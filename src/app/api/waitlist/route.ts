@@ -1,32 +1,66 @@
 import { NextResponse } from "next/server";
 import { DatabaseError } from "pg";
-import { query } from "@/lib/db";
-import { waitlistSchema } from "@/lib/validation/waitlist";
 
-function mapDatabaseError(error: unknown): { status: number; message: string } {
+import { query } from "@/lib/db";
+import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
+import { resolveLocale } from "@/lib/i18n/utils";
+import { createWaitlistSchema, type WaitlistInput } from "@/lib/validation/waitlist";
+
+type WaitlistFieldErrors = Partial<Record<keyof WaitlistInput, string>>;
+
+type WaitlistFormDictionary = Dictionary["waitlistForm"];
+
+type SchemaResult = {
+  dictionary: WaitlistFormDictionary;
+  schema: ReturnType<typeof createWaitlistSchema>;
+};
+
+function mapDatabaseError(
+  error: unknown,
+  dictionary: WaitlistFormDictionary
+): { status: number; message: string; fieldErrors?: WaitlistFieldErrors } {
   if (error instanceof DatabaseError && error.code === "23505") {
     return {
       status: 409,
-      message: "이미 등록된 이메일입니다.",
+      message: dictionary.messages.duplicateEmail,
+      fieldErrors: {
+        email: dictionary.messages.duplicateEmail,
+      },
     };
   }
 
   return {
     status: 500,
-    message: "서버 오류가 발생했습니다.",
+    message: dictionary.messages.serverError,
   };
 }
 
+async function resolveSchema(request: Request): Promise<SchemaResult> {
+  const locale = resolveLocale({
+    headerLocale: request.headers.get("accept-language"),
+  });
+
+  const dictionary = (await getDictionary(locale)).waitlistForm;
+  const schema = createWaitlistSchema(dictionary.validation);
+
+  return { schema, dictionary };
+}
+
 export async function POST(request: Request) {
+  let schemaResult: SchemaResult | null = null;
+
   try {
+    schemaResult = await resolveSchema(request);
+    const { schema, dictionary } = schemaResult;
+
     const payload = await request.json();
-    const parseResult = waitlistSchema.safeParse(payload);
+    const parseResult = schema.safeParse(payload);
 
     if (!parseResult.success) {
-      const fieldErrors: Record<string, string> = {};
+      const fieldErrors: WaitlistFieldErrors = {};
       for (const issue of parseResult.error.issues) {
         const key = issue.path[0];
-        if (typeof key === "string") {
+        if (key === "featureRequest" || key === "platform" || key === "email") {
           fieldErrors[key] = issue.message;
         }
       }
@@ -34,7 +68,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error: "입력값을 확인해주세요.",
+          error: dictionary.messages.validationError,
           fieldErrors,
         },
         { status: 400 }
@@ -57,13 +91,15 @@ export async function POST(request: Request) {
       waitlist: result.rows[0],
     });
   } catch (error) {
-    console.error("waitlist POST 오류", error);
-    const { status, message } = mapDatabaseError(error);
+    console.error("waitlist POST failed", error);
+    const dictionary = schemaResult?.dictionary ?? (await resolveSchema(request)).dictionary;
+    const { status, message, fieldErrors } = mapDatabaseError(error, dictionary);
 
     return NextResponse.json(
       {
         ok: false,
         error: message,
+        fieldErrors,
       },
       { status }
     );

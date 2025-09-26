@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from "pg";
+import { Pool, QueryResult, type QueryResultRow } from "pg";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -14,7 +14,8 @@ const globalForPool = globalThis as typeof globalThis & {
   pgPool?: Pool;
 };
 
-const pool = globalForPool.pgPool ??
+const pool =
+  globalForPool.pgPool ??
   new Pool({
     connectionString,
     ssl: {
@@ -26,7 +27,7 @@ if (process.env.NODE_ENV !== "production") {
   globalForPool.pgPool = pool;
 }
 
-export async function query<T = unknown>(
+export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> {

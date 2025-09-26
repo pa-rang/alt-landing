@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "Alt Landing",
+    "description": "Join the Alt Landing waitlist"
+  },
+  "home": {
+    "heroTitle": "Join the Alt Landing waitlist",
+    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to get an invite first."
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "languages": {
+      "ko": "Korean",
+      "en": "English"
+    }
+  },
+  "waitlistForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "platformLabel": "Platform",
+    "platformOptions": {
+      "mac": "Mac",
+      "windows": "Windows"
+    },
+    "featureRequestLabel": "Feature request (optional)",
+    "featureRequestPlaceholder": "Tell us what you want to build or try.",
+    "submit": {
+      "idle": "Join the waitlist",
+      "submitting": "Submitting..."
+    },
+    "messages": {
+      "success": "You're on the waitlist!",
+      "duplicateEmail": "This email is already registered.",
+      "validationError": "Please check the form fields.",
+      "genericError": "We couldn't add you to the waitlist.",
+      "unknownError": "Something went wrong.",
+      "serverError": "A server error occurred."
+    },
+    "validation": {
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "That doesn't look like a valid email address.",
+      "platformInvalid": "Unsupported platform.",
+      "featureTooLong": "Please keep requests within 500 characters."
+    }
+  }
+}

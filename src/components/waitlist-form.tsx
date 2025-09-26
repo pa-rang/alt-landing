@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { waitlistSchema, platformEnum, type WaitlistInput } from "@/lib/validation/waitlist";
+import { useMemo, useState, type FormEvent } from "react";
+
+import type { Dictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/config";
+import {
+  PLATFORM_OPTIONS,
+  createWaitlistSchema,
+  type PlatformValue,
+  type WaitlistInput,
+} from "@/lib/validation/waitlist";
+
+const PLATFORMS = PLATFORM_OPTIONS;
 
 type FormStatus =
   | { state: "idle" }
@@ -11,14 +21,39 @@ type FormStatus =
 
 type FieldErrors = Partial<Record<keyof WaitlistInput, string>>;
 
-const PLATFORMS = platformEnum.options;
+type WaitlistFormDictionary = Dictionary["waitlistForm"];
 
-export function WaitlistForm() {
+type WaitlistFormProps = {
+  locale: Locale;
+  dictionary: WaitlistFormDictionary;
+};
+
+type ServerFieldErrors = Partial<Record<keyof WaitlistInput, string>>;
+
+function parseServerFieldErrors(input: unknown): ServerFieldErrors {
+  if (!input || typeof input !== "object") {
+    return {};
+  }
+
+  const result: ServerFieldErrors = {};
+  for (const key of ["email", "platform", "featureRequest"] satisfies Array<keyof WaitlistInput>) {
+    const value = (input as Record<string, unknown>)[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
   const [email, setEmail] = useState("");
-  const [platform, setPlatform] = useState<typeof PLATFORMS[number]>("mac");
+  const [platform, setPlatform] = useState<PlatformValue>("mac");
   const [featureRequest, setFeatureRequest] = useState("");
   const [status, setStatus] = useState<FormStatus>({ state: "idle" });
   const [errors, setErrors] = useState<FieldErrors>({});
+
+  const waitlistSchema = useMemo(() => createWaitlistSchema(dictionary.validation), [dictionary.validation]);
 
   const resetErrors = () => setErrors({});
 
@@ -42,7 +77,7 @@ export function WaitlistForm() {
         }
       }
       setErrors(fieldErrors);
-      setStatus({ state: "error", message: "입력값을 확인해주세요." });
+      setStatus({ state: "error", message: dictionary.messages.validationError });
       return;
     }
 
@@ -51,6 +86,7 @@ export function WaitlistForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept-Language": locale,
         },
         body: JSON.stringify(parseResult.data),
       });
@@ -58,18 +94,29 @@ export function WaitlistForm() {
       const payload = await response.json();
 
       if (!response.ok) {
-        const message = typeof payload?.error === "string" ? payload.error : "등록에 실패했습니다.";
-        setStatus({ state: "error", message });
+        const serverFieldErrors = parseServerFieldErrors(payload?.fieldErrors);
+        if (response.status === 409 && !serverFieldErrors.email) {
+          serverFieldErrors.email = dictionary.messages.duplicateEmail;
+        }
+        if (Object.keys(serverFieldErrors).length > 0) {
+          setErrors(serverFieldErrors);
+        }
+
+        const errorMessage =
+          typeof payload?.error === "string" && payload.error.trim().length > 0
+            ? payload.error
+            : dictionary.messages.genericError;
+        setStatus({ state: "error", message: errorMessage });
         return;
       }
 
-      setStatus({ state: "success", message: "웨이팅 리스트에 등록되었습니다!" });
+      setStatus({ state: "success", message: dictionary.messages.success });
       setEmail("");
       setPlatform("mac");
       setFeatureRequest("");
     } catch (error) {
       console.error("waitlist submit failed", error);
-      setStatus({ state: "error", message: "알 수 없는 오류가 발생했습니다." });
+      setStatus({ state: "error", message: dictionary.messages.unknownError });
     }
   };
 
@@ -79,7 +126,7 @@ export function WaitlistForm() {
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
       <div className="space-y-2">
         <label htmlFor="email" className="block text-sm font-medium text-foreground">
-          이메일
+          {dictionary.emailLabel}
         </label>
         <input
           id="email"
@@ -90,7 +137,7 @@ export function WaitlistForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
-          placeholder="you@example.com"
+          placeholder={dictionary.emailPlaceholder}
           disabled={isSubmitting}
         />
         {errors.email ? <p className="text-sm text-red-500">{errors.email}</p> : null}
@@ -98,19 +145,19 @@ export function WaitlistForm() {
 
       <div className="space-y-2">
         <label htmlFor="platform" className="block text-sm font-medium text-foreground">
-          플랫폼
+          {dictionary.platformLabel}
         </label>
         <select
           id="platform"
           name="platform"
           value={platform}
-          onChange={(event) => setPlatform(event.target.value as typeof PLATFORMS[number])}
+          onChange={(event) => setPlatform(event.target.value as PlatformValue)}
           className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
           disabled={isSubmitting}
         >
           {PLATFORMS.map((option) => (
             <option key={option} value={option}>
-              {option === "mac" ? "Mac" : "Windows"}
+              {dictionary.platformOptions[option]}
             </option>
           ))}
         </select>
@@ -119,7 +166,7 @@ export function WaitlistForm() {
 
       <div className="space-y-2">
         <label htmlFor="featureRequest" className="block text-sm font-medium text-foreground">
-          기대하는 기능 (선택)
+          {dictionary.featureRequestLabel}
         </label>
         <textarea
           id="featureRequest"
@@ -128,7 +175,7 @@ export function WaitlistForm() {
           onChange={(event) => setFeatureRequest(event.target.value)}
           rows={4}
           className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
-          placeholder="원하는 기능이나 사용 목적을 알려주세요."
+          placeholder={dictionary.featureRequestPlaceholder}
           disabled={isSubmitting}
         />
         {errors.featureRequest ? <p className="text-sm text-red-500">{errors.featureRequest}</p> : null}
@@ -139,7 +186,7 @@ export function WaitlistForm() {
         className="w-full rounded-md bg-foreground px-4 py-2 text-background transition hover:opacity-90 disabled:opacity-60"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "등록 중..." : "웨이팅 리스트 등록"}
+        {isSubmitting ? dictionary.submit.submitting : dictionary.submit.idle}
       </button>
 
       {status.state === "success" ? <p className="text-sm text-green-600">{status.message}</p> : null}
