@@ -7,7 +7,6 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { WaitlistDialog } from "@/components/waitlist-dialog";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +26,12 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
     event.preventDefault();
 
     // 간단한 이메일 검증
-    const emailResult = z.string().trim().min(1, dictionary.validation.emailRequired).email(dictionary.validation.emailInvalid).safeParse(email);
+    const emailResult = z
+      .string()
+      .trim()
+      .min(1, dictionary.validation.emailRequired)
+      .email(dictionary.validation.emailInvalid)
+      .safeParse(email);
 
     if (!emailResult.success) {
       setEmailError(emailResult.error.issues[0]?.message || dictionary.validation.emailInvalid);
@@ -41,9 +45,9 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
   const handleEnterKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      const form = event.currentTarget.closest('form');
+      const form = event.currentTarget.closest("form");
       if (form) {
-        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
         form.dispatchEvent(submitEvent);
       }
     }
@@ -51,11 +55,8 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">
-            {dictionary.emailLabel}
-          </Label>
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Input
             id="email"
             name="email"
@@ -69,17 +70,13 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
             }}
             onKeyPress={handleEnterKeyPress}
             placeholder={dictionary.emailPlaceholder}
-            className={cn(emailError && "border-destructive")}
+            className={cn("flex-1 h-10 bg-stone-200 border-none", emailError && "border-destructive")}
           />
-          {emailError ? <p className="text-sm text-destructive">{emailError}</p> : null}
+          <Button type="submit" className="whitespace-nowrap h-10" size="default">
+            {dictionary.submit.idle}
+          </Button>
         </div>
-
-        <Button
-          type="submit"
-          className="w-full"
-        >
-          {dictionary.submit.idle}
-        </Button>
+        {emailError ? <p className="text-sm text-destructive mt-2">{emailError}</p> : null}
       </form>
 
       <WaitlistDialog
