@@ -5,7 +5,6 @@ import { useMemo, useState, type FormEvent } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import {
-  PLATFORM_OPTIONS,
   createWaitlistSchema,
   type PlatformValue,
   type WaitlistInput,
@@ -13,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +25,6 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const PLATFORMS = PLATFORM_OPTIONS;
 
 type FormStatus =
   | { state: "idle" }
@@ -180,25 +178,51 @@ export function WaitlistDialog({ locale, dictionary, open, onOpenChange, initial
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="platform">
+            <Label>
               {dictionary.platformLabel}
             </Label>
-            <Select
-              value={platform}
-              onValueChange={(value) => setPlatform(value as PlatformValue)}
-              disabled={isSubmitting}
-            >
-              <SelectTrigger className={cn(errors.platform && "border-destructive")}>
-                <SelectValue placeholder={dictionary.platformOptions[platform]} />
-              </SelectTrigger>
-              <SelectContent>
-                {PLATFORMS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {dictionary.platformOptions[option]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-auto py-3 px-4 flex flex-col items-center gap-2 border transition-none hover:bg-background hover:text-foreground",
+                  platform === "mac" && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
+                  errors.platform && "border-destructive"
+                )}
+                onClick={() => setPlatform("mac")}
+                disabled={isSubmitting}
+              >
+                <Image
+                  src="/apple.png"
+                  alt="macOS"
+                  width={24}
+                  height={24}
+                  className={platform === "mac" ? "brightness-0 invert" : ""}
+                />
+                <span className="text-sm font-medium">{dictionary.platformOptions.mac}</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-auto py-3 px-4 flex flex-col items-center gap-2 border transition-none hover:bg-background hover:text-foreground",
+                  platform === "windows" && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
+                  errors.platform && "border-destructive"
+                )}
+                onClick={() => setPlatform("windows")}
+                disabled={isSubmitting}
+              >
+                <Image
+                  src="/windows.svg"
+                  alt="Windows"
+                  width={24}
+                  height={24}
+                  className={platform === "windows" ? "brightness-0 invert" : ""}
+                />
+                <span className="text-sm font-medium">{dictionary.platformOptions.windows}</span>
+              </Button>
+            </div>
             {errors.platform ? <p className="text-sm text-destructive">{errors.platform}</p> : null}
           </div>
 
