@@ -10,6 +10,13 @@ import {
   type PlatformValue,
   type WaitlistInput,
 } from "@/lib/validation/waitlist";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const PLATFORMS = PLATFORM_OPTIONS;
 
@@ -111,12 +118,15 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
       }
 
       setStatus({ state: "success", message: dictionary.messages.success });
+      toast.success(dictionary.messages.success);
       setEmail("");
       setPlatform("mac");
       setFeatureRequest("");
     } catch (error) {
       console.error("waitlist submit failed", error);
-      setStatus({ state: "error", message: dictionary.messages.unknownError });
+      const errorMessage = dictionary.messages.unknownError;
+      setStatus({ state: "error", message: errorMessage });
+      toast.error(errorMessage);
     }
   };
 
@@ -125,10 +135,10 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
       <div className="space-y-2">
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
+        <Label htmlFor="email">
           {dictionary.emailLabel}
-        </label>
-        <input
+        </Label>
+        <Input
           id="email"
           name="email"
           type="email"
@@ -136,61 +146,60 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
           placeholder={dictionary.emailPlaceholder}
           disabled={isSubmitting}
+          className={cn(errors.email && "border-destructive")}
         />
-        {errors.email ? <p className="text-sm text-red-500">{errors.email}</p> : null}
+        {errors.email ? <p className="text-sm text-destructive">{errors.email}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="platform" className="block text-sm font-medium text-foreground">
+        <Label htmlFor="platform">
           {dictionary.platformLabel}
-        </label>
-        <select
-          id="platform"
-          name="platform"
+        </Label>
+        <Select
           value={platform}
-          onChange={(event) => setPlatform(event.target.value as PlatformValue)}
-          className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
+          onValueChange={(value) => setPlatform(value as PlatformValue)}
           disabled={isSubmitting}
         >
-          {PLATFORMS.map((option) => (
-            <option key={option} value={option}>
-              {dictionary.platformOptions[option]}
-            </option>
-          ))}
-        </select>
-        {errors.platform ? <p className="text-sm text-red-500">{errors.platform}</p> : null}
+          <SelectTrigger className={cn(errors.platform && "border-destructive")}>
+            <SelectValue placeholder={dictionary.platformOptions[platform]} />
+          </SelectTrigger>
+          <SelectContent>
+            {PLATFORMS.map((option) => (
+              <SelectItem key={option} value={option}>
+                {dictionary.platformOptions[option]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.platform ? <p className="text-sm text-destructive">{errors.platform}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="featureRequest" className="block text-sm font-medium text-foreground">
+        <Label htmlFor="featureRequest">
           {dictionary.featureRequestLabel}
-        </label>
-        <textarea
+        </Label>
+        <Textarea
           id="featureRequest"
           name="featureRequest"
           value={featureRequest}
           onChange={(event) => setFeatureRequest(event.target.value)}
           rows={4}
-          className="w-full rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-foreground"
+          className={cn(errors.featureRequest && "border-destructive")}
           placeholder={dictionary.featureRequestPlaceholder}
           disabled={isSubmitting}
         />
-        {errors.featureRequest ? <p className="text-sm text-red-500">{errors.featureRequest}</p> : null}
+        {errors.featureRequest ? <p className="text-sm text-destructive">{errors.featureRequest}</p> : null}
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="w-full rounded-md bg-foreground px-4 py-2 text-background transition hover:opacity-90 disabled:opacity-60"
+        className="w-full"
         disabled={isSubmitting}
       >
         {isSubmitting ? dictionary.submit.submitting : dictionary.submit.idle}
-      </button>
-
-      {status.state === "success" ? <p className="text-sm text-green-600">{status.message}</p> : null}
-      {status.state === "error" && status.message ? <p className="text-sm text-red-500">{status.message}</p> : null}
+      </Button>
     </form>
   );
 }
