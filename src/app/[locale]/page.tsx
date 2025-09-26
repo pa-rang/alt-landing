@@ -20,34 +20,49 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-6 py-8 sm:px-8 lg:px-16">
+      <section className="relative overflow-hidden pt-2 md:pt-12 pb-16 px-4 sm:px-8 lg:px-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-16 items-center">
-            <div className="flex flex-col justify-center space-y-8">
+          <div className="grid gap-8 md:gap-16 items-center">
+            <div className="flex flex-col justify-center space-y-4 md:space-y-8">
               <div className="space-y-1">
                 <h1 className="text-4xl font-bold tracking-tight">
-                  <span className="text-zinc-800">No Internet. No Login. </span>
-                  <span className="inline-block animate-pulse bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 bg-clip-text text-transparent">
+                  <span className="text-zinc-800">
+                    No Internet. <br className="sm:hidden" />
+                    No Login.{" "}
+                  </span>
+                  <span className="inline-block bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
                     Absolutely Free.
                   </span>
                 </h1>
-                <div className="flex items-center gap-3">
-                  <Image src="/alt_logo.png" alt="alt logo" width={48} height={48} className="inline-block" />
-                  <h1 className="text-4xl text-zinc-800">Your private AI lecture notetaker, alt</h1>
+                {/* Mobile: inline text with image */}
+                <h1 className="text-[20px] mt-4 text-zinc-800 md:hidden">
+                  Your private AI lecture notetaker,{" "}
+                  <Image src="/alt_logo.png" alt="alt" width={48} height={48} className="inline-block align-middle" />
+                </h1>
+
+                {/* Desktop: flex layout */}
+                <div className="hidden md:flex items-center gap-2">
+                  <h1 className="text-2xl md:text-4xl text-zinc-800">Your private AI lecture notetaker, </h1>
+                  <Image src="/alt_logo.png" alt="alt" width={60} height={60} className="inline-block" />
                 </div>
               </div>
-              <div className="w-full max-w-md">
+
+              <p className="text-sm sm:text-base text-zinc-500">
+                학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때. <br />
+                alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요.
+              </p>
+
+              <div className="w-full max-w-md mt-2">
                 <WaitlistForm locale={locale} dictionary={dictionary.waitlistForm} />
               </div>
             </div>
-
             <div className="relative">
               <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
                 <Image
                   src="/alt_screenshot.png"
                   alt="AI Transcript Platform Screenshot"
-                  width={600}
+                  width={800}
                   height={600}
                   className="relative z-10 w-full h-auto"
                   priority

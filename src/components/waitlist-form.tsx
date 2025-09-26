@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
-
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,7 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
   return (
     <>
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col xs:flex-row gap-2">
           <Input
             id="email"
             name="email"

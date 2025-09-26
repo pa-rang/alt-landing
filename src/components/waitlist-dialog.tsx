@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, useEffect, type FormEvent } from "react";
 
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
@@ -142,10 +142,12 @@ export function WaitlistDialog({ locale, dictionary, open, onOpenChange, initial
 
   const isSubmitting = status.state === "submitting";
 
-  // 이메일이 변경될 때마다 상태 업데이트
-  if (initialEmail !== email && !open) {
-    setEmail(initialEmail);
-  }
+  // 이메일이 변경될 때마다 상태 업데이트 (useEffect로 사이드 이펙트 처리)
+  useEffect(() => {
+    if (initialEmail !== email && !open) {
+      setEmail(initialEmail);
+    }
+  }, [initialEmail, email, open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
