@@ -41,6 +41,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "alt",
+    images: [
+      {
+        url: "https://altalt.io/alt_screenshot.png",
+        width: 1200,
+        height: 630,
+        alt: "alt - ai lecture notetaker",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -48,6 +56,7 @@ export const metadata: Metadata = {
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     creator: "@alt_app",
+    images: ["https://altalt.io/alt_screenshot.png"],
   },
   verification: {
     google: "your-google-verification-code",
