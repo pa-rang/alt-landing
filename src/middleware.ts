@@ -7,6 +7,7 @@ const PUBLIC_FILE = /\.[^\/]+$/;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  console.log("Middleware: pathname =", pathname);
 
   if (
     pathname.startsWith("/_next") ||
@@ -14,6 +15,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     PUBLIC_FILE.test(pathname)
   ) {
+    console.log("Middleware: Skipping for system file");
     return NextResponse.next();
   }
 
@@ -36,7 +38,6 @@ export function middleware(request: NextRequest) {
     cookieLocale: request.cookies.get("NEXT_LOCALE")?.value,
     country: request.headers.get("x-vercel-ip-country"),
   });
-  console.log("locale", locale);
 
   const redirectUrl = new URL(`/${locale}${pathname}`, request.url);
   const response = NextResponse.redirect(redirectUrl);
@@ -49,5 +50,15 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/(.*)", "/"],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (metadata files)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/",
+  ],
 };
