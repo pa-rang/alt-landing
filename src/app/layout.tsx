@@ -2,7 +2,9 @@ import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { isSupportedLocale } from "@/lib/i18n/config";
+import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -17,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "alt, ai lecture notetaker",
+  title: "alt - ai lecture notetaker",
   description:
     "Transform your lectures into organized, searchable notes with AI. alt automatically transcribes, summarizes, and structures your academic content for better learning outcomes.",
   keywords: [
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
   publisher: "alt",
   robots: "index, follow",
   openGraph: {
-    title: "alt, ai lecture notetaker",
+    title: "alt - ai lecture notetaker",
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     type: "website",
@@ -52,7 +54,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "alt, ai lecture notetaker",
+    title: "alt - ai lecture notetaker",
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     creator: "@alt_app",
@@ -73,6 +75,8 @@ export default async function RootLayout({
   const locale = headerList.get("x-next-locale");
   const htmlLang = isSupportedLocale(locale) ? locale : "en";
 
+  const dictionary = await getDictionary(htmlLang as Locale);
+
   return (
     <html lang={htmlLang}>
       <head>
@@ -83,15 +87,23 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
         <link rel="canonical" href="https://altalt.io" />
-        <meta name="language" content="en" />
+        <meta name="language" content={htmlLang} />
         <meta name="revisit-after" content="7 days" />
+        {SUPPORTED_LOCALES.map((supportedLocale) => (
+          <link
+            key={supportedLocale}
+            rel="alternate"
+            hrefLang={supportedLocale}
+            href={`https://altalt.io/${supportedLocale}/`}
+          />
+        ))}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "alt, ai lecture notetaker",
+              name: "alt - ai lecture notetaker",
               description:
                 "Transform your lectures into organized, searchable notes with AI. alt automatically transcribes, summarizes, and structures your academic content for better learning outcomes.",
               url: "https://altalt.io",
@@ -111,7 +123,17 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <div className="min-h-screen flex flex-col">
+          <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-14 w-full items-center justify-between px-4">
+              <div className="flex items-center space-x-4"></div>
+              <div className="flex items-center space-x-4">
+                <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
+              </div>
+            </div>
+          </header>
+          <main className="flex-1">{children}</main>
+        </div>
         <Toaster />
       </body>
     </html>
