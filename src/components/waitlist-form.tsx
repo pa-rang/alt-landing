@@ -10,13 +10,15 @@ import { WaitlistDialog } from "@/components/waitlist-dialog";
 import { cn } from "@/lib/utils";
 
 type WaitlistFormDictionary = Dictionary["waitlistForm"];
+type WaitlistDialogTexts = Dictionary["waitlistDialog"];
 
 type WaitlistFormProps = {
   locale: Locale;
   dictionary: WaitlistFormDictionary;
+  dialogTexts: WaitlistDialogTexts;
 };
 
-export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
+export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormProps) {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -81,6 +83,7 @@ export function WaitlistForm({ locale, dictionary }: WaitlistFormProps) {
       <WaitlistDialog
         locale={locale}
         dictionary={dictionary}
+        dialogTexts={dialogTexts}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         initialEmail={email}

@@ -8,10 +8,11 @@ import type { Locale } from "@/lib/i18n/config";
 type WaitlistButtonProps = {
   locale: Locale;
   dictionary: Dictionary["waitlistForm"];
+  dialogTexts: Dictionary["waitlistDialog"];
   children: ReactNode;
 };
 
-export function WaitlistButton({ locale, dictionary, children }: WaitlistButtonProps) {
+export function WaitlistButton({ locale, dictionary, dialogTexts, children }: WaitlistButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,6 +21,7 @@ export function WaitlistButton({ locale, dictionary, children }: WaitlistButtonP
       <WaitlistDialog
         locale={locale}
         dictionary={dictionary}
+        dialogTexts={dialogTexts}
         open={open}
         onOpenChange={setOpen}
         initialEmail=""

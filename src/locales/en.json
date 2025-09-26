@@ -5,7 +5,11 @@
   },
   "home": {
     "heroTitle": "Join the Alt Landing waitlist",
-    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to get an invite first."
+    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to get an invite first.",
+    "privateAiNotetaker": "Your private AI lecture notetaker,",
+    "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
+    "subDescription": "For school lectures, presentations, when internet is unstable or you want to protect your privacy.",
+    "subDescriptionCta": "Use alt for real-time note-taking and lecture summaries completely free."
   },
   "languageSwitcher": {
     "label": "Language",
@@ -42,5 +46,9 @@
       "platformInvalid": "Unsupported platform.",
       "featureTooLong": "Please keep requests within 500 characters."
     }
+  },
+  "waitlistDialog": {
+    "title": "Join Waitlist",
+    "description": "Almost there! Tell us your OS and what features you're expecting."
   }
 }

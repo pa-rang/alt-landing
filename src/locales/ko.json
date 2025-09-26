@@ -5,7 +5,11 @@
   },
   "home": {
     "heroTitle": "Alt Landing 웨이팅 리스트에 참여하세요",
-    "heroDescription": "빠르게 테스트하고 피드백을 주실 분을 찾고 있습니다. 이메일과 플랫폼을 남겨주시면 초대장을 가장 먼저 보내드릴게요."
+    "heroDescription": "빠르게 테스트하고 피드백을 주실 분을 찾고 있습니다. 이메일과 플랫폼을 남겨주시면 초대장을 가장 먼저 보내드릴게요.",
+    "privateAiNotetaker": "Your private AI lecture notetaker,",
+    "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
+    "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때.",
+    "subDescriptionCta": "alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요."
   },
   "languageSwitcher": {
     "label": "언어",
@@ -42,5 +46,9 @@
       "platformInvalid": "지원하지 않는 플랫폼입니다.",
       "featureTooLong": "요청 사항은 500자 이내로 적어주세요."
     }
+  },
+  "waitlistDialog": {
+    "title": "웨이팅 리스트 참여",
+    "description": "거의 다 됐습니다! OS와 기대하는 기능을 알려주세요."
   }
 }

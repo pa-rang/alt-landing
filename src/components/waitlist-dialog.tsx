@@ -35,10 +35,12 @@ type FormStatus =
 type FieldErrors = Partial<Record<keyof WaitlistInput, string>>;
 
 type WaitlistDialogDictionary = Dictionary["waitlistForm"];
+type WaitlistDialogTexts = Dictionary["waitlistDialog"];
 
 type WaitlistDialogProps = {
   locale: Locale;
   dictionary: WaitlistDialogDictionary;
+  dialogTexts: WaitlistDialogTexts;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialEmail: string;
@@ -62,7 +64,7 @@ function parseServerFieldErrors(input: unknown): ServerFieldErrors {
   return result;
 }
 
-export function WaitlistDialog({ locale, dictionary, open, onOpenChange, initialEmail }: WaitlistDialogProps) {
+export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenChange, initialEmail }: WaitlistDialogProps) {
   const [email, setEmail] = useState(initialEmail);
   const [platform, setPlatform] = useState<PlatformValue>("mac");
   const [featureRequest, setFeatureRequest] = useState("");
@@ -153,9 +155,9 @@ export function WaitlistDialog({ locale, dictionary, open, onOpenChange, initial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Join Waitlist</DialogTitle>
+          <DialogTitle>{dialogTexts.title}</DialogTitle>
           <DialogDescription>
-            거의 다 됐습니다! OS와 기대하는 기능을 알려주세요.
+            {dialogTexts.description}
           </DialogDescription>
         </DialogHeader>
 

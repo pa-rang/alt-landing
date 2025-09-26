@@ -36,24 +36,24 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                 </h1>
                 {/* Mobile: inline text with image */}
                 <h1 className="text-[20px] mt-4 text-zinc-800 md:hidden">
-                  Your private AI lecture notetaker,{" "}
+                  {dictionary.home.mobilePrivateAiNotetaker}{" "}
                   <Image src="/alt_logo.png" alt="alt" width={48} height={48} className="inline-block align-middle" />
                 </h1>
 
                 {/* Desktop: flex layout */}
                 <div className="hidden md:flex items-center gap-2">
-                  <h1 className="text-2xl md:text-4xl text-zinc-800">Your private AI lecture notetaker, </h1>
+                  <h1 className="text-2xl md:text-4xl text-zinc-800">{dictionary.home.privateAiNotetaker} </h1>
                   <Image src="/alt_logo.png" alt="alt" width={60} height={60} className="inline-block" />
                 </div>
               </div>
 
               <p className="text-sm sm:text-base text-zinc-500">
-                학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때. <br />
-                alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요.
+                {dictionary.home.subDescription} <br />
+                {dictionary.home.subDescriptionCta}
               </p>
 
               <div className="w-full max-w-md mt-2">
-                <WaitlistForm locale={locale} dictionary={dictionary.waitlistForm} />
+                <WaitlistForm locale={locale} dictionary={dictionary.waitlistForm} dialogTexts={dictionary.waitlistDialog} />
               </div>
             </div>
             <div className="relative">
