@@ -5,6 +5,17 @@ import { query } from "@/lib/db";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import { resolveLocale } from "@/lib/i18n/utils";
 import { createWaitlistSchema, type WaitlistInput } from "@/lib/validation/waitlist";
+import { sendWaitlistNotification } from "@/lib/slack";
+
+type WaitlistEntry = {
+  id: number;
+  email: string;
+  platform: string;
+  feature_request?: string | null;
+  invited_at?: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 type WaitlistFieldErrors = Partial<Record<keyof WaitlistInput, string>>;
 
@@ -77,7 +88,7 @@ export async function POST(request: Request) {
 
     const { email, platform, featureRequest } = parseResult.data;
 
-    const result = await query(
+    const result = await query<WaitlistEntry>(
       `insert into public.waitlist (email, platform, feature_request)
        values ($1, $2, $3)
        on conflict (email)
@@ -85,6 +96,11 @@ export async function POST(request: Request) {
        returning id, email, platform, feature_request, invited_at, created_at, updated_at`,
       [email, platform, featureRequest ?? null]
     );
+
+    // 슬랙 알림 전송 (백그라운드에서 비동기 처리, 사용자 응답에 영향 없음)
+    sendWaitlistNotification(result.rows[0]).catch((slackError) => {
+      console.error('슬랙 알림 전송 실패:', slackError);
+    });
 
     return NextResponse.json({
       ok: true,
