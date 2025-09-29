@@ -21,6 +21,11 @@ const pool =
     ssl: {
       rejectUnauthorized: false,
     },
+    // 서버리스 환경 최적화 설정
+    connectionTimeoutMillis: 10000, // 연결 타임아웃: 10초
+    idleTimeoutMillis: 30000, // 유휴 연결 타임아웃: 30초
+    max: 10, // 최대 연결 수
+    allowExitOnIdle: true, // 서버리스 환경에서 프로세스 종료 허용
   });
 
 if (process.env.NODE_ENV !== "production") {

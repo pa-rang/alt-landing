@@ -97,9 +97,19 @@ export async function POST(request: Request) {
       [email, platform, featureRequest ?? null]
     );
 
-    // 슬랙 알림 전송 (백그라운드에서 비동기 처리, 사용자 응답에 영향 없음)
-    sendWaitlistNotification(result.rows[0]).catch((slackError) => {
-      console.error('슬랙 알림 전송 실패:', slackError);
+    // 슬랙 알림 전송 (완전히 격리된 백그라운드 처리)
+    // 사용자 응답과 완전히 분리하여 에러가 전파되지 않도록 함
+    setImmediate(() => {
+      sendWaitlistNotification(result.rows[0])
+        .then(success => {
+          if (!success) {
+            console.warn(`슬랙 알림 전송 실패 (웨이트리스트 ID: ${result.rows[0].id})`);
+          }
+        })
+        .catch((slackError) => {
+          // 예상치 못한 에러도 안전하게 처리
+          console.error('슬랙 알림 처리 중 예외 발생:', slackError);
+        });
     });
 
     return NextResponse.json({
