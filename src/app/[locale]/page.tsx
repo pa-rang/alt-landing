@@ -64,12 +64,14 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
                 <Image
-                  src="/alt_screenshot_2.png"
+                  src="/alt_product_image.png"
                   alt="AI Transcript Platform Screenshot"
-                  width={800}
-                  height={600}
+                  width={1600}
+                  height={964}
                   className="relative z-10 w-full h-auto"
+                  quality={100}
                   priority
+                  unoptimized={false}
                 />
               </div>
             </div>
