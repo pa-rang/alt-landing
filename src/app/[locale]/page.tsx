@@ -53,14 +53,18 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </p>
 
               <div className="w-full max-w-md mt-2">
-                <WaitlistForm locale={locale} dictionary={dictionary.waitlistForm} dialogTexts={dictionary.waitlistDialog} />
+                <WaitlistForm
+                  locale={locale}
+                  dictionary={dictionary.waitlistForm}
+                  dialogTexts={dictionary.waitlistDialog}
+                />
               </div>
             </div>
             <div className="relative">
               <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
                 <Image
-                  src="/alt_screenshot.png"
+                  src="/alt_screenshot_2.png"
                   alt="AI Transcript Platform Screenshot"
                   width={800}
                   height={600}

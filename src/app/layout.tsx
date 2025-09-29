@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "alt",
     images: [
       {
-        url: "https://altalt.io/alt_screenshot.png",
+        url: "https://altalt.io/alt_screenshot_2.png",
         width: 1200,
         height: 630,
         alt: "alt - ai lecture notetaker",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     creator: "@alt_app",
-    images: ["https://altalt.io/alt_screenshot.png"],
+    images: ["https://altalt.io/alt_screenshot_2.png"],
   },
   verification: {
     google: "your-google-verification-code",
