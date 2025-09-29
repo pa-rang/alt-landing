@@ -74,6 +74,16 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                   unoptimized={false}
                 />
               </div>
+
+              {/* Contact us text */}
+              <div className="mt-14">
+                <a
+                  href="mailto:altalt.team@gmail.com"
+                  className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+                >
+                  Contact us
+                </a>
+              </div>
             </div>
           </div>
         </div>
