@@ -48,7 +48,6 @@
     }
   },
   "waitlistDialog": {
-    "title": "웨이팅 리스트 참여",
-    "description": "거의 다 됐습니다! OS와 기대하는 기능을 알려주세요."
+    "title": "웨이팅 리스트 참여"
   }
 }

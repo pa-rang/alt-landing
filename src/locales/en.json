@@ -48,7 +48,6 @@
     }
   },
   "waitlistDialog": {
-    "title": "Join Waitlist",
-    "description": "Almost there! Tell us your OS and what features you're expecting."
+    "title": "Join Waitlist"
   }
 }

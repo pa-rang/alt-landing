@@ -43,17 +43,6 @@ export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormPr
     setDialogOpen(true);
   };
 
-  const handleEnterKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const form = event.currentTarget.closest("form");
-      if (form) {
-        const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
-        form.dispatchEvent(submitEvent);
-      }
-    }
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit} className="w-full">
@@ -69,7 +58,6 @@ export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormPr
               setEmail(event.target.value);
               if (emailError) setEmailError("");
             }}
-            onKeyPress={handleEnterKeyPress}
             placeholder={dictionary.emailPlaceholder}
             className={cn("flex-1 h-10 bg-stone-200 border-none", emailError && "border-destructive")}
           />

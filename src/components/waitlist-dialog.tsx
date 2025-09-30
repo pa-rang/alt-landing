@@ -4,27 +4,15 @@ import { useMemo, useState, useEffect, type FormEvent } from "react";
 
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
-import {
-  createWaitlistSchema,
-  type PlatformValue,
-  type WaitlistInput,
-} from "@/lib/validation/waitlist";
+import { createWaitlistSchema, type PlatformValue, type WaitlistInput } from "@/lib/validation/waitlist";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
 
 type FormStatus =
   | { state: "idle" }
@@ -64,7 +52,14 @@ function parseServerFieldErrors(input: unknown): ServerFieldErrors {
   return result;
 }
 
-export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenChange, initialEmail }: WaitlistDialogProps) {
+export function WaitlistDialog({
+  locale,
+  dictionary,
+  dialogTexts,
+  open,
+  onOpenChange,
+  initialEmail,
+}: WaitlistDialogProps) {
   const [email, setEmail] = useState(initialEmail);
   const [platform, setPlatform] = useState<PlatformValue>("mac");
   const [featureRequest, setFeatureRequest] = useState("");
@@ -153,19 +148,14 @@ export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{dialogTexts.title}</DialogTitle>
-          <DialogDescription>
-            {dialogTexts.description}
-          </DialogDescription>
+          <DialogTitle className="mb-1 text-left">{dialogTexts.title}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">
-              {dictionary.emailLabel}
-            </Label>
+            <Label htmlFor="email">{dictionary.emailLabel}</Label>
             <Input
               id="email"
               name="email"
@@ -182,16 +172,15 @@ export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenCh
           </div>
 
           <div className="space-y-2">
-            <Label>
-              {dictionary.platformLabel}
-            </Label>
+            <Label>{dictionary.platformLabel}</Label>
             <div className="grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="outline"
                 className={cn(
                   "h-auto py-3 px-4 flex flex-col items-center gap-2 border transition-none hover:bg-background hover:text-foreground",
-                  platform === "mac" && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
+                  platform === "mac" &&
+                    "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
                   errors.platform && "border-destructive"
                 )}
                 onClick={() => setPlatform("mac")}
@@ -211,7 +200,8 @@ export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenCh
                 variant="outline"
                 className={cn(
                   "h-auto py-3 px-4 flex flex-col items-center gap-2 border transition-none hover:bg-background hover:text-foreground",
-                  platform === "windows" && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
+                  platform === "windows" &&
+                    "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
                   errors.platform && "border-destructive"
                 )}
                 onClick={() => setPlatform("windows")}
@@ -231,9 +221,7 @@ export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenCh
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="featureRequest">
-              {dictionary.featureRequestLabel}
-            </Label>
+            <Label htmlFor="featureRequest">{dictionary.featureRequestLabel}</Label>
             <Textarea
               id="featureRequest"
               name="featureRequest"
@@ -248,11 +236,7 @@ export function WaitlistDialog({ locale, dictionary, dialogTexts, open, onOpenCh
           </div>
 
           <DialogFooter>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? dictionary.submit.submitting : dictionary.submit.idle}
             </Button>
           </DialogFooter>
