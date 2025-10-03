@@ -1,11 +1,5 @@
 {
-  "meta": {
-    "title": "Alt Landing",
-    "description": "Get early access to alt"
-  },
   "home": {
-    "heroTitle": "Get early access to alt",
-    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to be notified when we launch.",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "For school lectures, presentations, when your internet is unstable or you want to protect your privacy.",
