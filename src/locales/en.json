@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Alt Landing",
-    "description": "Join the Alt Landing waitlist"
+    "description": "Get early access to alt"
   },
   "home": {
-    "heroTitle": "Join the Alt Landing waitlist",
-    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to get an invite first.",
+    "heroTitle": "Get early access to alt",
+    "heroDescription": "We are looking for early testers who can share fast feedback. Leave your email and preferred platform to be notified when we launch.",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "For school lectures, presentations, when your internet is unstable or you want to protect your privacy.",
@@ -21,6 +21,7 @@
   "waitlistForm": {
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
+    "earlyAccessNote": "Currently available only to early access applicants.",
     "platformLabel": "Platform",
     "platformOptions": {
       "mac": "Mac",
@@ -29,11 +30,11 @@
     "featureRequestLabel": "Feature request (optional)",
     "featureRequestPlaceholder": "Tell us what you want to build or try.",
     "submit": {
-      "idle": "Join the waitlist",
+      "idle": "Get early access",
       "submitting": "Submitting..."
     },
     "messages": {
-      "success": "You're on the waitlist!",
+      "success": "We'll email you when alt launches!",
       "duplicateEmail": "This email is already registered.",
       "validationError": "Please check the form fields.",
       "genericError": "We couldn't add you to the waitlist.",
@@ -48,6 +49,6 @@
     }
   },
   "waitlistDialog": {
-    "title": "Join Waitlist"
+    "title": "Get Early Access"
   }
 }

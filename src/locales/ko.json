@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Alt Landing",
-    "description": "Alt Landing 웨이팅 리스트에 참여하세요"
+    "description": "alt 얼리 액세스 신청하기"
   },
   "home": {
-    "heroTitle": "Alt Landing 웨이팅 리스트에 참여하세요",
-    "heroDescription": "빠르게 테스트하고 피드백을 주실 분을 찾고 있습니다. 이메일과 플랫폼을 남겨주시면 초대장을 가장 먼저 보내드릴게요.",
+    "heroTitle": "alt 얼리 액세스 신청하기",
+    "heroDescription": "빠르게 테스트하고 피드백을 주실 분을 찾고 있습니다. 이메일과 플랫폼을 남겨주시면 출시 시 가장 먼저 안내드릴게요.",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때.",
@@ -21,6 +21,7 @@
   "waitlistForm": {
     "emailLabel": "이메일",
     "emailPlaceholder": "you@example.com",
+    "earlyAccessNote": "현재 우선 이용권을 신청한 사람만 사용이 가능합니다.",
     "platformLabel": "플랫폼",
     "platformOptions": {
       "mac": "Mac",
@@ -29,11 +30,11 @@
     "featureRequestLabel": "기대하는 기능 (선택)",
     "featureRequestPlaceholder": "원하는 기능이나 사용 목적을 알려주세요.",
     "submit": {
-      "idle": "웨이팅 리스트 등록",
-      "submitting": "등록 중..."
+      "idle": "우선 이용권 신청",
+      "submitting": "신청 중..."
     },
     "messages": {
-      "success": "웨이팅 리스트에 등록되었습니다!",
+      "success": "alt 출시 시 이메일로 안내드릴게요!",
       "duplicateEmail": "이미 등록된 이메일입니다.",
       "validationError": "입력값을 확인해주세요.",
       "genericError": "등록에 실패했습니다.",
@@ -48,6 +49,6 @@
     }
   },
   "waitlistDialog": {
-    "title": "웨이팅 리스트 참여"
+    "title": "우선 이용권 신청하기"
   }
 }

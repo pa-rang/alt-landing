@@ -66,6 +66,7 @@ export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormPr
           </Button>
         </div>
         {emailError ? <p className="text-sm text-destructive mt-2">{emailError}</p> : null}
+        <p className="text-xs text-muted-foreground mt-2">{dictionary.earlyAccessNote}</p>
       </form>
 
       <WaitlistDialog
