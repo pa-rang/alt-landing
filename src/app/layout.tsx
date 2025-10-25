@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -135,6 +136,7 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
         </div>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
