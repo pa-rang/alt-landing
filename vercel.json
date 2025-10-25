@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/mac",
+      "destination": "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-1.0.0-arm64.dmg",
+      "permanent": false,
+      "has": [
+        {
+          "type": "host",
+          "value": "download.altalt.io"
+        }
+      ]
+    }
+  ]
+}
