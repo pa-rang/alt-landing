@@ -3,6 +3,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  APPLE_COLS as COLS,
+  APPLE_ROWS as ROWS,
+  GAME_SECONDS,
+  computeSelectedIndicesFromRect,
+  formatTime,
+  generateValues,
+} from "@/lib/apple-game";
 
 type DownloadGameProps = {
   onClose: () => void;
@@ -14,82 +22,13 @@ type Cell = {
   removed: boolean;
 };
 
-const ROWS = 10;
-const COLS = 17;
-const TOTAL_CELLS = ROWS * COLS; // 170
-const GAME_SECONDS = 120;
-
-function getRandomInt1to9(): number {
-  return Math.floor(Math.random() * 9) + 1;
-}
-
-function generateCells(): Cell[] {
-  // 1) 무작위 생성
-  const values: number[] = Array.from({ length: TOTAL_CELLS }, () => getRandomInt1to9());
-
-  // 2) 합이 10의 배수가 되도록 조정
-  let sum = values.reduce((acc, v) => acc + v, 0);
-  let remainder = sum % 10;
-
-  if (remainder !== 0) {
-    const deltaAdd = (10 - remainder) % 10; // 더해야 하는 값 [1..9]
-    const deltaSub = remainder; // 빼야 하는 값 [1..9]
-
-    // 한 칸만 조정으로 해결 시도 (우선 덧셈)
-    let idx = values.findIndex((v) => v + deltaAdd <= 9);
-    if (idx !== -1) {
-      values[idx] += deltaAdd;
-    } else {
-      // 덧셈이 불가하면 뺄셈 시도
-      idx = values.findIndex((v) => v - deltaSub >= 1);
-      if (idx !== -1) {
-        values[idx] -= deltaSub;
-      } else {
-        // 안전장치: 작은 단위로 조정 반복 (극히 드묾)
-        let guard = 0;
-        while ((values.reduce((a, b) => a + b, 0) % 10) !== 0 && guard < 1000) {
-          const need = (10 - (values.reduce((a, b) => a + b, 0) % 10)) % 10;
-          if (need === 0) break;
-          let adjusted = false;
-          if (need > 0) {
-            for (let i = 0; i < values.length; i++) {
-              if (values[i] < 9) {
-                values[i] += 1;
-                adjusted = true;
-                break;
-              }
-            }
-          }
-          if (!adjusted) {
-            for (let i = 0; i < values.length; i++) {
-              if (values[i] > 1) {
-                values[i] -= 1;
-                break;
-              }
-            }
-          }
-          guard++;
-        }
-      }
-    }
-  }
-
-  // 3) 셀 구성
-  return values.map((v, i) => ({ id: i, value: v, removed: false }));
-}
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-    .toString()
-    .padStart(1, "0");
-  const s = (seconds % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
-}
-
 export function DownloadGame({ onClose }: DownloadGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
-  const [cells, setCells] = useState<Cell[]>(() => generateCells());
+  const [cells, setCells] = useState<Cell[]>(() => {
+    const values = generateValues(ROWS, COLS);
+    return values.map((v, i) => ({ id: i, value: v, removed: false }));
+  });
   const [score, setScore] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(GAME_SECONDS);
   const [gameState, setGameState] = useState<"idle" | "running" | "ended">("idle");
@@ -100,7 +39,8 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const resetGame = useCallback(() => {
-    setCells(generateCells());
+    const values = generateValues(ROWS, COLS);
+    setCells(values.map((v, i) => ({ id: i, value: v, removed: false })));
     setScore(0);
     setTimeLeft(GAME_SECONDS);
     setGameState("idle");
@@ -156,30 +96,19 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
   const computeSelectedIndices = useCallback(
     (x1: number, y1: number, x2: number, y2: number) => {
       if (!boardRef.current) return [] as number[];
-      const left = Math.min(x1, x2);
-      const right = Math.max(x1, x2);
-      const top = Math.min(y1, y2);
-      const bottom = Math.max(y1, y2);
-
       const rect = boardRef.current.getBoundingClientRect();
-      const cellWidth = rect.width / COLS;
-      const cellHeight = rect.height / ROWS;
-
-      const colStart = Math.max(0, Math.min(COLS - 1, Math.floor(left / cellWidth)));
-      const colEnd = Math.max(0, Math.min(COLS - 1, Math.floor(right / cellWidth)));
-      const rowStart = Math.max(0, Math.min(ROWS - 1, Math.floor(top / cellHeight)));
-      const rowEnd = Math.max(0, Math.min(ROWS - 1, Math.floor(bottom / cellHeight)));
-
-      const indices: number[] = [];
-      for (let r = Math.min(rowStart, rowEnd); r <= Math.max(rowStart, rowEnd); r++) {
-        for (let c = Math.min(colStart, colEnd); c <= Math.max(colStart, colEnd); c++) {
-          const idx = r * COLS + c;
-          if (!cells[idx]?.removed) {
-            indices.push(idx);
-          }
-        }
-      }
-      return indices;
+      const removedMask = cells.map((c) => c.removed);
+      return computeSelectedIndicesFromRect(
+        rect.width,
+        rect.height,
+        x1,
+        y1,
+        x2,
+        y2,
+        ROWS,
+        COLS,
+        removedMask
+      );
     },
     [cells]
   );
@@ -279,6 +208,8 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
+            // 모바일 스크롤 방지 및 터치 부드럽게
+            style={{ touchAction: "none", WebkitUserSelect: "none", userSelect: "none" }}
           >
             {/* 그리드 */}
             <div
@@ -296,7 +227,7 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
                   {!cell.removed ? (
                     <div
                       className={cn(
-                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold transition-transform",
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold transition-transform will-change-transform",
                         sumIsTen && isDragging && selectedIndices.includes(cell.id)
                           ? "bg-red-500 text-white scale-105"
                           : "bg-rose-200 text-rose-900"
