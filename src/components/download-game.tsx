@@ -164,9 +164,10 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
 
   const handleStart = useCallback(() => {
     if (gameState === "idle") {
+      resetGame();
       setGameState("running");
     }
-  }, [gameState]);
+  }, [gameState, resetGame]);
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
@@ -183,16 +184,18 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm sm:text-base">
             <span className="px-3 py-1 rounded-md bg-gray-100">
-              점수: <b>{score}</b>
+              점수 <b>{score}</b>
             </span>
             <span className={cn("px-3 py-1 rounded-md", timeLeft <= 10 ? "bg-red-100 text-red-700" : "bg-gray-100")}>
-              남은 시간: <b>{formatTime(timeLeft)}</b>
+              남은 시간 <b>{formatTime(timeLeft)}</b>
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={resetGame}>
-              리셋
-            </Button>
+            {gameState === "running" && (
+              <Button variant="outline" onClick={resetGame}>
+                다시하기
+              </Button>
+            )}
           </div>
         </div>
 
@@ -247,8 +250,8 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
             {selectionRect ? (
               <div
                 className={cn(
-                  "absolute border-2 rounded-sm pointer-events-none",
-                  sumIsTen ? "border-red-500 bg-red-500/10" : "border-gray-400 bg-gray-400/10"
+                  "absolute border-2 pointer-events-none",
+                  sumIsTen ? "border-emerald-500 bg-emerald-500/10" : "border-yellow-500 bg-yellow-500/10"
                 )}
                 style={{
                   left: selectionRect.left,
@@ -271,7 +274,7 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
 
           {/* 가이드 텍스트 */}
           <div className="mt-3 text-xs sm:text-sm text-gray-600">
-            - 사각형으로 드래그하여 숫자 합이 정확히 10인 사과들을 제거하세요. 합이 10이면 박스가 빨간색으로 표시됩니다.
+            사각형으로 드래그하여 숫자 합이 정확히 10인 사과들을 제거하세요. 합이 10이면 박스가 빨간색으로 표시됩니다.
           </div>
         </div>
 
