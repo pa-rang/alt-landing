@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -68,6 +69,26 @@ export const metadata: Metadata = {
     google: "your-google-verification-code",
   },
   category: "Education Technology",
+  metadataBase: new URL("https://altalt.io"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      en: "/en",
+      ko: "/ko",
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon/favicon-16px.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32px.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-512px.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon/favicon-180px.png", sizes: "180x180", type: "image/png" }],
+  },
+  other: {
+    language: "en",
+    "revisit-after": "7 days",
+  },
 };
 
 export default async function RootLayout({
@@ -94,26 +115,10 @@ export default async function RootLayout({
   }, {} as Record<Locale, string>);
 
   return (
-    <html lang={htmlLang}>
-      <head>
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16px.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32px.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180px.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/favicon/favicon-512px.png" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <link rel="canonical" href="https://altalt.io" />
-        <meta name="language" content={htmlLang} />
-        <meta name="revisit-after" content="7 days" />
-        {SUPPORTED_LOCALES.map((supportedLocale) => (
-          <link
-            key={supportedLocale}
-            rel="alternate"
-            hrefLang={supportedLocale}
-            href={`https://altalt.io/${supportedLocale}/`}
-          />
-        ))}
-        <script
+    <html lang={htmlLang} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Script
+          id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -137,8 +142,6 @@ export default async function RootLayout({
             }),
           }}
         />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="min-h-screen flex flex-col">
           <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-14 w-full items-center justify-between px-4">
