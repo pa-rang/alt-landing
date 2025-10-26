@@ -169,8 +169,8 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
   }, [gameState]);
 
   return (
-    <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4">
-      <div className="w-full max-w-6xl bg-white rounded-xl shadow-xl overflow-hidden">
+    <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
+      <div className="max-w-6xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)]">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
           <div className="font-semibold text-lg sm:text-xl">사과 게임</div>
           <div className="flex items-center gap-2">
@@ -199,56 +199,52 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 pb-5">
+        <div className="px-4 sm:px-6 pb-5 overflow-auto">
           <div
             ref={boardRef}
-            className={cn(
-              "relative w-full mx-auto bg-green-50 rounded-lg border overflow-hidden select-none",
-              "aspect-17/10"
-            )}
+            className={cn("relative bg-green-50 rounded-lg border overflow-hidden select-none mx-auto w-fit", "grid")}
+            style={{
+              gridTemplateColumns: `repeat(${COLS}, 40px)`,
+              gridTemplateRows: `repeat(${ROWS}, 40px)`,
+              touchAction: "none",
+              WebkitUserSelect: "none",
+              userSelect: "none",
+            }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
-            // 모바일 스크롤 방지 및 터치 부드럽게
-            style={{ touchAction: "none", WebkitUserSelect: "none", userSelect: "none" }}
           >
-            {/* 그리드 */}
-            <div
-              className="absolute inset-0 grid"
-              style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)`, gridTemplateRows: `repeat(${ROWS}, 1fr)` }}
-            >
-              {cells.map((cell) => (
-                <div
-                  key={cell.id}
-                  className={cn(
-                    "relative flex items-center justify-center border-[0.5px] border-emerald-200",
-                    cell.removed ? "bg-transparent" : "bg-white"
-                  )}
-                >
-                  {!cell.removed ? (
-                    <div
-                      className={cn(
-                        "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
-                        sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
-                      )}
-                    >
-                      <Image
-                        src="/apple_game_items/gemini_tomato.png"
-                        alt="melon"
-                        fill
-                        className="object-cover select-none"
-                        unoptimized
-                        draggable={false}
-                      />
-                      <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-                        {cell.value}
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
+            {cells.map((cell) => (
+              <div
+                key={cell.id}
+                className={cn(
+                  "relative flex items-center justify-center border-[0.5px] border-emerald-200",
+                  cell.removed ? "bg-transparent" : "bg-white"
+                )}
+              >
+                {!cell.removed ? (
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
+                      sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
+                    )}
+                  >
+                    <Image
+                      src="/apple_game_items/gemini_tomato_removebg.png"
+                      alt="melon"
+                      fill
+                      className="object-cover select-none"
+                      unoptimized
+                      draggable={false}
+                    />
+                    <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
+                      {cell.value}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ))}
 
             {/* 드래그 박스 */}
             {selectionRect ? (
