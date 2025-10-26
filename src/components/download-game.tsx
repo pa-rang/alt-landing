@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,17 +99,7 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
       if (!boardRef.current) return [] as number[];
       const rect = boardRef.current.getBoundingClientRect();
       const removedMask = cells.map((c) => c.removed);
-      return computeSelectedIndicesFromRect(
-        rect.width,
-        rect.height,
-        x1,
-        y1,
-        x2,
-        y2,
-        ROWS,
-        COLS,
-        removedMask
-      );
+      return computeSelectedIndicesFromRect(rect.width, rect.height, x1, y1, x2, y2, ROWS, COLS, removedMask);
     },
     [cells]
   );
@@ -155,12 +146,13 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
   );
 
   const selectionRect = useMemo(() => {
-    if (!isDragging || !startPos || !currentPos) return null as null | {
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    };
+    if (!isDragging || !startPos || !currentPos)
+      return null as null | {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      };
     const left = Math.min(startPos.x, currentPos.x);
     const top = Math.min(startPos.y, currentPos.y);
     const width = Math.abs(startPos.x - currentPos.x);
@@ -182,18 +174,28 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
           <div className="font-semibold text-lg sm:text-xl">사과 게임</div>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={onClose}>닫기</Button>
+            <Button variant="secondary" onClick={onClose}>
+              닫기
+            </Button>
           </div>
         </div>
 
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm sm:text-base">
-            <span className="px-3 py-1 rounded-md bg-gray-100">점수: <b>{score}</b></span>
-            <span className={cn("px-3 py-1 rounded-md", timeLeft <= 10 ? "bg-red-100 text-red-700" : "bg-gray-100")}>남은 시간: <b>{formatTime(timeLeft)}</b></span>
+            <span className="px-3 py-1 rounded-md bg-gray-100">
+              점수: <b>{score}</b>
+            </span>
+            <span className={cn("px-3 py-1 rounded-md", timeLeft <= 10 ? "bg-red-100 text-red-700" : "bg-gray-100")}>
+              남은 시간: <b>{formatTime(timeLeft)}</b>
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleStart} disabled={gameState !== "idle"}>시작</Button>
-            <Button variant="outline" onClick={resetGame}>리셋</Button>
+            <Button onClick={handleStart} disabled={gameState !== "idle"}>
+              시작
+            </Button>
+            <Button variant="outline" onClick={resetGame}>
+              리셋
+            </Button>
           </div>
         </div>
 
@@ -202,7 +204,7 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
             ref={boardRef}
             className={cn(
               "relative w-full mx-auto bg-green-50 rounded-lg border overflow-hidden select-none",
-              "aspect-[17/10]"
+              "aspect-17/10"
             )}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -227,13 +229,21 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
                   {!cell.removed ? (
                     <div
                       className={cn(
-                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold transition-transform will-change-transform",
-                        sumIsTen && isDragging && selectedIndices.includes(cell.id)
-                          ? "bg-red-500 text-white scale-105"
-                          : "bg-rose-200 text-rose-900"
+                        "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
+                        sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
                       )}
                     >
-                      {cell.value}
+                      <Image
+                        src="/apple_game_items/gemini_tomato.png"
+                        alt="melon"
+                        fill
+                        className="object-cover select-none"
+                        unoptimized
+                        draggable={false}
+                      />
+                      <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                        {cell.value}
+                      </span>
                     </div>
                   ) : null}
                 </div>
@@ -268,10 +278,14 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl text-center">
               <div className="text-xl sm:text-2xl font-bold mb-2">게임 종료</div>
-              <div className="text-base sm:text-lg mb-6">최종 점수: <b>{score}</b></div>
+              <div className="text-base sm:text-lg mb-6">
+                최종 점수: <b>{score}</b>
+              </div>
               <div className="flex gap-2 justify-center">
                 <Button onClick={resetGame}>재도전</Button>
-                <Button variant="secondary" onClick={onClose}>닫기</Button>
+                <Button variant="secondary" onClick={onClose}>
+                  닫기
+                </Button>
               </div>
             </div>
           </div>
