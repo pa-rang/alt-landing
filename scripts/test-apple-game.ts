@@ -4,7 +4,7 @@ import {
   generateValues,
   computeSelectedIndicesFromRect,
   formatTime,
-} from "../src/lib/apple-game.ts";
+} from "../src/lib/apple-game";
 // tsx 실행 시에도 확장자 명시가 안전합니다.
 
 function assert(condition: any, message: string) {
@@ -20,7 +20,10 @@ async function main() {
     assert(values.length === APPLE_ROWS * APPLE_COLS, "Board length must be 170");
     const sum = values.reduce((a, b) => a + b, 0);
     assert(sum % 10 === 0, "Sum must be a multiple of 10");
-    assert(values.every((v) => v >= 1 && v <= 9), "Values must be between 1 and 9");
+    assert(
+      values.every((v) => v >= 1 && v <= 9),
+      "Values must be between 1 and 9"
+    );
   }
 
   // Test 2: Rectangle selection mapping

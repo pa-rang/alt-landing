@@ -10,7 +10,7 @@ function getRandomInt1to9(): number {
 export function generateValues(rows: number = APPLE_ROWS, cols: number = APPLE_COLS): number[] {
   const total = rows * cols;
   const values: number[] = Array.from({ length: total }, () => getRandomInt1to9());
-  let sum = values.reduce((a, b) => a + b, 0);
+  const sum = values.reduce((a, b) => a + b, 0);
   const remainder = sum % 10;
 
   if (remainder !== 0) {
@@ -27,7 +27,7 @@ export function generateValues(rows: number = APPLE_ROWS, cols: number = APPLE_C
       } else {
         // Fallback: small adjustments until divisible by 10
         let guard = 0;
-        while ((values.reduce((a, b) => a + b, 0) % 10) !== 0 && guard < 1000) {
+        while (values.reduce((a, b) => a + b, 0) % 10 !== 0 && guard < 1000) {
           const need = (10 - (values.reduce((a, b) => a + b, 0) % 10)) % 10;
           if (need === 0) break;
           let adjusted = false;
