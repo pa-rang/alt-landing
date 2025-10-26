@@ -190,9 +190,6 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleStart} disabled={gameState !== "idle"}>
-              시작
-            </Button>
             <Button variant="outline" onClick={resetGame}>
               리셋
             </Button>
@@ -261,6 +258,15 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
                 }}
               />
             ) : null}
+
+            {/* 시작 버튼 오버레이 */}
+            {gameState === "idle" && (
+              <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex items-center justify-center">
+                <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6">
+                  게임 시작
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* 가이드 텍스트 */}
