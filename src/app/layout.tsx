@@ -8,6 +8,8 @@ import { getDictionary } from "@/lib/i18n/dictionary";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { FeedbackButton } from "@/components/feedback-button";
 import { Toaster } from "@/components/ui/sonner";
+import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -128,7 +130,11 @@ export default async function RootLayout({
         <div className="min-h-screen flex flex-col">
           <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-14 w-full items-center justify-between px-4">
-              <div className="flex items-center space-x-4"></div>
+              <div className="flex items-center space-x-4">
+                <Link href={`/${htmlLang}`} className="flex items-center">
+                  <Image src="/alt_logo.png" alt="alt" width={32} height={32} className="cursor-pointer" />
+                </Link>
+              </div>
               <div className="flex items-center space-x-4">
                 <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} />
                 <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
