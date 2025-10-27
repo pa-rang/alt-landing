@@ -25,24 +25,24 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
           <div className="grid gap-8 md:gap-16 items-center">
             <div className="flex flex-col justify-center space-y-4 md:space-y-8">
               <div className="space-y-1">
-                <h1 className="text-4xl font-bold tracking-tight text-zinc-800">강의에만 집중하세요.</h1>
+                <h1 className="text-4xl font-bold tracking-tight text-zinc-800">{dictionary.home.focusLecture}</h1>
                 {/* Mobile: inline text with image */}
                 <h1 className="text-[20px] mt-4 text-zinc-800 md:hidden">
-                  <Image src="/alt_logo.png" alt="alt" width={48} height={48} className="inline-block align-middle" />가
-                  실시간으로 필기하고, 정리합니다.
+                  <Image src="/alt_logo.png" alt="alt" width={48} height={48} className="inline-block align-middle" />
+                  {dictionary.home.realTimeNoteTaking}
                 </h1>
 
                 {/* Desktop: flex layout */}
                 <div className="hidden md:flex items-center">
                   <Image src="/alt_logo.png" alt="alt" width={60} height={60} className="inline-block" />
-                  <h1 className="text-2xl md:text-4xl text-zinc-800">가 실시간으로 필기하고, 정리합니다.</h1>
+                  <h1 className="text-2xl md:text-4xl text-zinc-800">{dictionary.home.realTimeNoteTaking}</h1>
                 </div>
 
                 <h1 className="text-4xl font-bold tracking-tight">
                   <span className="inline-block bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                    100% 무료.
+                    {dictionary.home.completelyFree}
                   </span>
-                  <span className="text-zinc-800"> 로그인, 인터넷 아무것도 필요없어요.</span>
+                  <span className="text-zinc-800">{dictionary.home.noLoginRequired}</span>
                 </h1>
               </div>
 
@@ -80,7 +80,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                   href="mailto:altalt.team@gmail.com"
                   className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
                 >
-                  Contact us
+                  {dictionary.home.contactUs}
                 </a>
               </div>
             </div>

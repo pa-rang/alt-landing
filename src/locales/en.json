@@ -1,5 +1,10 @@
 {
   "home": {
+    "focusLecture": "Focus only on your lecture.",
+    "realTimeNoteTaking": " takes notes and organizes in real time.",
+    "completelyFree": "100% free.",
+    "noLoginRequired": " No login or internet required.",
+    "contactUs": "Contact us",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "For school lectures, presentations, when your internet is unstable or you want to protect your privacy.",

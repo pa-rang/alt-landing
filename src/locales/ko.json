@@ -1,5 +1,10 @@
 {
   "home": {
+    "focusLecture": "강의에만 집중하세요.",
+    "realTimeNoteTaking": "가 실시간으로 필기하고, 정리합니다.",
+    "completelyFree": "100% 무료.",
+    "noLoginRequired": " 로그인, 인터넷 아무것도 필요없어요.",
+    "contactUs": "문의하기",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때.",

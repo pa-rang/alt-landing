@@ -81,6 +81,18 @@ export default async function RootLayout({
 
   const dictionary = await getDictionary(htmlLang as Locale);
 
+  // 각 locale의 피드백 버튼 라벨 가져오기
+  const feedbackLabels = await Promise.all(
+    SUPPORTED_LOCALES.map(async (loc) => {
+      const dict = await getDictionary(loc);
+      return { locale: loc, label: dict.feedback.button };
+    })
+  );
+  const labels = feedbackLabels.reduce((acc, { locale, label }) => {
+    acc[locale] = label;
+    return acc;
+  }, {} as Record<Locale, string>);
+
   return (
     <html lang={htmlLang}>
       <head>
@@ -136,7 +148,7 @@ export default async function RootLayout({
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
-                <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} />
+                <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} labels={labels} />
                 <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
               </div>
             </div>

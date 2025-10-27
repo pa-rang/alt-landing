@@ -56,11 +56,7 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
       return;
     }
 
-    const contentResult = z
-      .string()
-      .trim()
-      .min(1, dictionary.validation.contentRequired)
-      .safeParse(content);
+    const contentResult = z.string().trim().min(1, dictionary.validation.contentRequired).safeParse(content);
 
     if (!contentResult.success) {
       setFieldErrors({ content: contentResult.error.issues[0]?.message });
@@ -74,6 +70,7 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept-Language": locale,
         },
         body: JSON.stringify({
           feedbackType,
