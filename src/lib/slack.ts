@@ -34,7 +34,7 @@ function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number):
     fetch(url, options),
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error(`Request timeout after ${timeoutMs}ms`)), timeoutMs)
-    )
+    ),
   ]);
 }
 
@@ -120,7 +120,7 @@ export async function sendWaitlistNotification(entry: WaitlistEntry): Promise<bo
           return false;
         }
         // 재시도 전 대기
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
         continue;
       }
 
@@ -136,7 +136,7 @@ export async function sendWaitlistNotification(entry: WaitlistEntry): Promise<bo
       }
 
       // 재시도 전 대기 (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
     }
   }
 
@@ -224,7 +224,7 @@ export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<bo
           return false;
         }
         // 재시도 전 대기
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
         continue;
       }
 
@@ -240,7 +240,7 @@ export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<bo
       }
 
       // 재시도 전 대기 (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
     }
   }
 

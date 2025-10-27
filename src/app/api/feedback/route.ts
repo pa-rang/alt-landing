@@ -96,14 +96,14 @@ export async function POST(request: Request) {
     // 사용자 응답과 완전히 분리하여 에러가 전파되지 않도록 함
     setImmediate(() => {
       sendFeedbackNotification(result.rows[0])
-        .then(success => {
+        .then((success) => {
           if (!success) {
             console.warn(`슬랙 알림 전송 실패 (피드백 ID: ${result.rows[0].id})`);
           }
         })
         .catch((slackError) => {
           // 예상치 못한 에러도 안전하게 처리
-          console.error('슬랙 알림 처리 중 예외 발생:', slackError);
+          console.error("슬랙 알림 처리 중 예외 발생:", slackError);
         });
     });
 
