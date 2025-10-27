@@ -56,8 +56,10 @@
     "form": {
       "typeLabel": "What would you like to share?",
       "typeOptions": {
-        "issue": "Issue (with my project)",
-        "idea": "Idea (to improve alt)"
+        "issue": "Issue",
+        "issueSubtitle": "with my project",
+        "idea": "Idea",
+        "ideaSubtitle": "to improve alt"
       },
       "contentLabel": "Details",
       "contentPlaceholder": {

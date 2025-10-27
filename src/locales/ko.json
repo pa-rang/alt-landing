@@ -56,8 +56,10 @@
     "form": {
       "typeLabel": "무엇을 공유하고 싶으신가요?",
       "typeOptions": {
-        "issue": "이슈 (프로젝트 문제점)",
-        "idea": "아이디어 (alt 개선 제안)"
+        "issue": "이슈",
+        "issueSubtitle": "프로젝트 문제점",
+        "idea": "아이디어",
+        "ideaSubtitle": "alt 개선 제안"
       },
       "contentLabel": "내용",
       "contentPlaceholder": {

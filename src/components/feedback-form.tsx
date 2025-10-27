@@ -106,7 +106,7 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
       {/* 피드백 유형 선택 */}
       <div className="space-y-2">
         <Label>{dictionary.typeLabel}</Label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => {
@@ -119,9 +119,12 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
               fieldErrors.feedbackType && "border-destructive"
             )}
           >
-            <div className="flex items-center gap-2">
-              <Bug className="h-5 w-5 text-red-500" />
-              <span className="font-medium">{dictionary.typeOptions.issue}</span>
+            <div className="flex flex-col items-start gap-1">
+              <div className="flex items-center gap-2">
+                <Bug className="h-5 w-5 text-red-500" />
+                <span className="font-medium">{dictionary.typeOptions.issue}</span>
+              </div>
+              <span className="text-xs text-muted-foreground ml-7">{dictionary.typeOptions.issueSubtitle}</span>
             </div>
           </button>
           <button
@@ -136,9 +139,12 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
               fieldErrors.feedbackType && "border-destructive"
             )}
           >
-            <div className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-500" />
-              <span className="font-medium">{dictionary.typeOptions.idea}</span>
+            <div className="flex flex-col items-start gap-1">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                <span className="font-medium">{dictionary.typeOptions.idea}</span>
+              </div>
+              <span className="text-xs text-muted-foreground ml-7">{dictionary.typeOptions.ideaSubtitle}</span>
             </div>
           </button>
         </div>
