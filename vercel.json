@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/mac",
-      "destination": "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.4-arm64.dmg",
+      "destination": "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.5-arm64.dmg",
       "permanent": false,
       "has": [
         {
