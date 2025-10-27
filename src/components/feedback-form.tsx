@@ -60,7 +60,6 @@ export function FeedbackForm({ locale, dictionary }: FeedbackFormProps) {
       .string()
       .trim()
       .min(1, dictionary.validation.contentRequired)
-      .min(10, dictionary.validation.contentTooShort)
       .safeParse(content);
 
     if (!contentResult.success) {

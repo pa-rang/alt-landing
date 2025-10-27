@@ -7,7 +7,6 @@ export type FeedbackTypeValue = (typeof FEEDBACK_TYPE_OPTIONS)[number];
 export type FeedbackValidationMessages = {
   typeRequired: string;
   contentRequired: string;
-  contentTooShort: string;
   emailRequired: string;
   emailInvalid: string;
 };
@@ -21,7 +20,7 @@ export function createFeedbackSchema(messages: FeedbackValidationMessages) {
 
   return z.object({
     feedbackType,
-    content: z.string().trim().min(1, messages.contentRequired).min(10, messages.contentTooShort),
+    content: z.string().trim().min(1, messages.contentRequired),
     email: z.string().trim().min(1, messages.emailRequired).email(messages.emailInvalid),
   });
 }
