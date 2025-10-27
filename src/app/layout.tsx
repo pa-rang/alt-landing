@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { FeedbackButton } from "@/components/feedback-button";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -129,6 +130,7 @@ export default async function RootLayout({
             <div className="flex h-14 w-full items-center justify-between px-4">
               <div className="flex items-center space-x-4"></div>
               <div className="flex items-center space-x-4">
+                <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} />
                 <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
               </div>
             </div>

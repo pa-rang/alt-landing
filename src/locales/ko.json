@@ -44,5 +44,40 @@
   },
   "waitlistDialog": {
     "title": "우선 이용권 신청하기"
+  },
+  "feedback": {
+    "button": "피드백",
+    "title": "여러분의 의견으로 더 나은 서비스를 제공할 수 있습니다",
+    "form": {
+      "typeLabel": "무엇을 공유하고 싶으신가요?",
+      "typeOptions": {
+        "issue": "이슈 (프로젝트 문제점)",
+        "idea": "아이디어 (alt 개선 제안)"
+      },
+      "contentLabel": "내용",
+      "contentPlaceholder": {
+        "issue": "발생한 문제나 개선이 필요한 부분을 자세히 설명해주세요.",
+        "idea": "더 나은 서비스를 위한 아이디어를 공유해주세요."
+      },
+      "emailLabel": "적어주신 이메일로 답변을 드릴게요 :)",
+      "emailPlaceholder": "you@example.com",
+      "submit": {
+        "idle": "피드백 보내기",
+        "submitting": "전송 중..."
+      },
+      "messages": {
+        "success": "피드백을 감사합니다! 검토 후 답변드리겠습니다.",
+        "validationError": "입력값을 확인해주세요.",
+        "genericError": "피드백 전송에 실패했습니다.",
+        "serverError": "서버 오류가 발생했습니다."
+      },
+      "validation": {
+        "typeRequired": "피드백 유형을 선택해주세요.",
+        "contentRequired": "내용을 입력해주세요.",
+        "contentTooShort": "내용은 최소 10자 이상 입력해주세요.",
+        "emailRequired": "이메일을 입력해주세요.",
+        "emailInvalid": "올바른 이메일 주소가 아닙니다."
+      }
+    }
   }
 }
