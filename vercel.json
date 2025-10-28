@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/mac",
       "destination": "/api/mac",
+      "permanent": false,
       "has": [
         {
           "type": "host",
