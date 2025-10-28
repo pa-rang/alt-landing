@@ -98,6 +98,57 @@
     "finalScore": "Final Score",
     "downloadRequirement": "You need to score more than 70 points to download alt.",
     "rules": "Game Rules: Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
-    "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns red when the sum is 10."
+    "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns red when the sum is 10.",
+    "tabs": {
+      "game": "Game",
+      "personalLeaderboard": "Personal Rank",
+      "organizationLeaderboard": "Organization Rank"
+    },
+    "leaderboard": {
+      "rank": "Rank",
+      "nickname": "Nickname",
+      "organization": "Organization",
+      "score": "Score",
+      "totalScore": "Total Score",
+      "members": "Members",
+      "loading": "Loading...",
+      "error": "Failed to load leaderboard.",
+      "empty": "No scores recorded yet.",
+      "you": "You"
+    },
+    "scoreSubmit": {
+      "title": "Submit to Leaderboard",
+      "description": "Submit your score and compete with others!",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "organizationLabel": "Organization",
+      "organizationPlaceholder": "example.com",
+      "nicknameLabel": "Nickname",
+      "nicknamePlaceholder": "Your Name",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "success": "Submitted to leaderboard!",
+      "newHighScore": "New high score!",
+      "rankMessage": "You're ranked #{{rank}}!",
+      "messages": {
+        "success": "Submitted to leaderboard!",
+        "validationError": "Please check the form fields.",
+        "duplicateEmail": "Email already registered. Will auto-update if you score higher.",
+        "serverError": "A server error occurred.",
+        "genericError": "Failed to submit."
+      },
+      "validation": {
+        "emailRequired": "Enter your email.",
+        "emailInvalid": "That doesn't look like a valid email address.",
+        "organizationRequired": "Enter your organization.",
+        "organizationTooLong": "Organization name must be within 255 characters.",
+        "nicknameRequired": "Enter your nickname.",
+        "nicknameTooLong": "Nickname must be within 100 characters.",
+        "nicknameInvalid": "Nickname can only contain letters, numbers, spaces, _, and -.",
+        "scoreRequired": "Score is required.",
+        "scoreInvalid": "Invalid score.",
+        "scoreNegative": "Score must be 0 or greater."
+      }
+    }
   }
 }
