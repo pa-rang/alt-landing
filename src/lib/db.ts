@@ -2,31 +2,33 @@ import { Pool, QueryResult, type QueryResultRow } from "pg";
 
 const connectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL 환경 변수가 설정되어 있지 않습니다.");
+if (!connectionString && process.env.NODE_ENV !== "production") {
+  console.warn("DATABASE_URL 환경 변수가 설정되어 있지 않습니다.");
 }
 
 declare global {
-  var pgPool: Pool | undefined;
+  var pgPool: Pool | null | undefined;
 }
 
 const globalForPool = globalThis as typeof globalThis & {
-  pgPool?: Pool;
+  pgPool?: Pool | null;
 };
 
 const pool =
   globalForPool.pgPool ??
-  new Pool({
-    connectionString,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    // 서버리스 환경 최적화 설정
-    connectionTimeoutMillis: 10000, // 연결 타임아웃: 10초
-    idleTimeoutMillis: 30000, // 유휴 연결 타임아웃: 30초
-    max: 10, // 최대 연결 수
-    allowExitOnIdle: true, // 서버리스 환경에서 프로세스 종료 허용
-  });
+  (connectionString
+    ? new Pool({
+        connectionString,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        // 서버리스 환경 최적화 설정
+        connectionTimeoutMillis: 10000, // 연결 타임아웃: 10초
+        idleTimeoutMillis: 30000, // 유휴 연결 타임아웃: 30초
+        max: 10, // 최대 연결 수
+        allowExitOnIdle: true, // 서버리스 환경에서 프로세스 종료 허용
+      })
+    : null);
 
 if (process.env.NODE_ENV !== "production") {
   globalForPool.pgPool = pool;
@@ -36,6 +38,9 @@ export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> {
+  if (!pool) {
+    throw new Error("DATABASE_URL 환경 변수가 설정되어 있지 않습니다.");
+  }
   return pool.query<T>(text, params);
 }
 

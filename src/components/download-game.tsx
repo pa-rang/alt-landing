@@ -13,13 +13,11 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
-import type { Locale } from "@/lib/i18n/config";
 import { GameScoreSubmit } from "@/components/game-score-submit";
 import { GameLeaderboard } from "@/components/game-leaderboard";
 
 type DownloadGameProps = {
   onClose: () => void;
-  locale: Locale;
   dictionary: Dictionary["game"];
 };
 
@@ -31,7 +29,7 @@ type Cell = {
 
 type TabType = "game" | "personalLeaderboard" | "organizationLeaderboard";
 
-export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps) {
+export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {

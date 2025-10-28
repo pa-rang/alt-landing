@@ -33,11 +33,10 @@ export function createGameScoreSchema(messages: GameScoreValidationMessages) {
       .regex(/^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s_-]+$/, messages.nicknameInvalid),
     score: z
       .number({
-        required_error: messages.scoreRequired,
-        invalid_type_error: messages.scoreInvalid,
+        message: messages.scoreInvalid,
       })
-      .int(messages.scoreInvalid)
-      .nonnegative(messages.scoreNegative),
+      .int({ message: messages.scoreInvalid })
+      .nonnegative({ message: messages.scoreNegative }),
   });
 }
 

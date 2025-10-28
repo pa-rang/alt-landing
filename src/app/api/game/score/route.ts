@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { DatabaseError } from "pg";
 
 import { query } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import { resolveLocale } from "@/lib/i18n/utils";
 import {
