@@ -56,6 +56,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                   locale={locale}
                   dictionary={dictionary.waitlistForm}
                   dialogTexts={dictionary.waitlistDialog}
+                  gameDictionary={dictionary.game}
                 />
               </div>
             </div>

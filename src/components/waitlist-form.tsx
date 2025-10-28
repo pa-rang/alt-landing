@@ -12,14 +12,16 @@ import { cn } from "@/lib/utils";
 
 type WaitlistFormDictionary = Dictionary["waitlistForm"];
 type WaitlistDialogTexts = Dictionary["waitlistDialog"];
+type GameDictionary = Dictionary["game"];
 
 type WaitlistFormProps = {
   locale: Locale;
   dictionary: WaitlistFormDictionary;
   dialogTexts: WaitlistDialogTexts;
+  gameDictionary: GameDictionary;
 };
 
-export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormProps) {
+export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }: WaitlistFormProps) {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -129,6 +131,8 @@ export function WaitlistForm({ locale, dictionary, dialogTexts }: WaitlistFormPr
                 setShowGame(false);
                 setIsAnimating(false);
               }}
+              locale={locale}
+              dictionary={gameDictionary}
             />
           )}
         </div>

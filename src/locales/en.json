@@ -85,5 +85,19 @@
         "emailInvalid": "That doesn't look like a valid email address."
       }
     }
+  },
+  "game": {
+    "title": "Square Tomato Game",
+    "close": "Close",
+    "start": "Start Game",
+    "retry": "Retry",
+    "restart": "Try Again",
+    "scoreLabel": "Score",
+    "timeLabel": "Time Left",
+    "gameOver": "Game Over",
+    "finalScore": "Final Score",
+    "downloadRequirement": "You need to score more than 70 points to download alt.",
+    "rules": "Game Rules: Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
+    "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns red when the sum is 10."
   }
 }

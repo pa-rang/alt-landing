@@ -5,16 +5,20 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  APPLE_COLS as COLS,
-  APPLE_ROWS as ROWS,
+  TOMATO_COLS as COLS,
+  TOMATO_ROWS as ROWS,
   GAME_SECONDS,
   computeSelectedIndicesFromRect,
   formatTime,
   generateValues,
 } from "@/lib/apple-game";
+import type { Dictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/config";
 
 type DownloadGameProps = {
   onClose: () => void;
+  locale: Locale;
+  dictionary: Dictionary["game"];
 };
 
 type Cell = {
@@ -23,7 +27,7 @@ type Cell = {
   removed: boolean;
 };
 
-export function DownloadGame({ onClose }: DownloadGameProps) {
+export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {
@@ -173,27 +177,39 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
       <div className="max-w-6xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)]">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
-          <div className="font-semibold text-lg sm:text-xl">사과 게임</div>
+          <div className="font-semibold text-lg sm:text-xl">{dictionary.title}</div>
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={onClose}>
-              닫기
+              {dictionary.close}
             </Button>
           </div>
         </div>
 
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-sm sm:text-base">
+          <div className="flex items-center gap-3 text-sm sm:text-base flex-1">
             <span className="px-3 py-1 rounded-md bg-gray-100">
-              점수 <b>{score}</b>
+              {dictionary.scoreLabel} <b>{score}</b>
             </span>
-            <span className={cn("px-3 py-1 rounded-md", timeLeft <= 10 ? "bg-red-100 text-red-700" : "bg-gray-100")}>
-              남은 시간 <b>{formatTime(timeLeft)}</b>
-            </span>
+            <div className="flex-1 flex items-center gap-2">
+              <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
+              <span className="text-sm font-bold whitespace-nowrap min-w-[3ch]">{formatTime(timeLeft)}</span>
+              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden relative min-w-[80px]">
+                <div
+                  className={cn(
+                    "h-full transition-all duration-300 ease-linear",
+                    timeLeft > 30 ? "bg-emerald-500" : timeLeft > 10 ? "bg-yellow-500" : "bg-red-500"
+                  )}
+                  style={{
+                    width: `${(timeLeft / GAME_SECONDS) * 100}%`,
+                  }}
+                />
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {gameState === "running" && (
               <Button variant="outline" onClick={resetGame}>
-                다시하기
+                {dictionary.retry}
               </Button>
             )}
           </div>
@@ -264,32 +280,36 @@ export function DownloadGame({ onClose }: DownloadGameProps) {
 
             {/* 시작 버튼 오버레이 */}
             {gameState === "idle" && (
-              <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex items-center justify-center">
-                <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6">
-                  게임 시작
+              <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
+                <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
+                  {dictionary.downloadRequirement}
+                </p>
+                <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
+                  {dictionary.start}
                 </Button>
+                <p className="text-base text-gray-800 text-center px-4 max-w-md font-medium leading-relaxed">
+                  {dictionary.rules}
+                </p>
               </div>
             )}
           </div>
 
           {/* 가이드 텍스트 */}
-          <div className="mt-3 text-xs sm:text-sm text-gray-600">
-            사각형으로 드래그하여 숫자 합이 정확히 10인 사과들을 제거하세요. 합이 10이면 박스가 빨간색으로 표시됩니다.
-          </div>
+          <div className="mt-3 text-xs sm:text-sm text-gray-600">{dictionary.guide}</div>
         </div>
 
         {/* 종료 화면 */}
         {gameState === "ended" && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl text-center">
-              <div className="text-xl sm:text-2xl font-bold mb-2">게임 종료</div>
+              <div className="text-xl sm:text-2xl font-bold mb-2">{dictionary.gameOver}</div>
               <div className="text-base sm:text-lg mb-6">
-                최종 점수: <b>{score}</b>
+                {dictionary.finalScore}: <b>{score}</b>
               </div>
               <div className="flex gap-2 justify-center">
-                <Button onClick={resetGame}>재도전</Button>
+                <Button onClick={resetGame}>{dictionary.restart}</Button>
                 <Button variant="secondary" onClick={onClose}>
-                  닫기
+                  {dictionary.close}
                 </Button>
               </div>
             </div>

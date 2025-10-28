@@ -1,6 +1,6 @@
 import {
-  APPLE_COLS,
-  APPLE_ROWS,
+  TOMATO_COLS,
+  TOMATO_ROWS,
   generateValues,
   computeSelectedIndicesFromRect,
   formatTime,
@@ -17,7 +17,7 @@ async function main() {
   // Test 1: Board generation
   for (let i = 0; i < 50; i++) {
     const values = generateValues();
-    assert(values.length === APPLE_ROWS * APPLE_COLS, "Board length must be 170");
+    assert(values.length === TOMATO_ROWS * TOMATO_COLS, "Board length must be 170");
     const sum = values.reduce((a, b) => a + b, 0);
     assert(sum % 10 === 0, "Sum must be a multiple of 10");
     assert(
@@ -35,10 +35,10 @@ async function main() {
     H,
     0,
     0,
-    (W / APPLE_COLS) * 3 - 1,
-    (H / APPLE_ROWS) * 2 - 1,
-    APPLE_ROWS,
-    APPLE_COLS
+    (W / TOMATO_COLS) * 3 - 1,
+    (H / TOMATO_ROWS) * 2 - 1,
+    TOMATO_ROWS,
+    TOMATO_COLS
   );
   const expected = new Set([0, 1, 2, 17, 18, 19]);
   assert(inds.length === expected.size, "Selection size must be 6");
@@ -49,7 +49,7 @@ async function main() {
   assert(formatTime(65) === "1:05", "formatTime(65) should be 1:05");
   assert(formatTime(9) === "0:09", "formatTime(9) should be 0:09");
 
-  console.log("All apple-game tests passed.");
+  console.log("All tomato-game tests passed.");
 }
 
 main().catch((e) => {

@@ -1,13 +1,13 @@
-export const APPLE_ROWS = 10;
-export const APPLE_COLS = 17;
-export const APPLE_TOTAL_CELLS = APPLE_ROWS * APPLE_COLS;
+export const TOMATO_ROWS = 10;
+export const TOMATO_COLS = 17;
+export const TOMATO_TOTAL_CELLS = TOMATO_ROWS * TOMATO_COLS;
 export const GAME_SECONDS = 120;
 
 function getRandomInt1to9(): number {
   return Math.floor(Math.random() * 9) + 1;
 }
 
-export function generateValues(rows: number = APPLE_ROWS, cols: number = APPLE_COLS): number[] {
+export function generateValues(rows: number = TOMATO_ROWS, cols: number = TOMATO_COLS): number[] {
   const total = rows * cols;
   const values: number[] = Array.from({ length: total }, () => getRandomInt1to9());
   const sum = values.reduce((a, b) => a + b, 0);
@@ -69,8 +69,8 @@ export function computeSelectedIndicesFromRect(
   y1: number,
   x2: number,
   y2: number,
-  rows: number = APPLE_ROWS,
-  cols: number = APPLE_COLS,
+  rows: number = TOMATO_ROWS,
+  cols: number = TOMATO_COLS,
   removedMask?: boolean[]
 ): number[] {
   if (boardWidth <= 0 || boardHeight <= 0) return [];
