@@ -13,11 +13,11 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
-import type { Locale } from "@/lib/i18n/config";
+import { GameScoreSubmit } from "@/components/game-score-submit";
+import { GameLeaderboard } from "@/components/game-leaderboard";
 
 type DownloadGameProps = {
   onClose: () => void;
-  locale: Locale;
   dictionary: Dictionary["game"];
 };
 
@@ -27,7 +27,9 @@ type Cell = {
   removed: boolean;
 };
 
-export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps) {
+type TabType = "game" | "personalLeaderboard" | "organizationLeaderboard";
+
+export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {
@@ -43,6 +45,14 @@ export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps)
   const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
+  const [activeTab, setActiveTab] = useState<TabType>("game");
+  const [showScoreSubmit, setShowScoreSubmit] = useState(false);
+  const [submittedData, setSubmittedData] = useState<{
+    email: string;
+    organization: string;
+    rank: number;
+  } | null>(null);
+
   const resetGame = useCallback(() => {
     const values = generateValues(ROWS, COLS);
     setCells(values.map((v, i) => ({ id: i, value: v, removed: false })));
@@ -53,6 +63,7 @@ export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps)
     setStartPos(null);
     setCurrentPos(null);
     setSelectedIndices([]);
+    setShowScoreSubmit(false);
   }, []);
 
   // 타이머
@@ -64,6 +75,7 @@ export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps)
         if (t <= 1) {
           clearInterval(timer);
           setGameState("ended");
+          setShowScoreSubmit(true);
           return 0;
         }
         return t - 1;
@@ -170,12 +182,22 @@ export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps)
     if (gameState === "idle") {
       resetGame();
       setGameState("running");
+      setActiveTab("game");
     }
   }, [gameState, resetGame]);
 
+  const handleScoreSubmitSuccess = useCallback(
+    (data: { email: string; organization: string; rank: number }) => {
+      setSubmittedData(data);
+      setShowScoreSubmit(false);
+      setActiveTab("personalLeaderboard");
+    },
+    []
+  );
+
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
-      <div className="max-w-6xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)]">
+      <div className="max-w-6xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
           <div className="font-semibold text-lg sm:text-xl">{dictionary.title}</div>
           <div className="flex items-center gap-2">
@@ -185,134 +207,193 @@ export function DownloadGame({ onClose, locale, dictionary }: DownloadGameProps)
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-sm sm:text-base flex-1">
-            <span className="px-3 py-1 rounded-md bg-gray-100">
-              {dictionary.scoreLabel} <b>{score}</b>
-            </span>
-            <div className="flex-1 flex items-center gap-2">
-              <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
-              <span className="text-sm font-bold whitespace-nowrap min-w-[3ch]">{formatTime(timeLeft)}</span>
-              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden relative min-w-[80px]">
-                <div
-                  className={cn(
-                    "h-full transition-all duration-300 ease-linear",
-                    timeLeft > 30 ? "bg-emerald-500" : timeLeft > 10 ? "bg-yellow-500" : "bg-red-500"
-                  )}
-                  style={{
-                    width: `${(timeLeft / GAME_SECONDS) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {gameState === "running" && (
-              <Button variant="outline" onClick={resetGame}>
-                {dictionary.retry}
-              </Button>
+        {/* 탭 네비게이션 */}
+        <div className="flex border-b">
+          <button
+            onClick={() => setActiveTab("game")}
+            className={cn(
+              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+              activeTab === "game"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-600 hover:text-gray-900"
             )}
-          </div>
+          >
+            {dictionary.tabs.game}
+          </button>
+          <button
+            onClick={() => setActiveTab("personalLeaderboard")}
+            className={cn(
+              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+              activeTab === "personalLeaderboard"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-600 hover:text-gray-900"
+            )}
+          >
+            {dictionary.tabs.personalLeaderboard}
+          </button>
+          <button
+            onClick={() => setActiveTab("organizationLeaderboard")}
+            className={cn(
+              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+              activeTab === "organizationLeaderboard"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-600 hover:text-gray-900"
+            )}
+          >
+            {dictionary.tabs.organizationLeaderboard}
+          </button>
         </div>
 
-        <div className="px-4 sm:px-6 pb-5 overflow-auto">
-          <div
-            ref={boardRef}
-            className={cn("relative bg-green-50 rounded-lg border overflow-hidden select-none mx-auto w-fit", "grid")}
-            style={{
-              gridTemplateColumns: `repeat(${COLS}, 40px)`,
-              gridTemplateRows: `repeat(${ROWS}, 40px)`,
-              touchAction: "none",
-              WebkitUserSelect: "none",
-              userSelect: "none",
-            }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-          >
-            {cells.map((cell) => (
-              <div
-                key={cell.id}
-                className={cn(
-                  "relative flex items-center justify-center border-[0.5px] border-emerald-200",
-                  cell.removed ? "bg-transparent" : "bg-white"
+        {/* 게임 탭 */}
+        {activeTab === "game" && (
+          <>
+            <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 text-sm sm:text-base flex-1">
+                <span className="px-3 py-1 rounded-md bg-gray-100">
+                  {dictionary.scoreLabel} <b>{score}</b>
+                </span>
+                <div className="flex-1 flex items-center gap-2">
+                  <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
+                  <span className="text-sm font-bold whitespace-nowrap min-w-[3ch]">{formatTime(timeLeft)}</span>
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden relative min-w-[80px]">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-300 ease-linear",
+                        timeLeft > 30 ? "bg-emerald-500" : timeLeft > 10 ? "bg-yellow-500" : "bg-red-500"
+                      )}
+                      style={{
+                        width: `${(timeLeft / GAME_SECONDS) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {gameState === "running" && (
+                  <Button variant="outline" onClick={resetGame}>
+                    {dictionary.retry}
+                  </Button>
                 )}
+              </div>
+            </div>
+
+            <div className="px-4 sm:px-6 pb-5 overflow-auto">
+              <div
+                ref={boardRef}
+                className={cn("relative bg-green-50 rounded-lg border overflow-hidden select-none mx-auto w-fit", "grid")}
+                style={{
+                  gridTemplateColumns: `repeat(${COLS}, 40px)`,
+                  gridTemplateRows: `repeat(${ROWS}, 40px)`,
+                  touchAction: "none",
+                  WebkitUserSelect: "none",
+                  userSelect: "none",
+                }}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerLeave={handlePointerUp}
               >
-                {!cell.removed ? (
+                {cells.map((cell) => (
                   <div
+                    key={cell.id}
                     className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
-                      sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
+                      "relative flex items-center justify-center border-[0.5px] border-emerald-200",
+                      cell.removed ? "bg-transparent" : "bg-white"
                     )}
                   >
-                    <Image
-                      src="/apple_game_items/gemini_tomato_removebg.png"
-                      alt="melon"
-                      fill
-                      className="object-cover select-none"
-                      unoptimized
-                      draggable={false}
-                    />
-                    <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
-                      {cell.value}
-                    </span>
+                    {!cell.removed ? (
+                      <div
+                        className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
+                          sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
+                        )}
+                      >
+                        <Image
+                          src="/apple_game_items/gemini_tomato_removebg.png"
+                          alt="melon"
+                          fill
+                          className="object-cover select-none"
+                          unoptimized
+                          draggable={false}
+                        />
+                        <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
+                          {cell.value}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
+                ))}
+
+                {/* 드래그 박스 */}
+                {selectionRect ? (
+                  <div
+                    className={cn(
+                      "absolute border-2 pointer-events-none",
+                      sumIsTen ? "border-emerald-500 bg-emerald-500/10" : "border-yellow-500 bg-yellow-500/10"
+                    )}
+                    style={{
+                      left: selectionRect.left,
+                      top: selectionRect.top,
+                      width: selectionRect.width,
+                      height: selectionRect.height,
+                    }}
+                  />
                 ) : null}
-              </div>
-            ))}
 
-            {/* 드래그 박스 */}
-            {selectionRect ? (
-              <div
-                className={cn(
-                  "absolute border-2 pointer-events-none",
-                  sumIsTen ? "border-emerald-500 bg-emerald-500/10" : "border-yellow-500 bg-yellow-500/10"
+                {/* 시작 버튼 오버레이 */}
+                {gameState === "idle" && (
+                  <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
+                    <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
+                      {dictionary.downloadRequirement}
+                    </p>
+                    <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
+                      {dictionary.start}
+                    </Button>
+                    <p className="text-base text-gray-800 text-center px-4 max-w-md font-medium leading-relaxed">
+                      {dictionary.rules}
+                    </p>
+                  </div>
                 )}
-                style={{
-                  left: selectionRect.left,
-                  top: selectionRect.top,
-                  width: selectionRect.width,
-                  height: selectionRect.height,
-                }}
-              />
-            ) : null}
+              </div>
 
-            {/* 시작 버튼 오버레이 */}
-            {gameState === "idle" && (
-              <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
-                <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
-                  {dictionary.downloadRequirement}
-                </p>
-                <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
-                  {dictionary.start}
-                </Button>
-                <p className="text-base text-gray-800 text-center px-4 max-w-md font-medium leading-relaxed">
-                  {dictionary.rules}
-                </p>
+              {/* 가이드 텍스트 */}
+              <div className="mt-3 text-xs sm:text-sm text-gray-600">{dictionary.guide}</div>
+            </div>
+
+            {/* 점수 제출 모달 */}
+            {gameState === "ended" && showScoreSubmit && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
+                  <div className="text-xl sm:text-2xl font-bold mb-2 text-center">{dictionary.gameOver}</div>
+                  <div className="text-base sm:text-lg mb-6 text-center">
+                    {dictionary.finalScore}: <b>{score}</b>
+                  </div>
+                  <GameScoreSubmit score={score} dictionary={dictionary.scoreSubmit} onSuccess={handleScoreSubmitSuccess} />
+                </div>
               </div>
             )}
+          </>
+        )}
+
+        {/* 개인 리더보드 탭 */}
+        {activeTab === "personalLeaderboard" && (
+          <div className="px-4 sm:px-6 py-4 overflow-auto flex-1">
+            <GameLeaderboard
+              type="personal"
+              dictionary={dictionary.leaderboard}
+              userEmail={submittedData?.email}
+            />
           </div>
+        )}
 
-          {/* 가이드 텍스트 */}
-          <div className="mt-3 text-xs sm:text-sm text-gray-600">{dictionary.guide}</div>
-        </div>
-
-        {/* 종료 화면 */}
-        {gameState === "ended" && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl text-center">
-              <div className="text-xl sm:text-2xl font-bold mb-2">{dictionary.gameOver}</div>
-              <div className="text-base sm:text-lg mb-6">
-                {dictionary.finalScore}: <b>{score}</b>
-              </div>
-              <div className="flex gap-2 justify-center">
-                <Button onClick={resetGame}>{dictionary.restart}</Button>
-                <Button variant="secondary" onClick={onClose}>
-                  {dictionary.close}
-                </Button>
-              </div>
-            </div>
+        {/* 학교/직장 리더보드 탭 */}
+        {activeTab === "organizationLeaderboard" && (
+          <div className="px-4 sm:px-6 py-4 overflow-auto flex-1">
+            <GameLeaderboard
+              type="organization"
+              dictionary={dictionary.leaderboard}
+              userOrganization={submittedData?.organization}
+            />
           </div>
         )}
       </div>

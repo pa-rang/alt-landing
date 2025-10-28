@@ -131,7 +131,6 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
                 setShowGame(false);
                 setIsAnimating(false);
               }}
-              locale={locale}
               dictionary={gameDictionary}
             />
           )}
