@@ -317,12 +317,12 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               </div>
               <div className="flex items-center gap-2">
                 {gameState === "running" && (
-                  <Button variant="outline" onClick={resetGame}>
+                  <Button variant="default" onClick={resetGame}>
                     {dictionary.retry}
                   </Button>
                 )}
                 {gameState === "ended" && (
-                  <Button variant="outline" onClick={resetGame}>
+                  <Button variant="default" onClick={resetGame}>
                     {dictionary.restart}
                   </Button>
                 )}
