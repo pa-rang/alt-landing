@@ -32,7 +32,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
     async function fetchLeaderboard() {
       try {
         const response = await fetch(`/api/game/leaderboard?type=${type}&limit=100`);
-        
+
         if (!mounted) return;
 
         if (!response.ok) {
@@ -41,7 +41,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
         }
 
         const data = await response.json();
-        
+
         if (data.ok) {
           setState({ status: "success", data: data.leaderboard, type: data.type });
         } else {
@@ -114,7 +114,13 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
 
             return (
               <tr
-                key={type === "personal" && "email" in entry ? entry.email : "organization" in entry ? entry.organization : entry.rank}
+                key={
+                  type === "personal" && "email" in entry
+                    ? entry.email
+                    : "organization" in entry
+                    ? entry.organization
+                    : entry.rank
+                }
                 className={cn(
                   "border-b hover:bg-gray-50 transition-colors",
                   isCurrentUser && "bg-blue-50 hover:bg-blue-100 font-semibold"
@@ -133,9 +139,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
                   <>
                     <td className="px-4 py-2">
                       {entry.nickname}
-                      {isCurrentUser && (
-                        <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>
-                      )}
+                      {isCurrentUser && <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>}
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.score}</td>
                   </>
@@ -143,9 +147,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
                   <>
                     <td className="px-4 py-2">
                       {entry.organization}
-                      {isCurrentUser && (
-                        <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>
-                      )}
+                      {isCurrentUser && <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>}
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.total_score}</td>
                     <td className="px-4 py-2 text-right">{entry.member_count}</td>

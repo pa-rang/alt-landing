@@ -7,7 +7,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WaitlistDialog } from "@/components/waitlist-dialog";
-import { DownloadGame } from "@/components/download-game";
+import { SquareTomatoGame } from "@/components/game";
 import { cn } from "@/lib/utils";
 
 type WaitlistFormDictionary = Dictionary["waitlistForm"];
@@ -126,7 +126,7 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
 
           {/* 게임 화면 */}
           {showGame && (
-            <DownloadGame
+            <SquareTomatoGame
               onClose={() => {
                 setShowGame(false);
                 setIsAnimating(false);

@@ -13,10 +13,10 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
-import { GameScoreSubmit } from "@/components/game-score-submit";
-import { GameLeaderboard } from "@/components/game-leaderboard";
+import { GameScoreSubmit } from "./score-submit";
+import { GameLeaderboard } from "./leaderboard";
 
-type DownloadGameProps = {
+type SquareTomatoGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
   initialEmail?: string;
@@ -30,7 +30,7 @@ type Cell = {
 
 type TabType = "game" | "personalLeaderboard" | "organizationLeaderboard";
 
-export function DownloadGame({ onClose, dictionary, initialEmail }: DownloadGameProps) {
+export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTomatoGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {
@@ -312,13 +312,13 @@ export function DownloadGame({ onClose, dictionary, initialEmail }: DownloadGame
                     {!cell.removed ? (
                       <div
                         className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden",
+                          "w-10 h-10 flex items-center justify-center text-base sm:text-lg font-semibold transition-transform will-change-transform relative overflow-hidden rounded-lg",
                           sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
                         )}
                       >
                         <Image
                           src="/apple_game_items/gemini_tomato_removebg.png"
-                          alt="melon"
+                          alt="tomato"
                           fill
                           className="object-cover select-none"
                           unoptimized
