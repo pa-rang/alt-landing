@@ -18,7 +18,7 @@ export async function GET(request: Request) {
            organization,
            SUM(score) as total_score,
            COUNT(*) as member_count,
-           ROW_NUMBER() OVER (ORDER BY SUM(score) DESC) as rank
+           CAST(ROW_NUMBER() OVER (ORDER BY SUM(score) DESC) AS INT) as rank
          FROM public.game_scores
          GROUP BY organization
          ORDER BY total_score DESC
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
            nickname,
            organization,
            score,
-           ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
+           CAST(ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) AS INT) as rank
          FROM public.game_scores
          ORDER BY score DESC, created_at ASC
          LIMIT $1`,

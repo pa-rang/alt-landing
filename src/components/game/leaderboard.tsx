@@ -20,11 +20,17 @@ type LeaderboardState =
   | { status: "error"; message: string }
   | {
       status: "success";
-      data: LeaderboardEntry[] | OrganizationLeaderboardEntry[];
+      data: (LeaderboardEntry | OrganizationLeaderboardEntry)[];
       type: LeaderboardType;
     };
 
-export function GameLeaderboard({ type, dictionary, userEmail, userOrganization, refreshTrigger }: GameLeaderboardProps) {
+export function GameLeaderboard({
+  type,
+  dictionary,
+  userEmail,
+  userOrganization,
+  refreshTrigger,
+}: GameLeaderboardProps) {
   const [state, setState] = useState<LeaderboardState>({ status: "loading" });
 
   useEffect(() => {
@@ -108,11 +114,12 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization,
           </tr>
         </thead>
         <tbody>
-          {state.data.map((entry) => {
+          {state.data.map((entry, index) => {
             const isCurrentUser =
               type === "personal"
                 ? userEmail && "email" in entry && entry.email === userEmail
                 : userOrganization && "organization" in entry && entry.organization === userOrganization;
+            const rank = Number(entry.rank);
 
             return (
               <tr
@@ -121,7 +128,9 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization,
                     ? entry.email
                     : "organization" in entry
                     ? entry.organization
-                    : entry.rank
+                    : Number.isFinite(rank)
+                    ? `rank-${rank}`
+                    : `rank-${index}`
                 }
                 className={cn(
                   "border-b hover:bg-gray-50 transition-colors",
@@ -129,12 +138,20 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization,
                 )}
               >
                 <td className="px-4 py-2">
-                  {entry.rank <= 3 ? (
+                  {rank === 1 ? (
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-xs font-bold">
-                      {entry.rank}
+                      {rank}
+                    </span>
+                  ) : rank === 2 ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 text-white text-xs font-bold">
+                      {rank}
+                    </span>
+                  ) : rank === 3 ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-amber-700 to-amber-900 text-white text-xs font-bold">
+                      {rank}
                     </span>
                   ) : (
-                    <span>{entry.rank}</span>
+                    <span>{rank}</span>
                   )}
                 </td>
                 {type === "personal" && "nickname" in entry ? (
@@ -148,7 +165,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization,
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.score}</td>
                   </>
-                ) : "organization" in entry ? (
+                ) : "organization" in entry && "total_score" in entry ? (
                   <>
                     <td className="px-4 py-2">
                       {entry.organization}
