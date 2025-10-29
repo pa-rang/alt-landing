@@ -133,6 +133,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
   // DOWNLOAD_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
     if (showScoreSubmit && score >= DOWNLOAD_THRESHOLD_SCORE) {
+      console.log("🎉 Confetti 발사! 점수:", score, "기준점수:", DOWNLOAD_THRESHOLD_SCORE);
       confetti({
         particleCount: 100,
         spread: 70,
@@ -412,7 +413,13 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                     {score >= DOWNLOAD_THRESHOLD_SCORE ? (
                       <>🎉 {dictionary.gameOverCongratulations}</>
                     ) : (
-                      <>😢 {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(DOWNLOAD_THRESHOLD_SCORE - score))}</>
+                      <>
+                        😢{" "}
+                        {dictionary.gameOverNeedMorePoints.replace(
+                          "{{points}}",
+                          String(DOWNLOAD_THRESHOLD_SCORE - score)
+                        )}
+                      </>
                     )}
                   </div>
                   <GameScoreSubmit

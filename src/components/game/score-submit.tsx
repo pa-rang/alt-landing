@@ -80,6 +80,14 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
           rank: data.rank,
           bestScore: data.score.score,
         });
+        
+        // DOWNLOAD_THRESHOLD_SCORE 이상이면 자동으로 다운로드 시작
+        if (score >= DOWNLOAD_THRESHOLD_SCORE) {
+          console.log("📥 다운로드 시작:", ALT_DOWNLOAD_URL);
+          setTimeout(() => {
+            window.open(ALT_DOWNLOAD_URL, "_blank");
+          }, 500);
+        }
       } else {
         setState({ status: "error", message: data.error || dictionary.messages.genericError });
       }
@@ -161,7 +169,11 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? dictionary.submitting : score >= DOWNLOAD_THRESHOLD_SCORE ? dictionary.submitHighScore : dictionary.submit}
+        {isSubmitting
+          ? dictionary.submitting
+          : score >= DOWNLOAD_THRESHOLD_SCORE
+          ? dictionary.submitHighScore
+          : dictionary.submit}
       </Button>
     </form>
   );
