@@ -9,6 +9,7 @@ import {
   TOMATO_COLS as COLS,
   TOMATO_ROWS as ROWS,
   GAME_SECONDS,
+  DOWNLOAD_THRESHOLD_SCORE,
   computeSelectedIndicesFromRect,
   formatTime,
   generateValues,
@@ -129,9 +130,9 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
 
-  // 70점 이상일 때 confetti 발사
+  // DOWNLOAD_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
-    if (showScoreSubmit && score >= 70) {
+    if (showScoreSubmit && score >= DOWNLOAD_THRESHOLD_SCORE) {
       confetti({
         particleCount: 100,
         spread: 70,
@@ -408,10 +409,10 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
                 <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">
-                    {score >= 70 ? (
+                    {score >= DOWNLOAD_THRESHOLD_SCORE ? (
                       <>🎉 {dictionary.gameOverCongratulations}</>
                     ) : (
-                      <>😢 {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(70 - score))}</>
+                      <>😢 {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(DOWNLOAD_THRESHOLD_SCORE - score))}</>
                     )}
                   </div>
                   <GameScoreSubmit
