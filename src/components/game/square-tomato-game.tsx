@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -127,6 +128,17 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
     }, 1000);
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
+
+  // 70점 이상일 때 confetti 발사
+  useEffect(() => {
+    if (showScoreSubmit && score >= 70) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [showScoreSubmit, score]);
 
   const selectionSum = useMemo(() => {
     return selectedIndices.reduce((acc, idx) => {
@@ -396,9 +408,15 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
                 <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">
-                    {score >= 70
-                      ? dictionary.gameOverCongratulations
-                      : dictionary.gameOverNeedMorePoints.replace("{{points}}", String(70 - score))}
+                    {score >= 70 ? (
+                      <>
+                        🎉 {dictionary.gameOverCongratulations}
+                      </>
+                    ) : (
+                      <>
+                        😢 {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(70 - score))}
+                      </>
+                    )}
                   </div>
                   <GameScoreSubmit
                     score={score}
