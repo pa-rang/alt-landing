@@ -138,8 +138,11 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
                 {type === "personal" && "nickname" in entry ? (
                   <>
                     <td className="px-4 py-2">
-                      {entry.nickname}
-                      {isCurrentUser && <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>}
+                      <div className="flex items-center gap-2">
+                        <span>{entry.nickname}</span>
+                        {entry.organization && <span className="text-xs text-gray-500">{entry.organization}</span>}
+                        {isCurrentUser && <span className="text-xs text-blue-600">({dictionary.you})</span>}
+                      </div>
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.score}</td>
                   </>

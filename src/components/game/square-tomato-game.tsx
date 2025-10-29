@@ -16,6 +16,31 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./score-submit";
 import { LeaderboardBox } from "./leaderboard-box";
 
+type ScoreDisplayProps = {
+  gameState: "idle" | "running" | "ended";
+  currentScore: number;
+  bestScore: number;
+  scoreLabel: string;
+};
+
+function ScoreDisplay({ gameState, currentScore, bestScore, scoreLabel }: ScoreDisplayProps) {
+  if (gameState === "idle") {
+    // 게임 시작 전: BEST 점수만 표시
+    return (
+      <span className="px-3 py-1 rounded-md bg-blue-100 text-blue-800">
+        BEST <b>{bestScore > 0 ? bestScore : 0}</b>
+      </span>
+    );
+  }
+
+  // 게임 진행 중: 현재 점수만 표시
+  return (
+    <span className="px-3 py-1 rounded-md bg-gray-100">
+      {scoreLabel} <b>{currentScore}</b>
+    </span>
+  );
+}
+
 type SquareTomatoGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
@@ -50,6 +75,27 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
     organization: string;
     rank: number;
   } | null>(null);
+
+  const [bestScore, setBestScore] = useState<number>(0);
+
+  // 초기 렌더링 시 최고점수 조회
+  useEffect(() => {
+    if (!initialEmail) return;
+
+    const fetchBestScore = async () => {
+      try {
+        const response = await fetch(`/api/game/best-score?email=${encodeURIComponent(initialEmail)}`);
+        const data = await response.json();
+        if (data.ok) {
+          setBestScore(data.bestScore);
+        }
+      } catch (error) {
+        console.error("Failed to fetch best score:", error);
+      }
+    };
+
+    fetchBestScore();
+  }, [initialEmail]);
 
   const resetGame = useCallback(() => {
     const values = generateValues(ROWS, COLS);
@@ -183,10 +229,15 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
     }
   }, [gameState, resetGame]);
 
-  const handleScoreSubmitSuccess = useCallback((data: { email: string; organization: string; rank: number }) => {
-    setSubmittedData(data);
-    setShowScoreSubmit(false);
-  }, []);
+  const handleScoreSubmitSuccess = useCallback(
+    (data: { email: string; organization: string; rank: number; bestScore: number }) => {
+      setSubmittedData({ email: data.email, organization: data.organization, rank: data.rank });
+      setShowScoreSubmit(false);
+      // 최고점수 업데이트
+      setBestScore(data.bestScore);
+    },
+    []
+  );
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
@@ -209,9 +260,12 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
             </div>
             <div className="px-4 py-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-sm sm:text-base flex-1">
-                <span className="px-3 py-1 rounded-md bg-gray-100">
-                  {dictionary.scoreLabel} <b>{score}</b>
-                </span>
+                <ScoreDisplay
+                  gameState={gameState}
+                  currentScore={score}
+                  bestScore={bestScore}
+                  scoreLabel={dictionary.scoreLabel}
+                />
                 <div className="flex-1 flex items-center gap-2">
                   <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
                   <span
@@ -241,6 +295,11 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                 {gameState === "running" && (
                   <Button variant="outline" onClick={resetGame}>
                     {dictionary.retry}
+                  </Button>
+                )}
+                {gameState === "ended" && (
+                  <Button variant="outline" onClick={resetGame}>
+                    {dictionary.restart}
                   </Button>
                 )}
               </div>
@@ -337,9 +396,6 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
                 <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">{dictionary.gameOver}</div>
-                  <div className="text-base sm:text-lg mb-6 text-center">
-                    {dictionary.finalScore}: <b>{score}</b>
-                  </div>
                   <GameScoreSubmit
                     score={score}
                     dictionary={dictionary.scoreSubmit}

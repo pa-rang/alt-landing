@@ -3,10 +3,7 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-import {
-  type LeaderboardEntry,
-  type OrganizationLeaderboardEntry,
-} from "@/lib/validation/game-score";
+import { type LeaderboardEntry, type OrganizationLeaderboardEntry } from "@/lib/validation/game-score";
 
 export async function GET(request: Request) {
   try {
@@ -40,6 +37,7 @@ export async function GET(request: Request) {
         `SELECT 
            email,
            nickname,
+           organization,
            score,
            ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
          FROM public.game_scores

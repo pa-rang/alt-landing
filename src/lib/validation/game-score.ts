@@ -15,16 +15,8 @@ export type GameScoreValidationMessages = {
 
 export function createGameScoreSchema(messages: GameScoreValidationMessages) {
   return z.object({
-    email: z
-      .string()
-      .trim()
-      .min(1, messages.emailRequired)
-      .email(messages.emailInvalid),
-    organization: z
-      .string()
-      .trim()
-      .min(1, messages.organizationRequired)
-      .max(255, messages.organizationTooLong),
+    email: z.string().trim().min(1, messages.emailRequired).email(messages.emailInvalid),
+    organization: z.string().trim().min(1, messages.organizationRequired).max(255, messages.organizationTooLong),
     nickname: z
       .string()
       .trim()
@@ -58,6 +50,7 @@ export interface LeaderboardEntry {
   rank: number;
   email: string;
   nickname: string;
+  organization: string;
   score: number;
 }
 
