@@ -395,7 +395,11 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
             {gameState === "ended" && showScoreSubmit && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
                 <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
-                  <div className="text-xl sm:text-2xl font-bold mb-2 text-center">{dictionary.gameOver}</div>
+                  <div className="text-xl sm:text-2xl font-bold mb-2 text-center">
+                    {score >= 70
+                      ? dictionary.gameOverCongratulations
+                      : dictionary.gameOverNeedMorePoints.replace("{{points}}", String(70 - score))}
+                  </div>
                   <GameScoreSubmit
                     score={score}
                     dictionary={dictionary.scoreSubmit}
