@@ -10,6 +10,7 @@ type GameScoreSubmitProps = {
   score: number;
   dictionary: Dictionary["game"]["scoreSubmit"];
   onSuccess: (data: { email: string; organization: string; rank: number }) => void;
+  initialEmail?: string;
 };
 
 type SubmitState =
@@ -18,8 +19,8 @@ type SubmitState =
   | { status: "success"; rank: number }
   | { status: "error"; message: string };
 
-export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmitProps) {
-  const [email, setEmail] = useState("");
+export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: GameScoreSubmitProps) {
+  const [email, setEmail] = useState(initialEmail || "");
   const [organization, setOrganization] = useState("");
   const [nickname, setNickname] = useState("");
   const [state, setState] = useState<SubmitState>({ status: "idle" });
@@ -29,7 +30,10 @@ export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmi
   useEffect(() => {
     if (email.includes("@")) {
       const [localPart, domain] = email.split("@");
-      setOrganization(domain);
+      // TLD 제거 (예: kaist.ac.kr -> kaist, gmail.com -> gmail)
+      const domainParts = domain.split(".");
+      const organization = domainParts.slice(0, -1).join(".") || domainParts[0];
+      setOrganization(organization);
       setNickname(localPart);
     }
   }, [email]);
@@ -81,9 +85,7 @@ export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmi
       <div className="text-center py-6">
         <div className="text-2xl font-bold text-green-600 mb-2">🎉</div>
         <div className="text-lg font-semibold mb-1">{dictionary.success}</div>
-        <div className="text-sm text-gray-600">
-          {dictionary.rankMessage.replace("{{rank}}", String(state.rank))}
-        </div>
+        <div className="text-sm text-gray-600">{dictionary.rankMessage.replace("{{rank}}", String(state.rank))}</div>
       </div>
     );
   }
@@ -106,6 +108,7 @@ export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmi
           onChange={(e) => setEmail(e.target.value)}
           disabled={isSubmitting}
           required
+          className="mt-2"
         />
         {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
       </div>
@@ -120,6 +123,7 @@ export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmi
           onChange={(e) => setOrganization(e.target.value)}
           disabled={isSubmitting}
           required
+          className="mt-2"
         />
         {fieldErrors.organization && <p className="text-xs text-red-500 mt-1">{fieldErrors.organization}</p>}
       </div>
@@ -134,14 +138,13 @@ export function GameScoreSubmit({ score, dictionary, onSuccess }: GameScoreSubmi
           onChange={(e) => setNickname(e.target.value)}
           disabled={isSubmitting}
           required
+          className="mt-2"
         />
         {fieldErrors.nickname && <p className="text-xs text-red-500 mt-1">{fieldErrors.nickname}</p>}
       </div>
 
       {state.status === "error" && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
-          {state.message}
-        </div>
+        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">{state.message}</div>
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>

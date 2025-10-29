@@ -132,6 +132,7 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
                 setIsAnimating(false);
               }}
               dictionary={gameDictionary}
+              initialEmail={email}
             />
           )}
         </div>

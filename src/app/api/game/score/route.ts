@@ -6,11 +6,7 @@ import { query } from "@/lib/db";
 export const dynamic = "force-dynamic";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import { resolveLocale } from "@/lib/i18n/utils";
-import {
-  createGameScoreSchema,
-  type GameScoreInput,
-  type GameScore,
-} from "@/lib/validation/game-score";
+import { createGameScoreSchema, type GameScoreInput, type GameScore } from "@/lib/validation/game-score";
 
 type GameScoreFieldErrors = Partial<Record<keyof GameScoreInput, string>>;
 
@@ -27,7 +23,7 @@ function mapDatabaseError(
 ): { status: number; message: string; fieldErrors?: GameScoreFieldErrors } {
   if (error instanceof DatabaseError) {
     console.error("Database error:", error);
-    
+
     // 중복 이메일 처리
     if (error.code === "23505") {
       return {
@@ -35,7 +31,7 @@ function mapDatabaseError(
         message: dictionary.messages.duplicateEmail,
       };
     }
-    
+
     return {
       status: 500,
       message: dictionary.messages.serverError,
@@ -90,7 +86,7 @@ export async function POST(request: Request) {
 
     const { email, organization, nickname, score } = parseResult.data;
 
-    // UPSERT: 이메일이 이미 존재하면 더 높은 점수일 경우에만 업데이트
+    // UPSERT: 이메일이 이미 존재하면 정보를 덮어쓰기
     const result = await query<GameScore>(
       `INSERT INTO public.game_scores (email, organization, nickname, score, created_at, updated_at)
        VALUES ($1, $2, $3, $4, NOW(), NOW())
@@ -102,10 +98,7 @@ export async function POST(request: Request) {
            WHEN EXCLUDED.score > game_scores.score THEN EXCLUDED.score
            ELSE game_scores.score
          END,
-         updated_at = CASE
-           WHEN EXCLUDED.score > game_scores.score THEN NOW()
-           ELSE game_scores.updated_at
-         END
+         updated_at = NOW()
        RETURNING id, email, organization, nickname, score, created_at, updated_at`,
       [email, organization, nickname, score]
     );

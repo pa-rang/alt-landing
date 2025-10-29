@@ -19,6 +19,7 @@ import { GameLeaderboard } from "@/components/game-leaderboard";
 type DownloadGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
+  initialEmail?: string;
 };
 
 type Cell = {
@@ -29,7 +30,7 @@ type Cell = {
 
 type TabType = "game" | "personalLeaderboard" | "organizationLeaderboard";
 
-export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
+export function DownloadGame({ onClose, dictionary, initialEmail }: DownloadGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {
@@ -186,14 +187,11 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
     }
   }, [gameState, resetGame]);
 
-  const handleScoreSubmitSuccess = useCallback(
-    (data: { email: string; organization: string; rank: number }) => {
-      setSubmittedData(data);
-      setShowScoreSubmit(false);
-      setActiveTab("personalLeaderboard");
-    },
-    []
-  );
+  const handleScoreSubmitSuccess = useCallback((data: { email: string; organization: string; rank: number }) => {
+    setSubmittedData(data);
+    setShowScoreSubmit(false);
+    setActiveTab("personalLeaderboard");
+  }, []);
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
@@ -213,9 +211,7 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
             onClick={() => setActiveTab("game")}
             className={cn(
               "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-              activeTab === "game"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-gray-900"
+              activeTab === "game" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
             )}
           >
             {dictionary.tabs.game}
@@ -254,7 +250,16 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
                 </span>
                 <div className="flex-1 flex items-center gap-2">
                   <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
-                  <span className="text-sm font-bold whitespace-nowrap min-w-[3ch]">{formatTime(timeLeft)}</span>
+                  <span
+                    className="text-sm font-bold whitespace-nowrap min-w-[3ch] cursor-pointer hover:opacity-70"
+                    onDoubleClick={() => {
+                      if (gameState === "running") {
+                        setTimeLeft(5);
+                      }
+                    }}
+                  >
+                    {formatTime(timeLeft)}
+                  </span>
                   <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden relative min-w-[80px]">
                     <div
                       className={cn(
@@ -280,7 +285,10 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
             <div className="px-4 sm:px-6 pb-5 overflow-auto">
               <div
                 ref={boardRef}
-                className={cn("relative bg-green-50 rounded-lg border overflow-hidden select-none mx-auto w-fit", "grid")}
+                className={cn(
+                  "relative bg-green-50 rounded-lg border overflow-hidden select-none mx-auto w-fit",
+                  "grid"
+                )}
                 style={{
                   gridTemplateColumns: `repeat(${COLS}, 40px)`,
                   gridTemplateRows: `repeat(${ROWS}, 40px)`,
@@ -368,7 +376,12 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
                   <div className="text-base sm:text-lg mb-6 text-center">
                     {dictionary.finalScore}: <b>{score}</b>
                   </div>
-                  <GameScoreSubmit score={score} dictionary={dictionary.scoreSubmit} onSuccess={handleScoreSubmitSuccess} />
+                  <GameScoreSubmit
+                    score={score}
+                    dictionary={dictionary.scoreSubmit}
+                    onSuccess={handleScoreSubmitSuccess}
+                    initialEmail={initialEmail}
+                  />
                 </div>
               </div>
             )}
@@ -378,11 +391,7 @@ export function DownloadGame({ onClose, dictionary }: DownloadGameProps) {
         {/* 개인 리더보드 탭 */}
         {activeTab === "personalLeaderboard" && (
           <div className="px-4 sm:px-6 py-4 overflow-auto flex-1">
-            <GameLeaderboard
-              type="personal"
-              dictionary={dictionary.leaderboard}
-              userEmail={submittedData?.email}
-            />
+            <GameLeaderboard type="personal" dictionary={dictionary.leaderboard} userEmail={submittedData?.email} />
           </div>
         )}
 
