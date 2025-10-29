@@ -12,6 +12,7 @@ type GameLeaderboardProps = {
   dictionary: Dictionary["game"]["leaderboard"];
   userEmail?: string;
   userOrganization?: string;
+  refreshTrigger?: number;
 };
 
 type LeaderboardState =
@@ -23,13 +24,14 @@ type LeaderboardState =
       type: LeaderboardType;
     };
 
-export function GameLeaderboard({ type, dictionary, userEmail, userOrganization }: GameLeaderboardProps) {
+export function GameLeaderboard({ type, dictionary, userEmail, userOrganization, refreshTrigger }: GameLeaderboardProps) {
   const [state, setState] = useState<LeaderboardState>({ status: "loading" });
 
   useEffect(() => {
     let mounted = true;
 
     async function fetchLeaderboard() {
+      setState({ status: "loading" });
       try {
         const response = await fetch(`/api/game/leaderboard?type=${type}&limit=100`);
 
@@ -59,7 +61,7 @@ export function GameLeaderboard({ type, dictionary, userEmail, userOrganization 
     return () => {
       mounted = false;
     };
-  }, [type, dictionary.error]);
+  }, [type, dictionary.error, refreshTrigger]);
 
   if (state.status === "loading") {
     return (

@@ -19,9 +19,9 @@ export async function GET(request: Request) {
       );
     }
 
-    // 이메일로 최고점수 조회
-    const result = await query<{ score: number }>(
-      `SELECT score
+    // 이메일로 최고점수와 닉네임 조회
+    const result = await query<{ score: number; nickname: string }>(
+      `SELECT score, nickname
        FROM public.game_scores
        WHERE email = $1
        ORDER BY score DESC
@@ -30,10 +30,12 @@ export async function GET(request: Request) {
     );
 
     const bestScore = result.rows[0]?.score || 0;
+    const nickname = result.rows[0]?.nickname || "";
 
     return NextResponse.json({
       ok: true,
       bestScore,
+      nickname,
     });
   } catch (error) {
     console.error("best-score GET failed", error);

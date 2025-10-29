@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,8 +78,10 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
   } | null>(null);
 
   const [bestScore, setBestScore] = useState<number>(0);
+  const [bestNickname, setBestNickname] = useState<string>("");
+  const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
 
-  // 초기 렌더링 시 최고점수 조회
+  // 초기 렌더링 시 최고점수와 닉네임 조회
   useEffect(() => {
     if (!initialEmail) return;
 
@@ -90,6 +91,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
         const data = await response.json();
         if (data.ok) {
           setBestScore(data.bestScore);
+          setBestNickname(data.nickname || "");
         }
       } catch (error) {
         console.error("Failed to fetch best score:", error);
@@ -134,11 +136,17 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
   useEffect(() => {
     if (showScoreSubmit && score >= DOWNLOAD_THRESHOLD_SCORE) {
       console.log("🎉 Confetti 발사! 점수:", score, "기준점수:", DOWNLOAD_THRESHOLD_SCORE);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
+      // 모달이 열린 후 confetti 발사하도록 짧은 딜레이 추가
+      const timer = setTimeout(async () => {
+        const confetti = (await import("canvas-confetti")).default;
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          zIndex: 9999,
+        });
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [showScoreSubmit, score]);
 
@@ -249,6 +257,8 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
       setShowScoreSubmit(false);
       // 최고점수 업데이트
       setBestScore(data.bestScore);
+      // 리더보드 새로고침
+      setLeaderboardRefreshTrigger((prev) => prev + 1);
     },
     []
   );
@@ -283,7 +293,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                 <div className="flex-1 flex items-center gap-2">
                   <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
                   <span
-                    className="text-sm font-bold whitespace-nowrap min-w-[3ch] cursor-pointer hover:opacity-70"
+                    className="text-sm font-bold whitespace-nowrap min-w-[3ch]"
                     onDoubleClick={() => {
                       if (gameState === "running") {
                         setTimeLeft(5);
@@ -424,9 +434,11 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                   </div>
                   <GameScoreSubmit
                     score={score}
+                    bestScore={bestScore}
                     dictionary={dictionary.scoreSubmit}
                     onSuccess={handleScoreSubmitSuccess}
                     initialEmail={initialEmail}
+                    initialNickname={bestNickname}
                   />
                 </div>
               </div>
@@ -439,6 +451,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               dictionary={dictionary}
               userEmail={submittedData?.email}
               userOrganization={submittedData?.organization}
+              refreshTrigger={leaderboardRefreshTrigger}
             />
           </div>
         </div>

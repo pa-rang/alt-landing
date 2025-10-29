@@ -9,11 +9,12 @@ type LeaderboardBoxProps = {
   dictionary: Dictionary["game"];
   userEmail?: string;
   userOrganization?: string;
+  refreshTrigger?: number;
 };
 
 type LeaderboardTabType = "personal" | "organization";
 
-export function LeaderboardBox({ dictionary, userEmail, userOrganization }: LeaderboardBoxProps) {
+export function LeaderboardBox({ dictionary, userEmail, userOrganization, refreshTrigger }: LeaderboardBoxProps) {
   const [activeTab, setActiveTab] = useState<LeaderboardTabType>("personal");
 
   return (
@@ -49,13 +50,14 @@ export function LeaderboardBox({ dictionary, userEmail, userOrganization }: Lead
       {/* 리더보드 컨텐츠 */}
       <div className="px-4 py-4 overflow-auto flex-1">
         {activeTab === "personal" && (
-          <GameLeaderboard type="personal" dictionary={dictionary.leaderboard} userEmail={userEmail} />
+          <GameLeaderboard type="personal" dictionary={dictionary.leaderboard} userEmail={userEmail} refreshTrigger={refreshTrigger} />
         )}
         {activeTab === "organization" && (
           <GameLeaderboard
             type="organization"
             dictionary={dictionary.leaderboard}
             userOrganization={userOrganization}
+            refreshTrigger={refreshTrigger}
           />
         )}
       </div>
