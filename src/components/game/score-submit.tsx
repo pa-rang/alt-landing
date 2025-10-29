@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
+const ALT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
+
 type GameScoreSubmitProps = {
   score: number;
   dictionary: Dictionary["game"]["scoreSubmit"];
@@ -94,7 +96,15 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
       <div className="text-center py-6">
         <div className="text-2xl font-bold text-green-600 mb-2">🎉</div>
         <div className="text-lg font-semibold mb-1">{dictionary.success}</div>
-        <div className="text-sm text-gray-600">{dictionary.rankMessage.replace("{{rank}}", String(state.rank))}</div>
+        <div className="text-sm text-gray-600 mb-4">{dictionary.rankMessage.replace("{{rank}}", String(state.rank))}</div>
+        {score >= 70 && (
+          <Button
+            onClick={() => window.open(ALT_DOWNLOAD_URL, "_blank")}
+            className="w-full bg-blue-600 hover:bg-blue-700"
+          >
+            {dictionary.downloadAlt}
+          </Button>
+        )}
       </div>
     );
   }
@@ -148,7 +158,11 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? dictionary.submitting : dictionary.submit}
+        {isSubmitting
+          ? dictionary.submitting
+          : score >= 70
+          ? dictionary.submitHighScore
+          : dictionary.submit}
       </Button>
     </form>
   );
