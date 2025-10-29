@@ -399,7 +399,10 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                 {gameState === "idle" && (
                   <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
                     <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
-                      {dictionary.downloadRequirement}
+                      {dictionary.downloadRequirement.replace(
+                        "{{threshold}}",
+                        String(DOWNLOAD_THRESHOLD_SCORE)
+                      )}
                     </p>
                     <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
                       {dictionary.start}

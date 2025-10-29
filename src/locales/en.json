@@ -98,7 +98,7 @@
     "gameOverCongratulations": "Congratulations! You can download alt.",
     "gameOverNeedMorePoints": "Almost there! Just {{points}} more points to download alt.",
     "finalScore": "Final Score",
-    "downloadRequirement": "You need to score more than 70 points to download alt.",
+    "downloadRequirement": "You need to score more than {{threshold}} points to download alt.",
     "rules": "Game Rules: Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
     "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns red when the sum is 10.",
     "tabs": {
