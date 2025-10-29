@@ -9,7 +9,7 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 type GameScoreSubmitProps = {
   score: number;
   dictionary: Dictionary["game"]["scoreSubmit"];
-  onSuccess: (data: { email: string; organization: string; rank: number }) => void;
+  onSuccess: (data: { email: string; organization: string; rank: number; bestScore: number }) => void;
   initialEmail?: string;
 };
 
@@ -30,11 +30,15 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
   useEffect(() => {
     if (email.includes("@")) {
       const [localPart, domain] = email.split("@");
-      // TLD 제거 (예: kaist.ac.kr -> kaist, gmail.com -> gmail)
+      // 도메인 파싱: 3개 이상이면 첫 번째만, 2개면 마지막 제거
+      // 예: kaist.ac.kr -> kaist, gmail.com -> gmail
       const domainParts = domain.split(".");
-      const organization = domainParts.slice(0, -1).join(".") || domainParts[0];
-      setOrganization(organization);
+      const parsedOrganization = domainParts.length > 2 ? domainParts[0] : domainParts.slice(0, -1).join(".");
+      setOrganization(parsedOrganization);
       setNickname(localPart);
+    } else {
+      setOrganization("");
+      setNickname("");
     }
   }, [email]);
 
@@ -67,7 +71,12 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
 
       if (data.ok) {
         setState({ status: "success", rank: data.rank });
-        onSuccess({ email, organization, rank: data.rank });
+        onSuccess({
+          email,
+          organization,
+          rank: data.rank,
+          bestScore: data.score.score,
+        });
       } else {
         setState({ status: "error", message: data.error || dictionary.messages.genericError });
       }
@@ -93,8 +102,6 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="text-center mb-4">
-        <h3 className="text-lg font-semibold mb-1">{dictionary.title}</h3>
-        <p className="text-sm text-gray-600">{dictionary.description}</p>
         <div className="mt-2 text-2xl font-bold text-blue-600">{score}점</div>
       </div>
 
@@ -114,17 +121,10 @@ export function GameScoreSubmit({ score, dictionary, onSuccess, initialEmail }: 
       </div>
 
       <div>
-        <Label htmlFor="organization">{dictionary.organizationLabel}</Label>
-        <Input
-          id="organization"
-          type="text"
-          placeholder={dictionary.organizationPlaceholder}
-          value={organization}
-          onChange={(e) => setOrganization(e.target.value)}
-          disabled={isSubmitting}
-          required
-          className="mt-2"
-        />
+        <Label>{dictionary.organizationLabel}</Label>
+        <div className="mt-2 px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-700">
+          {organization || "-"}
+        </div>
         {fieldErrors.organization && <p className="text-xs text-red-500 mt-1">{fieldErrors.organization}</p>}
       </div>
 
