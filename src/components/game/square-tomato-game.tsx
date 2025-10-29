@@ -14,7 +14,7 @@ import {
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./score-submit";
-import { GameLeaderboard } from "./leaderboard";
+import { LeaderboardBox } from "./leaderboard-box";
 
 type SquareTomatoGameProps = {
   onClose: () => void;
@@ -27,8 +27,6 @@ type Cell = {
   value: number;
   removed: boolean;
 };
-
-type TabType = "game" | "personalLeaderboard" | "organizationLeaderboard";
 
 export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTomatoGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +44,6 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
   const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
-  const [activeTab, setActiveTab] = useState<TabType>("game");
   const [showScoreSubmit, setShowScoreSubmit] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
     email: string;
@@ -183,19 +180,17 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
     if (gameState === "idle") {
       resetGame();
       setGameState("running");
-      setActiveTab("game");
     }
   }, [gameState, resetGame]);
 
   const handleScoreSubmitSuccess = useCallback((data: { email: string; organization: string; rank: number }) => {
     setSubmittedData(data);
     setShowScoreSubmit(false);
-    setActiveTab("personalLeaderboard");
   }, []);
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
-      <div className="max-w-6xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
+      <div className="max-w-7xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
           <div className="font-semibold text-lg sm:text-xl">{dictionary.title}</div>
           <div className="flex items-center gap-2">
@@ -205,45 +200,14 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
           </div>
         </div>
 
-        {/* 탭 네비게이션 */}
-        <div className="flex border-b">
-          <button
-            onClick={() => setActiveTab("game")}
-            className={cn(
-              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-              activeTab === "game" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
-            )}
-          >
-            {dictionary.tabs.game}
-          </button>
-          <button
-            onClick={() => setActiveTab("personalLeaderboard")}
-            className={cn(
-              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-              activeTab === "personalLeaderboard"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-gray-900"
-            )}
-          >
-            {dictionary.tabs.personalLeaderboard}
-          </button>
-          <button
-            onClick={() => setActiveTab("organizationLeaderboard")}
-            className={cn(
-              "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-              activeTab === "organizationLeaderboard"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-gray-900"
-            )}
-          >
-            {dictionary.tabs.organizationLeaderboard}
-          </button>
-        </div>
-
-        {/* 게임 탭 */}
-        {activeTab === "game" && (
-          <>
-            <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        {/* 게임 박스와 리더보드 박스 */}
+        <div className="flex flex-col lg:flex-row gap-4 p-4 overflow-auto flex-1">
+          {/* 게임 박스 */}
+          <div className="flex-1 bg-white rounded-lg border shadow-sm flex flex-col">
+            <div className="px-4 py-3 border-b">
+              <h3 className="font-semibold text-lg">{dictionary.tabs.game}</h3>
+            </div>
+            <div className="px-4 py-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-sm sm:text-base flex-1">
                 <span className="px-3 py-1 rounded-md bg-gray-100">
                   {dictionary.scoreLabel} <b>{score}</b>
@@ -282,7 +246,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
               </div>
             </div>
 
-            <div className="px-4 sm:px-6 pb-5 overflow-auto">
+            <div className="px-4 pb-5 overflow-auto flex-1">
               <div
                 ref={boardRef}
                 className={cn(
@@ -370,7 +334,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
 
             {/* 점수 제출 모달 */}
             {gameState === "ended" && showScoreSubmit && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
                 <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">{dictionary.gameOver}</div>
                   <div className="text-base sm:text-lg mb-6 text-center">
@@ -385,26 +349,17 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                 </div>
               </div>
             )}
-          </>
-        )}
-
-        {/* 개인 리더보드 탭 */}
-        {activeTab === "personalLeaderboard" && (
-          <div className="px-4 sm:px-6 py-4 overflow-auto flex-1">
-            <GameLeaderboard type="personal" dictionary={dictionary.leaderboard} userEmail={submittedData?.email} />
           </div>
-        )}
 
-        {/* 학교/직장 리더보드 탭 */}
-        {activeTab === "organizationLeaderboard" && (
-          <div className="px-4 sm:px-6 py-4 overflow-auto flex-1">
-            <GameLeaderboard
-              type="organization"
-              dictionary={dictionary.leaderboard}
+          {/* 리더보드 박스 */}
+          <div className="flex-1">
+            <LeaderboardBox
+              dictionary={dictionary}
+              userEmail={submittedData?.email}
               userOrganization={submittedData?.organization}
             />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
