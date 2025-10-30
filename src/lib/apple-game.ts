@@ -2,7 +2,7 @@ export const TOMATO_ROWS = 10;
 export const TOMATO_COLS = 17;
 export const TOMATO_TOTAL_CELLS = TOMATO_ROWS * TOMATO_COLS;
 export const GAME_SECONDS = 120;
-export const DOWNLOAD_THRESHOLD_SCORE = 70; // 이 점수 이상이면 alt 다운로드 가능
+export const DOWNLOAD_THRESHOLD_SCORE = 65; // 이 점수 이상이면 alt 다운로드 가능
 
 function getRandomInt1to9(): number {
   return Math.floor(Math.random() * 9) + 1;

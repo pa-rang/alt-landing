@@ -16,7 +16,7 @@ type GameScoreSubmitProps = {
   score: number;
   bestScore: number;
   dictionary: Dictionary["game"]["scoreSubmit"];
-  onSuccess: (data: { email: string; organization: string; rank: number; bestScore: number }) => void;
+  onSuccess: (data: { email: string; organization: string; rank: number }) => void;
 };
 
 type SubmitState =
@@ -122,7 +122,6 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
         email,
         organization,
         rank: 0, // 업데이트 안함
-        bestScore: bestScore,
       });
       return;
     }
@@ -167,7 +166,6 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
             email,
             organization,
             rank: data.rank,
-            bestScore: data.score.score,
           });
         } else {
           // 기존 기록 갱신 안됨 - 그냥 닫기
@@ -175,7 +173,6 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
             email,
             organization,
             rank: data.rank,
-            bestScore: data.score.score,
           });
         }
       } else {
@@ -287,13 +284,13 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
             Download for macOS
           </Button>
           <Button type="submit" variant="outline" disabled={isSubmitting}>
-            {isSubmitting ? dictionary.submitting : "리더보드 등록"}
+            {isSubmitting ? dictionary.submitting : dictionary.submitLeaderboard}
           </Button>
         </div>
       ) : (
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? dictionary.submitting : "리더보드 등록"}
+            {isSubmitting ? dictionary.submitting : dictionary.submitLeaderboard}
           </Button>
         </div>
       )}

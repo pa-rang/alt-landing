@@ -106,6 +106,7 @@
       "personalLeaderboard": "Personal Rank",
       "organizationLeaderboard": "Organization Rank"
     },
+    "leaderboardTitle": "Leaderboard",
     "leaderboard": {
       "rank": "Rank",
       "nickname": "Nickname",
@@ -130,11 +131,13 @@
       "submit": "Submit to Leaderboard",
       "submitHighScore": "Submit to Leaderboard & Download alt",
       "submitting": "Submitting...",
+      "submitLeaderboard": "Submit to Leaderboard",
       "close": "Close",
       "downloadAlt": "Download alt",
       "success": "Submitted to leaderboard!",
       "newHighScore": "New high score!",
       "rankMessage": "You're ranked #{{rank}}!",
+      "leaderboardHint": "Submit to leaderboard to compete with your school/company rankings.",
       "messages": {
         "success": "Submitted to leaderboard!",
         "validationError": "Please check the form fields.",

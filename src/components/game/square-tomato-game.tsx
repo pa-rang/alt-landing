@@ -17,6 +17,8 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./score-submit";
 import { LeaderboardBox } from "./leaderboard-box";
 
+const BEST_SCORE_KEY = "squareTomatoGameBestScore";
+
 type ScoreDisplayProps = {
   gameState: "idle" | "running" | "ended";
   currentScore: number;
@@ -79,6 +81,14 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
   const [bestScore, setBestScore] = useState<number>(0);
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
 
+  // 최고점수 로컬스토리지에서 불러오기
+  useEffect(() => {
+    const savedScore = localStorage.getItem(BEST_SCORE_KEY);
+    if (savedScore) {
+      setBestScore(parseInt(savedScore, 10));
+    }
+  }, []);
+
   const resetGame = useCallback(() => {
     const values = generateValues(ROWS, COLS);
     setCells(values.map((v, i) => ({ id: i, value: v, removed: false })));
@@ -109,6 +119,16 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }, 1000);
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
+
+  // 게임 종료 시 최고점수 업데이트
+  useEffect(() => {
+    if (gameState === "ended") {
+      if (score > bestScore) {
+        setBestScore(score);
+        localStorage.setItem(BEST_SCORE_KEY, String(score));
+      }
+    }
+  }, [gameState, score, bestScore]);
 
   // DOWNLOAD_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
@@ -229,25 +249,20 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, [gameState, resetGame]);
 
-  const handleScoreSubmitSuccess = useCallback(
-    (data: { email: string; organization: string; rank: number; bestScore: number }) => {
-      setSubmittedData({ email: data.email, organization: data.organization, rank: data.rank });
-      setShowScoreSubmit(false);
-      // 최고점수 업데이트
-      setBestScore(data.bestScore);
-      // 리더보드 새로고침
-      setLeaderboardRefreshTrigger((prev) => prev + 1);
-    },
-    []
-  );
+  const handleScoreSubmitSuccess = useCallback((data: { email: string; organization: string; rank: number }) => {
+    setSubmittedData({ email: data.email, organization: data.organization, rank: data.rank });
+    setShowScoreSubmit(false);
+    // 리더보드 새로고침
+    setLeaderboardRefreshTrigger((prev) => prev + 1);
+  }, []);
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
-      <div className="max-w-7xl bg-white rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b">
-          <div className="font-semibold text-lg sm:text-xl">{dictionary.title}</div>
+      <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
+        <div className="flex items-center justify-between px-4 sm:px-4 py-3">
+          <div className="font-semibold text-lg sm:text-xl text-white">{dictionary.title}</div>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={onClose}>
+            <Button className="text-white bg-white/15" onClick={onClose}>
               {dictionary.close}
             </Button>
           </div>
@@ -362,7 +377,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   <div
                     className={cn(
                       "absolute border-2 pointer-events-none",
-                      sumIsTen ? "border-emerald-500 bg-emerald-500/10" : "border-yellow-500 bg-yellow-500/10"
+                      sumIsTen ? "border-red-500 bg-red-500/10" : "border-yellow-500 bg-yellow-500/10"
                     )}
                     style={{
                       left: selectionRect.left,
@@ -377,10 +392,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                 {gameState === "idle" && (
                   <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
                     <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
-                      {dictionary.downloadRequirement.replace(
-                        "{{threshold}}",
-                        String(DOWNLOAD_THRESHOLD_SCORE)
-                      )}
+                      {dictionary.downloadRequirement.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
                     </p>
                     <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
                       {dictionary.start}
@@ -420,7 +432,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                     onSuccess={handleScoreSubmitSuccess}
                   />
                   <p className="mt-4 text-sm text-gray-600 text-center">
-                    리더보드에 등록하여 학교/직장 순위를 높여보세요.
+                    {dictionary.scoreSubmit.leaderboardHint}
                   </p>
                 </div>
               </div>

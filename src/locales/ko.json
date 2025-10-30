@@ -106,6 +106,7 @@
       "personalLeaderboard": "개인 순위",
       "organizationLeaderboard": "학교/직장 순위"
     },
+    "leaderboardTitle": "리더보드",
     "leaderboard": {
       "rank": "순위",
       "nickname": "닉네임",
@@ -130,11 +131,13 @@
       "submit": "리더보드 등록하기",
       "submitHighScore": "리더보드 등록 후 alt 다운로드",
       "submitting": "등록 중...",
+      "submitLeaderboard": "리더보드 등록",
       "close": "닫기",
       "downloadAlt": "alt 다운로드",
       "success": "리더보드에 등록되었습니다!",
       "newHighScore": "새로운 최고 점수입니다!",
       "rankMessage": "현재 {{rank}}등입니다!",
+      "leaderboardHint": "리더보드에 등록하여 학교/직장 순위를 높여보세요.",
       "messages": {
         "success": "리더보드에 등록되었습니다!",
         "validationError": "입력값을 확인해주세요.",
