@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -263,6 +264,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
           <div className="font-semibold text-lg sm:text-xl text-white">{dictionary.title}</div>
           <div className="flex items-center gap-2">
+            {score >= DOWNLOAD_THRESHOLD_SCORE && (
+              <DownloadButton className="text-gray-900 bg-white hover:bg-white/80" />
+            )}
             <Button className="text-white bg-white/15" onClick={onClose}>
               {dictionary.close}
             </Button>
@@ -378,7 +382,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   <div
                     className={cn(
                       "absolute border-2 pointer-events-none",
-                      sumIsTen ? "border-red-500 bg-red-500/10" : "border-yellow-500 bg-yellow-500/10"
+                      sumIsTen ? "border-emerald-500 bg-emerald-500/10" : "border-yellow-500 bg-yellow-500/10"
                     )}
                     style={{
                       left: selectionRect.left,
@@ -412,13 +416,21 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
             {/* 점수 제출 모달 */}
             {gameState === "ended" && showScoreSubmit && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-10">
-                <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full">
+                <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xl max-w-md w-full relative">
+                  {/* 닫기 버튼 (오른쪽 위) */}
+                  <button
+                    onClick={() => setShowScoreSubmit(false)}
+                    className="absolute top-2 right-2 p-1 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+                    aria-label="Close"
+                  >
+                    <X className="w-3 h-3 text-gray-500" />
+                  </button>
+
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">
                     {score >= DOWNLOAD_THRESHOLD_SCORE ? (
-                      <>🎉 {dictionary.gameOverCongratulations}</>
+                      <>{dictionary.gameOverCongratulations}</>
                     ) : (
                       <>
-                        😢{" "}
                         {dictionary.gameOverNeedMorePoints.replace(
                           "{{points}}",
                           String(DOWNLOAD_THRESHOLD_SCORE - score)
@@ -432,17 +444,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                     dictionary={dictionary.scoreSubmit}
                     onSuccess={handleScoreSubmitSuccess}
                   />
-                  <p className="mt-4 text-sm text-gray-600 text-center">{dictionary.scoreSubmit.leaderboardHint}</p>
-
-                  {/* 버튼 영역 */}
-                  <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button variant="outline" onClick={() => setShowScoreSubmit(false)} className="flex-1 sm:flex-none">
-                      {dictionary.close}
-                    </Button>
-                    {score >= DOWNLOAD_THRESHOLD_SCORE && (
-                      <DownloadButton className="flex-1 sm:flex-none">Download for macOS</DownloadButton>
-                    )}
-                  </div>
+                  <p className="mt-1 text-xs text-gray-600 text-right">{dictionary.scoreSubmit.leaderboardHint}</p>
                 </div>
               </div>
             )}

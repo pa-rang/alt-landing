@@ -136,6 +136,9 @@
       "success": "Submitted to leaderboard!",
       "newHighScore": "New high score!",
       "rankMessage": "You're ranked #{{rank}}!",
+      "recordSubmitted": "Record submitted",
+      "previousScoreMaintained": "Your previous high score of {{previousScore}} points is maintained",
+      "currentRank": "Current rank: #{{rank}}",
       "leaderboardHint": "Submit to leaderboard to compete with your school/company rankings.",
       "messages": {
         "success": "Submitted to leaderboard!",

@@ -86,15 +86,22 @@ export async function POST(request: Request) {
 
     const { email, organization, nickname, score } = parseResult.data;
 
+    // 기존 점수 확인
+    const existingResult = await query<GameScore>(
+      `SELECT score FROM public.game_scores WHERE email = $1`,
+      [email]
+    );
+    const previousScore = existingResult.rows[0]?.score;
+
     // UPSERT: 이메일이 이미 존재하면 정보를 덮어쓰기
     const result = await query<GameScore>(
       `INSERT INTO public.game_scores (email, organization, nickname, score, created_at, updated_at)
        VALUES ($1, $2, $3, $4, NOW(), NOW())
-       ON CONFLICT (email) 
+       ON CONFLICT (email)
        DO UPDATE SET
          organization = EXCLUDED.organization,
          nickname = EXCLUDED.nickname,
-         score = CASE 
+         score = CASE
            WHEN EXCLUDED.score > game_scores.score THEN EXCLUDED.score
            ELSE game_scores.score
          END,
@@ -104,6 +111,7 @@ export async function POST(request: Request) {
     );
 
     const savedScore = result.rows[0];
+    const isNewHighScore = previousScore === undefined || score > previousScore;
 
     // 개인 순위 계산
     const rankResult = await query<{ rank: number }>(
@@ -125,7 +133,8 @@ export async function POST(request: Request) {
       ok: true,
       score: savedScore,
       rank,
-      isNewHighScore: savedScore.updated_at === savedScore.created_at || savedScore.score === score,
+      isNewHighScore,
+      previousScore: previousScore ?? null,
     });
   } catch (error) {
     console.error("game score POST failed", error);

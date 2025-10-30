@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ArrowDownToLine } from "lucide-react";
 
 const DEFAULT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
 
@@ -20,7 +21,6 @@ export function DownloadButton({
   size = "default",
   children = "Download for macOS",
   downloadUrl = DEFAULT_DOWNLOAD_URL,
-  icon
 }: DownloadButtonProps) {
   const handleDownload = () => {
     // macOS 다운로드 링크로 이동
@@ -28,14 +28,9 @@ export function DownloadButton({
   };
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      className={cn(className)}
-      onClick={handleDownload}
-    >
-      {icon}
+    <Button variant={variant} size={size} className={cn(className)} onClick={handleDownload} type="button">
       {children}
+      <ArrowDownToLine className="h-4 w-4" />
     </Button>
   );
 }

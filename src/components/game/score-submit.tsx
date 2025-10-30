@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +8,6 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { DOWNLOAD_THRESHOLD_SCORE } from "@/lib/apple-game";
 import { DownloadButton } from "./download-button";
 
-const ALT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
 const STORAGE_EMAIL_KEY = "squareTomatoGameEmail";
 const STORAGE_NICKNAME_KEY = "squareTomatoGameNickname";
 
@@ -23,7 +21,7 @@ type GameScoreSubmitProps = {
 type SubmitState =
   | { status: "idle" }
   | { status: "submitting" }
-  | { status: "success"; rank: number }
+  | { status: "success"; rank: number; isNewHighScore: boolean; previousScore?: number }
   | { status: "error"; message: string };
 
 export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: GameScoreSubmitProps) {
@@ -110,23 +108,6 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
     e.preventDefault();
     setFieldErrors({});
 
-    // 현재 점수가 최고 점수보다 낮으면 API 호출 없이 바로 닫기
-    if (score <= bestScore) {
-      // 닫기 전에도 입력한 정보는 저장
-      try {
-        if (email) localStorage.setItem(STORAGE_EMAIL_KEY, email);
-        if (nickname) localStorage.setItem(STORAGE_NICKNAME_KEY, nickname);
-      } catch (error) {
-        console.error("정보 저장 실패:", error);
-      }
-      onSuccess({
-        email,
-        organization,
-        rank: 0, // 업데이트 안함
-      });
-      return;
-    }
-
     setState({ status: "submitting" });
 
     try {
@@ -160,22 +141,19 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
           console.error("제출 후 정보 저장 실패:", error);
         }
 
-        // 새 최고 기록일 때만 성공 상태로 전환
-        if (data.isNewHighScore) {
-          setState({ status: "success", rank: data.rank });
-          onSuccess({
-            email,
-            organization,
-            rank: data.rank,
-          });
-        } else {
-          // 기존 기록 갱신 안됨 - 그냥 닫기
-          onSuccess({
-            email,
-            organization,
-            rank: data.rank,
-          });
-        }
+        // 성공 상태로 전환 (신기록 여부와 관계없이)
+        setState({
+          status: "success",
+          rank: data.rank,
+          isNewHighScore: data.isNewHighScore,
+          previousScore: data.previousScore,
+        });
+
+        onSuccess({
+          email,
+          organization,
+          rank: data.rank,
+        });
       } else {
         setState({ status: "error", message: data.error || dictionary.messages.genericError });
       }
@@ -189,20 +167,32 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
   const isSuccess = state.status === "success";
 
   if (isSuccess && state.status === "success") {
-    return (
-      <div className="text-center py-6">
-        <div className="text-2xl font-bold text-green-600 mb-2">🎉</div>
-        <div className="text-lg font-semibold mb-1">{dictionary.success}</div>
-        <div className="text-sm text-gray-600 mb-4">
-          {dictionary.rankMessage.replace("{{rank}}", String(state.rank))}
+    if (state.isNewHighScore) {
+      // 신기록 달성
+      return (
+        <div className="text-center py-6">
+          <div className="text-2xl font-bold text-green-600 mb-2">🎉</div>
+          <div className="text-lg font-semibold mb-1">{dictionary.success}</div>
+          <div className="text-sm text-gray-600 mb-4">
+            {dictionary.rankMessage.replace("{{rank}}", String(state.rank))}
+          </div>
         </div>
-        {score >= DOWNLOAD_THRESHOLD_SCORE && (
-          <DownloadButton downloadUrl={ALT_DOWNLOAD_URL} className="w-full bg-blue-600 hover:bg-blue-700">
-            {dictionary.downloadAlt}
-          </DownloadButton>
-        )}
-      </div>
-    );
+      );
+    } else {
+      // 기존 점수 유지
+      return (
+        <div className="text-center py-6">
+          <div className="text-2xl font-bold text-blue-600 mb-2">ℹ️</div>
+          <div className="text-lg font-semibold mb-1">{dictionary.recordSubmitted}</div>
+          <div className="text-sm text-gray-600 mb-2">
+            {dictionary.previousScoreMaintained.replace("{{previousScore}}", String(state.previousScore))}
+          </div>
+          <div className="text-sm text-gray-600 mb-4">
+            {dictionary.currentRank.replace("{{rank}}", String(state.rank))}
+          </div>
+        </div>
+      );
+    }
   }
 
   return (
@@ -271,15 +261,11 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
         <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">{state.message}</div>
       )}
 
+      <div className="h-2" />
+
       {score >= DOWNLOAD_THRESHOLD_SCORE ? (
         <div className="flex justify-end gap-2">
-          <DownloadButton
-            downloadUrl={ALT_DOWNLOAD_URL}
-            className="bg-black hover:bg-gray-800"
-            icon={<ArrowDownToLine className="mr-2 h-4 w-4" />}
-          >
-            Download for macOS
-          </DownloadButton>
+          <DownloadButton />
           <Button type="submit" variant="outline" disabled={isSubmitting}>
             {isSubmitting ? dictionary.submitting : dictionary.submitLeaderboard}
           </Button>
