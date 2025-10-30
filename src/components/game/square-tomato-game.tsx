@@ -45,7 +45,6 @@ function ScoreDisplay({ gameState, currentScore, bestScore, scoreLabel }: ScoreD
 type SquareTomatoGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
-  initialEmail?: string;
 };
 
 type Cell = {
@@ -54,7 +53,7 @@ type Cell = {
   removed: boolean;
 };
 
-export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTomatoGameProps) {
+export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [cells, setCells] = useState<Cell[]>(() => {
@@ -78,28 +77,7 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
   } | null>(null);
 
   const [bestScore, setBestScore] = useState<number>(0);
-  const [bestNickname, setBestNickname] = useState<string>("");
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
-
-  // 초기 렌더링 시 최고점수와 닉네임 조회
-  useEffect(() => {
-    if (!initialEmail) return;
-
-    const fetchBestScore = async () => {
-      try {
-        const response = await fetch(`/api/game/best-score?email=${encodeURIComponent(initialEmail)}`);
-        const data = await response.json();
-        if (data.ok) {
-          setBestScore(data.bestScore);
-          setBestNickname(data.nickname || "");
-        }
-      } catch (error) {
-        console.error("Failed to fetch best score:", error);
-      }
-    };
-
-    fetchBestScore();
-  }, [initialEmail]);
 
   const resetGame = useCallback(() => {
     const values = generateValues(ROWS, COLS);
@@ -440,9 +418,10 @@ export function SquareTomatoGame({ onClose, dictionary, initialEmail }: SquareTo
                     bestScore={bestScore}
                     dictionary={dictionary.scoreSubmit}
                     onSuccess={handleScoreSubmitSuccess}
-                    initialEmail={initialEmail}
-                    initialNickname={bestNickname}
                   />
+                  <p className="mt-4 text-sm text-gray-600 text-center">
+                    리더보드에 등록하여 학교/직장 순위를 높여보세요.
+                  </p>
                 </div>
               </div>
             )}

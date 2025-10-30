@@ -9,14 +9,14 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { DOWNLOAD_THRESHOLD_SCORE } from "@/lib/apple-game";
 
 const ALT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
+const STORAGE_EMAIL_KEY = "squareTomatoGameEmail";
+const STORAGE_NICKNAME_KEY = "squareTomatoGameNickname";
 
 type GameScoreSubmitProps = {
   score: number;
   bestScore: number;
   dictionary: Dictionary["game"]["scoreSubmit"];
   onSuccess: (data: { email: string; organization: string; rank: number; bestScore: number }) => void;
-  initialEmail?: string;
-  initialNickname?: string;
 };
 
 type SubmitState =
@@ -25,15 +25,68 @@ type SubmitState =
   | { status: "success"; rank: number }
   | { status: "error"; message: string };
 
-export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initialEmail, initialNickname }: GameScoreSubmitProps) {
-  const [email, setEmail] = useState(initialEmail || "");
+export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: GameScoreSubmitProps) {
+  const [email, setEmail] = useState("");
   const [organization, setOrganization] = useState("");
-  const [nickname, setNickname] = useState(initialNickname || "");
+  const [nickname, setNickname] = useState("");
+  const [hasManualNickname, setHasManualNickname] = useState(false);
   const [state, setState] = useState<SubmitState>({ status: "idle" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // 이메일 변경 시 자동으로 organization과 nickname 업데이트
+  // 로컬스토리지에서 이메일/닉네임 불러오기
   useEffect(() => {
+    try {
+      const savedEmail = localStorage.getItem(STORAGE_EMAIL_KEY);
+      const savedNickname = localStorage.getItem(STORAGE_NICKNAME_KEY);
+
+      if (savedEmail) {
+        setEmail(savedEmail);
+      }
+
+      if (savedNickname) {
+        setNickname(savedNickname);
+        // 저장된 닉네임이 있으면 자동완성으로 덮어쓰지 않도록 플래그 설정
+        setHasManualNickname(true);
+      }
+
+      // 초기화 완료
+      setIsInitialized(true);
+    } catch (error) {
+      console.error("로컬스토리지에서 정보를 불러오지 못했습니다.", error);
+      setIsInitialized(true);
+    }
+  }, []);
+
+  // 이메일 로컬스토리지에 저장 (입력 중에만 저장)
+  useEffect(() => {
+    try {
+      if (email) {
+        localStorage.setItem(STORAGE_EMAIL_KEY, email);
+      } else {
+        localStorage.removeItem(STORAGE_EMAIL_KEY);
+      }
+    } catch (error) {
+      console.error("로컬스토리지에 이메일을 저장하지 못했습니다.", error);
+    }
+  }, [email]);
+
+  // 닉네임은 수동으로 입력된 경우에만 로컬스토리지에 저장
+  useEffect(() => {
+    try {
+      if (hasManualNickname && nickname) {
+        localStorage.setItem(STORAGE_NICKNAME_KEY, nickname);
+      }
+    } catch (error) {
+      console.error("로컬스토리지에 닉네임을 저장하지 못했습니다.", error);
+    }
+  }, [nickname, hasManualNickname]);
+
+  // 이메일 변경 시 자동으로 organization과 nickname 업데이트 (초기화 후에만)
+  useEffect(() => {
+    // 초기 로드 시에는 실행하지 않음 (로컬스토리지에서 불러온 값 보존)
+    if (!isInitialized) return;
+
     if (email.includes("@")) {
       const [localPart, domain] = email.split("@");
       // 도메인 파싱: 3개 이상이면 첫 번째만, 2개면 마지막 제거
@@ -41,17 +94,16 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initi
       const domainParts = domain.split(".");
       const parsedOrganization = domainParts.length > 2 ? domainParts[0] : domainParts.slice(0, -1).join(".");
       setOrganization(parsedOrganization);
-      // initialNickname이 있으면 유지, 없으면 이메일에서 파싱
-      if (!initialNickname) {
+      if (!hasManualNickname) {
         setNickname(localPart);
       }
     } else {
       setOrganization("");
-      if (!initialNickname) {
+      if (!hasManualNickname) {
         setNickname("");
       }
     }
-  }, [email, initialNickname]);
+  }, [email, hasManualNickname, isInitialized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +111,13 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initi
 
     // 현재 점수가 최고 점수보다 낮으면 API 호출 없이 바로 닫기
     if (score <= bestScore) {
+      // 닫기 전에도 입력한 정보는 저장
+      try {
+        if (email) localStorage.setItem(STORAGE_EMAIL_KEY, email);
+        if (nickname) localStorage.setItem(STORAGE_NICKNAME_KEY, nickname);
+      } catch (error) {
+        console.error("정보 저장 실패:", error);
+      }
       onSuccess({
         email,
         organization,
@@ -93,6 +152,14 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initi
       }
 
       if (data.ok) {
+        // 제출 성공 시 이메일과 닉네임을 로컬스토리지에 저장
+        try {
+          localStorage.setItem(STORAGE_EMAIL_KEY, email);
+          localStorage.setItem(STORAGE_NICKNAME_KEY, nickname);
+        } catch (error) {
+          console.error("제출 후 정보 저장 실패:", error);
+        }
+
         // 새 최고 기록일 때만 성공 상태로 전환
         if (data.isNewHighScore) {
           setState({ status: "success", rank: data.rank });
@@ -193,7 +260,10 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initi
             type="text"
             placeholder={dictionary.nicknamePlaceholder}
             value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            onChange={(e) => {
+              setNickname(e.target.value);
+              setHasManualNickname(true);
+            }}
             disabled={isSubmitting}
             required
             className="h-8 text-sm"
@@ -217,13 +287,13 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess, initi
             Download for macOS
           </Button>
           <Button type="submit" variant="outline" disabled={isSubmitting}>
-            {isSubmitting ? dictionary.submitting : dictionary.close}
+            {isSubmitting ? dictionary.submitting : "리더보드 등록"}
           </Button>
         </div>
       ) : (
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? dictionary.submitting : dictionary.close}
+            {isSubmitting ? dictionary.submitting : "리더보드 등록"}
           </Button>
         </div>
       )}

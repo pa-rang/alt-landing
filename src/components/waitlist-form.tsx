@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, type FormEvent, useRef } from "react";
-import { z } from "zod";
+import { useState, useRef } from "react";
+import { ArrowDownToLine } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { WaitlistDialog } from "@/components/waitlist-dialog";
 import { SquareTomatoGame } from "@/components/game";
-import { cn } from "@/lib/utils";
 
 type WaitlistFormDictionary = Dictionary["waitlistForm"];
 type WaitlistDialogTexts = Dictionary["waitlistDialog"];
@@ -22,30 +20,13 @@ type WaitlistFormProps = {
 };
 
 export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }: WaitlistFormProps) {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [email] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // 간단한 이메일 검증
-    const emailResult = z
-      .string()
-      .trim()
-      .min(1, dictionary.validation.emailRequired)
-      .email(dictionary.validation.emailInvalid)
-      .safeParse(email);
-
-    if (!emailResult.success) {
-      setEmailError(emailResult.error.issues[0]?.message || dictionary.validation.emailInvalid);
-      return;
-    }
-
-    setEmailError("");
+  const handleGameStart = () => {
     setIsAnimating(true);
 
     // 애니메이션 완료 후 게임 화면 표시
@@ -56,36 +37,21 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="w-full relative">
+      <div className="w-full relative">
         <div className="flex flex-col xs:flex-row gap-2">
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              if (emailError) setEmailError("");
-            }}
-            placeholder={dictionary.emailPlaceholder}
-            className={cn("flex-1 h-10 bg-stone-200 border-none", emailError && "border-destructive")}
-            disabled={isAnimating}
-          />
           <Button
             ref={buttonRef}
-            type="submit"
-            className="whitespace-nowrap h-10 relative overflow-visible"
-            size="default"
+            onClick={handleGameStart}
+            className="whitespace-nowrap relative overflow-visible"
+            size="lg"
             disabled={isAnimating}
           >
             {dictionary.submit.idle}
+            <ArrowDownToLine className="ml-2 h-5 w-5" />
           </Button>
         </div>
-        {emailError ? <p className="text-sm text-destructive mt-2">{emailError}</p> : null}
         <p className="text-xs text-muted-foreground mt-2">{dictionary.earlyAccessNote}</p>
-      </form>
+      </div>
 
       {/* 풀스크린 애니메이션 오버레이 */}
       {(isAnimating || showGame) && (
@@ -132,7 +98,6 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
                 setIsAnimating(false);
               }}
               dictionary={gameDictionary}
-              initialEmail={email}
             />
           )}
         </div>

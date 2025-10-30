@@ -20,7 +20,7 @@
   "waitlistForm": {
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
-    "earlyAccessNote": "Currently available only to early access applicants.",
+    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon (M1, M2, M3, M4)",
     "platformLabel": "Platform",
     "platformOptions": {
       "mac": "Mac",
@@ -29,7 +29,7 @@
     "featureRequestLabel": "Feature request (optional)",
     "featureRequestPlaceholder": "Tell us what you want to build or try.",
     "submit": {
-      "idle": "Get early access",
+      "idle": "Download for macOS",
       "submitting": "Submitting..."
     },
     "messages": {
