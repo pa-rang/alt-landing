@@ -154,7 +154,7 @@ export default async function RootLayout({
                   <Home className="w-5 h-5 text-foreground" />
                 </Link>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} labels={labels} />
                 <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
               </div>
