@@ -44,8 +44,7 @@ export default async function AboutPage({ params }: { params: Promise<AboutPageP
 
             <div className="pt-2 space-y-2 text-sm text-zinc-800">
               <p>
-                {dictionary.about.mission} <br />
-                {dictionary.about.recruit}
+                <span dangerouslySetInnerHTML={{ __html: dictionary.about.mission }} />
               </p>
               <p>
                 {dictionary.about.contact}
