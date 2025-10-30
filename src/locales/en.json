@@ -4,7 +4,7 @@
     "realTimeNoteTaking": " takes notes and organizes in real time.",
     "completelyFree": "100% free.",
     "noLoginRequired": " No login or internet required.",
-    "contactUs": "Contact us",
+    "aboutUs": "About us",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "For school lectures, presentations, when your internet is unstable or you want to protect your privacy.",
@@ -157,5 +157,28 @@
         "scoreNegative": "Score must be 0 or greater."
       }
     }
+  },
+  "about": {
+    "title": "Team",
+    "members": {
+      "jeongyeon": {
+        "name": "Jeongyeon Lee",
+        "history": [
+          "(Former) Karrot Frontend Developer, Product Designer",
+          "KAIST Computer Science/Industrial Design"
+        ]
+      },
+      "sangwoo": {
+        "name": "Sangwoo Ye",
+        "history": [
+          "KAIST Presidential Fellowship (KPF)",
+          "KAIST Computer Science",
+          "Korea Science Academy Graduate"
+        ]
+      }
+    },
+    "mission": "Starting with alt, we aim to create tools that maximize individual productivity based on On-Device AI.",
+    "recruit": "If you're interested in building together, let's have a casual coffee chat.",
+    "contact": "Contact:"
   }
 }

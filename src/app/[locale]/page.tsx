@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -75,14 +76,14 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                 />
               </div>
 
-              {/* Contact us text */}
+              {/* About us text */}
               <div className="mt-14">
-                <a
-                  href="mailto:altalt.team@gmail.com"
+                <Link
+                  href={`/${locale}/about`}
                   className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
                 >
-                  {dictionary.home.contactUs}
-                </a>
+                  {dictionary.home.aboutUs}
+                </Link>
               </div>
             </div>
           </div>
