@@ -80,7 +80,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               <div className="mt-14">
                 <Link
                   href={`/${locale}/about`}
-                  className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+                  className="text-zinc-800 underline hover:text-zinc-700 transition-colors"
                 >
                   {dictionary.home.aboutUs}
                 </Link>
