@@ -42,20 +42,20 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
           <Button
             ref={buttonRef}
             onClick={handleGameStart}
-            className="whitespace-nowrap relative overflow-visible"
+            className="whitespace-nowrap relative overflow-visible text-base rounded-xl px-4! py-6!"
             size="lg"
             disabled={isAnimating}
           >
             {dictionary.submit.idle}
-            <ArrowDownToLine className="ml-2 h-5 w-5" />
+            <ArrowDownToLine className="ml-1 h-5 w-5" />
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">{dictionary.earlyAccessNote}</p>
+        <p className="text-[13px] text-muted-foreground mt-2">{dictionary.earlyAccessNote}</p>
       </div>
 
       {/* 풀스크린 애니메이션 오버레이 */}
       {(isAnimating || showGame) && (
-        <div className="fixed inset-0 z-[9999]">
+        <div className="fixed inset-0 z-9999">
           {/* 버튼에서 확장되는 배경 */}
           <div
             className="absolute bg-primary animate-expand-from-button"
