@@ -16,6 +16,7 @@ import {
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./score-submit";
 import { LeaderboardBox } from "./leaderboard-box";
+import { DownloadButton } from "./download-button";
 
 const BEST_SCORE_KEY = "squareTomatoGameBestScore";
 
@@ -398,7 +399,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                       {dictionary.start}
                     </Button>
                     <p className="text-base text-gray-800 text-center px-4 max-w-md font-medium leading-relaxed">
-                      {dictionary.rules}
+                      {dictionary.guide}
                     </p>
                   </div>
                 )}
@@ -431,9 +432,17 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                     dictionary={dictionary.scoreSubmit}
                     onSuccess={handleScoreSubmitSuccess}
                   />
-                  <p className="mt-4 text-sm text-gray-600 text-center">
-                    {dictionary.scoreSubmit.leaderboardHint}
-                  </p>
+                  <p className="mt-4 text-sm text-gray-600 text-center">{dictionary.scoreSubmit.leaderboardHint}</p>
+
+                  {/* 버튼 영역 */}
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button variant="outline" onClick={() => setShowScoreSubmit(false)} className="flex-1 sm:flex-none">
+                      {dictionary.close}
+                    </Button>
+                    {score >= DOWNLOAD_THRESHOLD_SCORE && (
+                      <DownloadButton className="flex-1 sm:flex-none">Download for macOS</DownloadButton>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

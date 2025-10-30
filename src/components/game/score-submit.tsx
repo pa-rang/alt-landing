@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { DOWNLOAD_THRESHOLD_SCORE } from "@/lib/apple-game";
+import { DownloadButton } from "./download-button";
 
 const ALT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
 const STORAGE_EMAIL_KEY = "squareTomatoGameEmail";
@@ -196,12 +197,9 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
           {dictionary.rankMessage.replace("{{rank}}", String(state.rank))}
         </div>
         {score >= DOWNLOAD_THRESHOLD_SCORE && (
-          <Button
-            onClick={() => window.open(ALT_DOWNLOAD_URL, "_blank")}
-            className="w-full bg-blue-600 hover:bg-blue-700"
-          >
+          <DownloadButton downloadUrl={ALT_DOWNLOAD_URL} className="w-full bg-blue-600 hover:bg-blue-700">
             {dictionary.downloadAlt}
-          </Button>
+          </DownloadButton>
         )}
       </div>
     );
@@ -275,14 +273,13 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
 
       {score >= DOWNLOAD_THRESHOLD_SCORE ? (
         <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={() => window.open(ALT_DOWNLOAD_URL, "_blank")}
+          <DownloadButton
+            downloadUrl={ALT_DOWNLOAD_URL}
             className="bg-black hover:bg-gray-800"
+            icon={<ArrowDownToLine className="mr-2 h-4 w-4" />}
           >
-            <ArrowDownToLine className="mr-2 h-4 w-4" />
             Download for macOS
-          </Button>
+          </DownloadButton>
           <Button type="submit" variant="outline" disabled={isSubmitting}>
             {isSubmitting ? dictionary.submitting : dictionary.submitLeaderboard}
           </Button>

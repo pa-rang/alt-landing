@@ -50,7 +50,12 @@ export function LeaderboardBox({ dictionary, userEmail, userOrganization, refres
       {/* 리더보드 컨텐츠 */}
       <div className="px-4 py-4 overflow-auto flex-1">
         {activeTab === "personal" && (
-          <GameLeaderboard type="personal" dictionary={dictionary.leaderboard} userEmail={userEmail} refreshTrigger={refreshTrigger} />
+          <GameLeaderboard
+            type="personal"
+            dictionary={dictionary.leaderboard}
+            userEmail={userEmail}
+            refreshTrigger={refreshTrigger}
+          />
         )}
         {activeTab === "organization" && (
           <GameLeaderboard
