@@ -7,7 +7,7 @@
     "aboutUs": "About us",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
-    "subDescription": "For school lectures, presentations, when your internet is unstable or you want to protect your privacy.",
+    "subDescription": "For school lectures, presentations, even when your internet is unstable.",
     "subDescriptionCta": "Use alt for real-time note-taking and lecture summaries, completely free."
   },
   "languageSwitcher": {
@@ -163,18 +163,11 @@
     "members": {
       "jeongyeon": {
         "name": "Jeongyeon Lee",
-        "history": [
-          "(Former) Karrot Frontend Developer, Product Designer",
-          "KAIST Computer Science/Industrial Design"
-        ]
+        "history": ["(Former) Karrot Frontend Developer, Product Designer", "KAIST Computer Science/Industrial Design"]
       },
       "sangwoo": {
         "name": "Sangwoo Ye",
-        "history": [
-          "KAIST Presidential Fellowship (KPF)",
-          "KAIST Computer Science",
-          "Korea Science Academy Graduate"
-        ]
+        "history": ["KAIST Presidential Fellowship (KPF)", "KAIST Computer Science", "Korea Science Academy Graduate"]
       }
     },
     "mission": "Starting with alt, we aim to create tools that maximize individual productivity based on On-Device AI.",

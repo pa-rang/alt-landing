@@ -7,7 +7,7 @@
     "aboutUs": "About us",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
-    "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정하거나 개인정보를 보호하고 싶을 때.",
+    "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정해도 상관없어요.",
     "subDescriptionCta": "alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요."
   },
   "languageSwitcher": {
@@ -163,18 +163,11 @@
     "members": {
       "jeongyeon": {
         "name": "이정연",
-        "history": [
-          "(전)당근마켓 Frontend Developer, Product Designer",
-          "KAIST 전산학과/산업디자인학과"
-        ]
+        "history": ["(전)당근마켓 Frontend Developer, Product Designer", "KAIST 전산학과/산업디자인학과"]
       },
       "sangwoo": {
         "name": "예상우",
-        "history": [
-          "KAIST 총장 장학생(KPF)",
-          "KAIST 전산학과",
-          "한국과학영재학교 졸"
-        ]
+        "history": ["KAIST 총장 장학생(KPF)", "KAIST 전산학과", "한국과학영재학교 졸"]
       }
     },
     "mission": "저희는 alt를 시작으로, On-Device AI를 기반한 개인의 효용을 극대화하는 도구를 만들어가고자 합니다.",

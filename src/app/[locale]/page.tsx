@@ -47,7 +47,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                 </h1>
               </div>
 
-              <p className="text-sm sm:text-base text-zinc-500">
+              <p className="text-sm sm:text-base text-zinc-700">
                 {dictionary.home.subDescription} <br />
                 {dictionary.home.subDescriptionCta}
               </p>
