@@ -10,7 +10,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { FeedbackButton } from "@/components/feedback-button";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
-import Image from "next/image";
+import { Home } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -146,8 +146,12 @@ export default async function RootLayout({
           <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-14 w-full items-center justify-between px-4">
               <div className="flex items-center space-x-4">
-                <Link href={`/${htmlLang}`} className="flex items-center">
-                  <Image src="/alt_logo.png" alt="alt" width={32} height={32} className="cursor-pointer" />
+                <Link
+                  href={`/${htmlLang}`}
+                  className="flex items-center justify-center w-8 h-8 rounded-md border hover:bg-accent transition-colors"
+                  aria-label="Home"
+                >
+                  <Home className="w-5 h-5 text-foreground" />
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
