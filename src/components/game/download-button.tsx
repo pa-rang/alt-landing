@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowDownToLine } from "lucide-react";
 
-const DEFAULT_DOWNLOAD_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/Alt-0.0.6-arm64.dmg";
+const DEFAULT_DOWNLOAD_URL = "/api/mac";
 
 type DownloadButtonProps = {
   className?: string;
