@@ -8,6 +8,18 @@ import { Button } from "@/components/ui/button";
 import { WaitlistDialog } from "@/components/waitlist-dialog";
 import { SquareTomatoGame } from "@/components/game";
 
+// GA4 이벤트 추적 함수
+function trackGameStart(locale: string) {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'game_start_button_click', {
+      event_category: 'game',
+      event_label: 'waitlist_game_start',
+      page_locale: locale,
+      timestamp: new Date().toISOString()
+    } as any);
+  }
+}
+
 type WaitlistFormDictionary = Dictionary["waitlistForm"];
 type WaitlistDialogTexts = Dictionary["waitlistDialog"];
 type GameDictionary = Dictionary["game"];
@@ -27,6 +39,9 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleGameStart = () => {
+    // GA4 이벤트 추적
+    trackGameStart(locale);
+
     setIsAnimating(true);
 
     // 애니메이션 완료 후 게임 화면 표시

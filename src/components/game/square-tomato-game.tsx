@@ -19,6 +19,37 @@ import { GameScoreSubmit } from "./score-submit";
 import { LeaderboardBox } from "./leaderboard-box";
 import { DownloadButton } from "./download-button";
 
+// GA4 이벤트 추적 함수들
+function trackGameStart() {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'game_start', {
+      event_category: 'game',
+      event_label: 'game_play_start',
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
+function trackGameRetry() {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'game_retry', {
+      event_category: 'game',
+      event_label: 'game_retry_during_play',
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
+function trackGameRestart() {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'game_restart', {
+      event_category: 'game',
+      event_label: 'game_restart_after_end',
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
 const BEST_SCORE_KEY = "squareTomatoGameBestScore";
 
 type ScoreDisplayProps = {
@@ -246,6 +277,8 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
 
   const handleStart = useCallback(() => {
     if (gameState === "idle") {
+      // GA4 이벤트 추적
+      trackGameStart();
       resetGame();
       setGameState("running");
     }
@@ -315,12 +348,18 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
               </div>
               <div className="flex items-center gap-2">
                 {gameState === "running" && (
-                  <Button variant="default" onClick={resetGame}>
+                  <Button variant="default" onClick={() => {
+                    trackGameRetry();
+                    resetGame();
+                  }}>
                     {dictionary.retry}
                   </Button>
                 )}
                 {gameState === "ended" && (
-                  <Button variant="default" onClick={resetGame}>
+                  <Button variant="default" onClick={() => {
+                    trackGameRestart();
+                    resetGame();
+                  }}>
                     {dictionary.restart}
                   </Button>
                 )}
