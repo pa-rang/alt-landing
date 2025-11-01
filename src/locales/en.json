@@ -1,7 +1,7 @@
 {
   "home": {
-    "focusLecture": "Focus only on your lecture.",
-    "realTimeNoteTaking": " takes notes and organizes in real time.",
+    "focusLecture": "Just focus on your lecture",
+    "realTimeNoteTaking": " takes notes and organizes them in real-time",
     "completelyFree": "100% free.",
     "noLoginRequired": " No login or internet required.",
     "aboutUs": "About us",
@@ -39,7 +39,7 @@
   "waitlistForm": {
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
-    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon (M1, M2, M3, M4)",
+    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon (M1-5 MacBooks)",
     "platformLabel": "Platform",
     "platformOptions": {
       "mac": "Mac",

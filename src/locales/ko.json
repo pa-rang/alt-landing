@@ -2,7 +2,7 @@
   "home": {
     "focusLecture": "강의에만 집중하세요.",
     "realTimeNoteTaking": "가 실시간으로 필기하고, 정리합니다.",
-    "completelyFree": "100% 무료.",
+    "completelyFree": "그것도 100% 무료로.",
     "noLoginRequired": " 로그인, 인터넷 아무것도 필요없어요.",
     "aboutUs": "About us",
     "privateAiNotetaker": "Your private AI lecture notetaker,",
@@ -39,7 +39,7 @@
   "waitlistForm": {
     "emailLabel": "이메일",
     "emailPlaceholder": "you@example.com",
-    "earlyAccessNote": "macOS 13.3 이상, 애플 실리콘 (M1, M2, M3, M4) 전용",
+    "earlyAccessNote": "MacOS 13.3 이상, Apple Silicon (M1-5 MacBooks) 전용",
     "platformLabel": "플랫폼",
     "platformOptions": {
       "mac": "Mac",

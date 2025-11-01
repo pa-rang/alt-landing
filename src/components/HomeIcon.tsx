@@ -9,13 +9,16 @@ type HomeIconProps = {
   locale: Locale;
 };
 
-export function HomeIcon({ locale }: HomeIconProps) {
+export function HomeIcon({ locale: initialLocale }: HomeIconProps) {
   const pathname = usePathname();
+
+  // URL에서 현재 locale 추출
+  const segments = pathname.split("/").filter(Boolean);
+  const currentLocale = (segments[0] || initialLocale) as Locale;
 
   // 홈 페이지에서는 아이콘을 숨김
   // pathname이 /{locale} 또는 /{locale}/ 형식인 경우 홈 페이지로 간주
-  const segments = pathname.split("/").filter(Boolean);
-  const isHomePage = segments.length === 1 && segments[0] === locale;
+  const isHomePage = segments.length === 1 && segments[0] === currentLocale;
 
   if (isHomePage) {
     return null;
@@ -23,7 +26,7 @@ export function HomeIcon({ locale }: HomeIconProps) {
 
   return (
     <Link
-      href={`/${locale}`}
+      href={`/${currentLocale}`}
       className="flex items-center justify-center w-8 h-8 rounded-md border hover:bg-accent transition-colors"
       aria-label="Home"
     >

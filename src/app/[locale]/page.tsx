@@ -28,11 +28,13 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 md:gap-16 items-center">
             <div className="flex flex-col justify-center space-y-4 md:space-y-8">
-              <div className="space-y-1">
-                <h1 className="text-4xl font-bold tracking-tight text-zinc-800">{dictionary.home.focusLecture}</h1>
+              <div className="space-y-3">
+                <h1 className="text-2xl md:text-4xl font-bold tracking-tight text-zinc-800">
+                  {dictionary.home.focusLecture}
+                </h1>
                 {/* Mobile: inline text with keyboard key */}
-                <h1 className="text-[20px] mt-4 text-zinc-800 md:hidden">
-                  <KeyboardKey size="sm" className="align-middle">
+                <h1 className="text-2xl mt-2 text-zinc-800 md:hidden">
+                  <KeyboardKey size="sm" className="align-top mr-1">
                     alt
                   </KeyboardKey>
                   {dictionary.home.realTimeNoteTaking}
@@ -41,14 +43,11 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                 {/* Desktop: flex layout */}
                 <div className="hidden md:flex items-center">
                   <KeyboardKey size="lg">alt</KeyboardKey>
-                  <h1 className="text-2xl md:text-4xl text-zinc-800">{dictionary.home.realTimeNoteTaking}</h1>
+                  <h1 className="ml-2 text-xl md:text-4xl text-zinc-800">{dictionary.home.realTimeNoteTaking}</h1>
                 </div>
 
-                <h1 className="text-4xl font-bold tracking-tight">
-                  <span className="inline-block bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                    {dictionary.home.completelyFree}
-                  </span>
-                  <span className="text-zinc-800">{dictionary.home.noLoginRequired}</span>
+                <h1 className="text-2xl md:text-4xl font-bold tracking-tight bg-gradient-to-r inline-block from-orange-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent">
+                  {dictionary.home.completelyFree}
                 </h1>
               </div>
 
@@ -111,7 +110,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               <div className="mt-14">
                 <Link
                   href={`/${locale}/about`}
-                  className="text-zinc-800 underline hover:text-zinc-700 transition-colors"
+                  className="text-stone-700 text-sm hover:underline hover:text-zinc-700 transition-colors"
                 >
                   {dictionary.home.aboutUs}
                 </Link>
