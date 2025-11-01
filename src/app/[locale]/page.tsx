@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Shield, Languages, Sparkles, Gift } from "lucide-react";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { FeatureCard } from "@/components/feature-card";
+import { KeyboardKey } from "@/components/keyboard-key";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 
@@ -29,15 +30,17 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
             <div className="flex flex-col justify-center space-y-4 md:space-y-8">
               <div className="space-y-1">
                 <h1 className="text-4xl font-bold tracking-tight text-zinc-800">{dictionary.home.focusLecture}</h1>
-                {/* Mobile: inline text with image */}
+                {/* Mobile: inline text with keyboard key */}
                 <h1 className="text-[20px] mt-4 text-zinc-800 md:hidden">
-                  <Image src="/alt_logo.png" alt="alt" width={48} height={48} className="inline-block align-middle" />
+                  <KeyboardKey size="sm" className="align-middle">
+                    alt
+                  </KeyboardKey>
                   {dictionary.home.realTimeNoteTaking}
                 </h1>
 
                 {/* Desktop: flex layout */}
                 <div className="hidden md:flex items-center">
-                  <Image src="/alt_logo.png" alt="alt" width={60} height={60} className="inline-block" />
+                  <KeyboardKey size="lg">alt</KeyboardKey>
                   <h1 className="text-2xl md:text-4xl text-zinc-800">{dictionary.home.realTimeNoteTaking}</h1>
                 </div>
 
