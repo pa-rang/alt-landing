@@ -37,8 +37,8 @@ export function LanguageSwitcher({ locale: initialLocale, dictionary }: Language
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Globe className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="gap-2 rounded-full shadow-none text-[13px]">
+          <Globe className="h-[14px]! w-[14px]!" />
           <span className="sr-only sm:not-sr-only">{currentLanguage}</span>
         </Button>
       </DropdownMenuTrigger>

@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 
 // GA4 이벤트 추적 함수
 function trackFeedbackClick(locale: string) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'feedback_button_click', {
-      event_category: 'engagement',
-      event_label: 'feedback_button',
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "feedback_button_click", {
+      event_category: "engagement",
+      event_label: "feedback_button",
       page_locale: locale,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }
@@ -49,9 +49,8 @@ export function FeedbackButton({ locale: initialLocale, dictionary, labels }: Fe
   };
 
   return (
-    <Button variant="outline" size="sm" className="gap-2" asChild>
+    <Button variant="outline" size="sm" className="gap-2 rounded-full shadow-none text-[13px]" asChild>
       <Link href={`/${currentLocale}/feedback`} onClick={handleFeedbackClick}>
-        <MessageSquare className="h-4 w-4" />
         <span className="sr-only sm:not-sr-only">{buttonLabel}</span>
       </Link>
     </Button>

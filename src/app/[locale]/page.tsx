@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Shield, Languages, Sparkles, Gift } from "lucide-react";
+import { Shield, Languages, Pen, Gift } from "lucide-react";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { FeatureCard } from "@/components/feature-card";
 import { KeyboardKey } from "@/components/keyboard-key";
@@ -86,7 +86,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                     description={dictionary.home.features.realTimeTranslation.description}
                   />
                   <FeatureCard
-                    icon={Sparkles}
+                    icon={Pen}
                     title={dictionary.home.features.aiEditing.title}
                     description={dictionary.home.features.aiEditing.description}
                   />
