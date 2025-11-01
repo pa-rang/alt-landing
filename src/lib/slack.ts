@@ -246,3 +246,128 @@ export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<bo
 
   return false;
 }
+
+interface DownloadEntry {
+  id: number;
+  email?: string | null;
+  platform: string;
+  user_agent?: string | null;
+  ip_address?: string | null;
+  download_url: string;
+  version?: string | null;
+  created_at: string;
+}
+
+export async function sendDownloadNotification(entry: DownloadEntry): Promise<boolean> {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    console.warn("SLACK_WEBHOOK_URL이 설정되지 않았습니다. 슬랙 알림을 건너뜁니다.");
+    return false;
+  }
+
+  const platformText = entry.platform === "macos" ? "🖥️ macOS" : entry.platform === "windows" ? "🪟 Windows" : entry.platform;
+  const emailText = entry.email || "익명 사용자";
+  const timeText = new Date(entry.created_at).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const message: SlackMessage = {
+    text: "📦 alt 다운로드가 발생했습니다!",
+    attachments: [
+      {
+        color: "good",
+        fields: [
+          {
+            title: "📧 이메일",
+            value: emailText,
+            short: true,
+          },
+          {
+            title: "💻 플랫폼",
+            value: platformText,
+            short: true,
+          },
+          {
+            title: "🕐 다운로드 시간",
+            value: timeText,
+            short: true,
+          },
+          {
+            title: "🆔 ID",
+            value: `#${entry.id}`,
+            short: true,
+          },
+          ...(entry.version
+            ? [
+                {
+                  title: "📌 버전",
+                  value: entry.version,
+                  short: true,
+                },
+              ]
+            : []),
+          {
+            title: "🔗 다운로드 URL",
+            value: entry.download_url.length > 100 ? `${entry.download_url.substring(0, 100)}...` : entry.download_url,
+            short: false,
+          },
+        ],
+      },
+    ],
+  };
+
+  // 재시도 로직 포함
+  const maxRetries = 2;
+  const baseTimeout = 10000; // 10초
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const timeout = baseTimeout * attempt; // 점진적 타임아웃 증가
+
+      const response = await fetchWithTimeout(
+        webhookUrl,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(message),
+        },
+        timeout
+      );
+
+      if (!response.ok) {
+        console.warn(`슬랙 API 응답 오류 (시도 ${attempt}/${maxRetries}): ${response.status} ${response.statusText}`);
+        if (attempt === maxRetries) {
+          console.error(`슬랙 알림 최종 실패: 다운로드 ID ${entry.id}`);
+          return false;
+        }
+        // 재시도 전 대기
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        continue;
+      }
+
+      console.log(`슬랙 알림 전송 성공: 다운로드 ID ${entry.id}`);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`슬랙 알림 전송 실패 (시도 ${attempt}/${maxRetries}):`, errorMessage);
+
+      if (attempt === maxRetries) {
+        console.error(`슬랙 알림 최종 실패: 다운로드 ID ${entry.id} - ${errorMessage}`);
+        return false;
+      }
+
+      // 재시도 전 대기 (exponential backoff)
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  return false;
+}
