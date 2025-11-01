@@ -8,7 +8,26 @@
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "For school lectures, presentations, even when your internet is unstable.",
-    "subDescriptionCta": "Use alt for real-time note-taking and lecture summaries, completely free."
+    "subDescriptionCta": "Use alt for real-time note-taking and lecture summaries, completely free.",
+    "features": {
+      "title": "Core Features of alt",
+      "privacy": {
+        "title": "Privacy",
+        "description": "All content is stored on your PC. Works offline, and we don't even have servers."
+      },
+      "realTimeTranslation": {
+        "title": "Real-time Translation",
+        "description": "Instantly translates lecture content to help you understand better."
+      },
+      "aiEditing": {
+        "title": "AI Editing",
+        "description": "AI refines your transcribed content to ensure accurate records."
+      },
+      "completelyFree": {
+        "title": "Completely Free",
+        "description": "300 minutes per month limit? Lectures can last hours a day. With alt, use 1,000 hours and pay $0."
+      }
+    }
   },
   "languageSwitcher": {
     "label": "Language",

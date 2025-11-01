@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Shield, Languages, Sparkles, Gift } from "lucide-react";
 import { WaitlistForm } from "@/components/waitlist-form";
+import { FeatureCard } from "@/components/feature-card";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 
@@ -62,6 +64,32 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </div>
             </div>
             <div className="relative">
+              {/* Features Section */}
+              <div className="mb-6 md:mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <FeatureCard
+                    icon={Shield}
+                    title={dictionary.home.features.privacy.title}
+                    description={dictionary.home.features.privacy.description}
+                  />
+                  <FeatureCard
+                    icon={Gift}
+                    title={dictionary.home.features.completelyFree.title}
+                    description={dictionary.home.features.completelyFree.description}
+                  />
+                  <FeatureCard
+                    icon={Languages}
+                    title={dictionary.home.features.realTimeTranslation.title}
+                    description={dictionary.home.features.realTimeTranslation.description}
+                  />
+                  <FeatureCard
+                    icon={Sparkles}
+                    title={dictionary.home.features.aiEditing.title}
+                    description={dictionary.home.features.aiEditing.description}
+                  />
+                </div>
+              </div>
+
               <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
                 <Image

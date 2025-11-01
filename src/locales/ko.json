@@ -8,7 +8,26 @@
     "privateAiNotetaker": "Your private AI lecture notetaker,",
     "mobilePrivateAiNotetaker": "Your private AI lecture notetaker,",
     "subDescription": "학교 수업 들을 때, 강연 들을 때, 인터넷이 불안정해도 상관없어요.",
-    "subDescriptionCta": "alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요."
+    "subDescriptionCta": "alt로 실시간 필기와 강의 정리를 완전 무료로 이용하세요.",
+    "features": {
+      "title": "alt의 핵심 기능",
+      "privacy": {
+        "title": "프라이버시",
+        "description": "모든 내용은 사용자 PC에 저장됩니다. 인터넷이 없어도 동작하며, 저희는 서버도 없습니다."
+      },
+      "realTimeTranslation": {
+        "title": "실시간 번역",
+        "description": "강의 내용을 실시간으로 번역하여 이해를 돕습니다."
+      },
+      "aiEditing": {
+        "title": "AI 수정",
+        "description": "받아쓴 내용을 AI가 한번 더 다듬어서, 정확하게 기록합니다."
+      },
+      "completelyFree": {
+        "title": "완전 무료",
+        "description": "월 300분 제한? 수업은 하루에도 몇시간하는데 너무 부족합니다. alt는 1,000시간을 써도 0원입니다."
+      }
+    }
   },
   "languageSwitcher": {
     "label": "언어",
