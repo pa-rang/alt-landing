@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 
 // GA4 이벤트 추적 함수
 function trackFeedbackClick(locale: string) {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'feedback_button_click', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'feedback_button_click', {
       event_category: 'engagement',
       event_label: 'feedback_button',
       page_locale: locale,

@@ -7,8 +7,8 @@ import { ArrowDownToLine } from "lucide-react";
 
 // GA4 이벤트 추적 함수
 function trackDownloadClick() {
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag("event", "download_click", {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "download_click", {
       event_category: "conversion",
       event_label: "macos_download",
       platform: "macos",

@@ -7,8 +7,8 @@ import type { Locale } from "@/lib/i18n/config";
 
 // GA4 이벤트 추적 함수
 function trackWaitlistButtonClick(locale: string) {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'waitlist_button_click', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'waitlist_button_click', {
       event_category: 'conversion',
       event_label: 'waitlist_button',
       page_locale: locale,

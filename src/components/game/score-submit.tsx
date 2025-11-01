@@ -10,8 +10,8 @@ import { DownloadButton } from "./download-button";
 
 // GA4 이벤트 추적 함수
 function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'score_submit', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'score_submit', {
       event_category: 'game',
       event_label: 'leaderboard_submission',
       score_value: score,

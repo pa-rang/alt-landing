@@ -21,8 +21,8 @@ import { DownloadButton } from "./download-button";
 
 // GA4 이벤트 추적 함수들
 function trackGameStart() {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'game_start', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'game_start', {
       event_category: 'game',
       event_label: 'game_play_start',
       timestamp: new Date().toISOString()
@@ -31,8 +31,8 @@ function trackGameStart() {
 }
 
 function trackGameRetry() {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'game_retry', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'game_retry', {
       event_category: 'game',
       event_label: 'game_retry_during_play',
       timestamp: new Date().toISOString()
@@ -41,8 +41,8 @@ function trackGameRetry() {
 }
 
 function trackGameRestart() {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'game_restart', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'game_restart', {
       event_category: 'game',
       event_label: 'game_restart_after_end',
       timestamp: new Date().toISOString()

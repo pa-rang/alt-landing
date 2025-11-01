@@ -10,13 +10,13 @@ import { SquareTomatoGame } from "@/components/game";
 
 // GA4 이벤트 추적 함수
 function trackGameStart(locale: string) {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'game_start_button_click', {
-      event_category: 'game',
-      event_label: 'waitlist_game_start',
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "game_start_button_click", {
+      event_category: "game",
+      event_label: "waitlist_game_start",
       page_locale: locale,
-      timestamp: new Date().toISOString()
-    } as any);
+      timestamp: new Date().toISOString(),
+    });
   }
 }
 
