@@ -38,7 +38,7 @@ export function GameLauncher({ locale, gameDictionary, buttonLabel, earlyAccessN
     // 애니메이션 완료 후 게임 화면 표시
     setTimeout(() => {
       setShowGame(true);
-    }, 2800);
+    }, 2560);
   };
 
   return (
@@ -76,18 +76,18 @@ export function GameLauncher({ locale, gameDictionary, buttonLabel, earlyAccessN
           {/* 텍스트 애니메이션 */}
           {!showGame && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center space-y-4">
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-800">
+              <div className="text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-800 tracking-tight">
                     download
                   </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1200">
+                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1200 tracking-tight">
                     if
                   </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1600">
+                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1600 tracking-tight">
                     you
                   </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-2000">
+                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-2000 tracking-tight">
                     can
                   </span>
                 </div>
