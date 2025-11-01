@@ -18,14 +18,12 @@ export default async function FeedbackPage({ params }: { params: Promise<Feedbac
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      <section className="relative overflow-hidden pt-8 md:pt-16 pb-16 px-4 sm:px-8 lg:px-16">
-        <div className="mx-auto max-w-2xl">
+      <section className="relative overflow-hidden pt-4 md:pt-8 pb-16 px-4 sm:px-8 lg:px-16">
+        <div className="mx-auto max-w-xl">
           <div className="space-y-8">
             {/* 제목 */}
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-800">
-                {dictionary.feedback.title}
-              </h1>
+            <div className="space-y-2 text-left">
+              <h1 className="text-xl font-bold tracking-tight text-zinc-800">{dictionary.feedback.title}</h1>
             </div>
 
             {/* 폼 영역 */}

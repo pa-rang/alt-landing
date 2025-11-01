@@ -2,10 +2,9 @@
 
 import { useState, useRef } from "react";
 import { ArrowDownToLine } from "lucide-react";
-import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionary";
 import { Button } from "@/components/ui/button";
-import { WaitlistDialog } from "@/components/WaitlistDialog";
 import { SquareTomatoGame } from "@/components/game";
 
 // GA4 이벤트 추적 함수
@@ -20,28 +19,20 @@ function trackGameStart(locale: string) {
   }
 }
 
-type WaitlistFormDictionary = Dictionary["waitlistForm"];
-type WaitlistDialogTexts = Dictionary["waitlistDialog"];
-type GameDictionary = Dictionary["game"];
-
-type WaitlistFormProps = {
+type GameLauncherProps = {
   locale: Locale;
-  dictionary: WaitlistFormDictionary;
-  dialogTexts: WaitlistDialogTexts;
-  gameDictionary: GameDictionary;
+  gameDictionary: Dictionary["game"];
+  buttonLabel: string;
+  earlyAccessNote: string;
 };
 
-export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }: WaitlistFormProps) {
-  const [email] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+export function GameLauncher({ locale, gameDictionary, buttonLabel, earlyAccessNote }: GameLauncherProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleGameStart = () => {
-    // GA4 이벤트 추적
     trackGameStart(locale);
-
     setIsAnimating(true);
 
     // 애니메이션 완료 후 게임 화면 표시
@@ -61,11 +52,11 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
             size="lg"
             disabled={isAnimating}
           >
-            {dictionary.submit.idle}
+            {buttonLabel}
             <ArrowDownToLine className="ml-1 h-5 w-5" />
           </Button>
         </div>
-        <p className="text-[13px] text-muted-foreground mt-2">{dictionary.earlyAccessNote}</p>
+        <p className="text-[13px] text-muted-foreground mt-2">{earlyAccessNote}</p>
       </div>
 
       {/* 풀스크린 애니메이션 오버레이 */}
@@ -117,15 +108,6 @@ export function WaitlistForm({ locale, dictionary, dialogTexts, gameDictionary }
           )}
         </div>
       )}
-
-      <WaitlistDialog
-        locale={locale}
-        dictionary={dictionary}
-        dialogTexts={dialogTexts}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        initialEmail={email}
-      />
     </>
   );
 }

@@ -51,7 +51,7 @@ export function FeedbackButton({ locale: initialLocale, dictionary, labels }: Fe
   return (
     <Button variant="outline" size="sm" className="gap-2 rounded-full shadow-none text-[13px]" asChild>
       <Link href={`/${currentLocale}/feedback`} onClick={handleFeedbackClick}>
-        <span className="sr-only sm:not-sr-only">{buttonLabel}</span>
+        <span>{buttonLabel}</span>
       </Link>
     </Button>
   );

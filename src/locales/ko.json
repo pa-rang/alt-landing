@@ -76,9 +76,9 @@
       "typeLabel": "무엇을 공유하고 싶으신가요?",
       "typeOptions": {
         "issue": "이슈",
-        "issueSubtitle": "프로젝트 문제점",
+        "issueSubtitle": "버그·오류/불편 제보",
         "idea": "아이디어",
-        "ideaSubtitle": "alt 개선 제안"
+        "ideaSubtitle": "기능 제안·개선 아이디어"
       },
       "contentLabel": "내용",
       "contentPlaceholder": {

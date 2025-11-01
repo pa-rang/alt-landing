@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Shield, Languages, Pen, Gift } from "lucide-react";
-import { WaitlistForm } from "@/components/WaitlistForm";
+import { GameLauncher } from "@/components/GameLauncher";
 import { FeatureCard } from "@/components/FeatureCard";
 import { KeyboardKey } from "@/components/KeyboardKey";
 import { isSupportedLocale } from "@/lib/i18n/config";
@@ -58,11 +58,11 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </p>
 
               <div className="w-full max-w-md mt-2">
-                <WaitlistForm
+                <GameLauncher
                   locale={locale}
-                  dictionary={dictionary.waitlistForm}
-                  dialogTexts={dictionary.waitlistDialog}
                   gameDictionary={dictionary.game}
+                  buttonLabel={dictionary.waitlistForm.submit.idle}
+                  earlyAccessNote={dictionary.waitlistForm.earlyAccessNote}
                 />
               </div>
             </div>

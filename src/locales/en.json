@@ -76,9 +76,9 @@
       "typeLabel": "What would you like to share?",
       "typeOptions": {
         "issue": "Issue",
-        "issueSubtitle": "with my project",
+        "issueSubtitle": "Report a bug or problem",
         "idea": "Idea",
-        "ideaSubtitle": "to improve alt"
+        "ideaSubtitle": "Suggest a feature or improvement"
       },
       "contentLabel": "Details",
       "contentPlaceholder": {

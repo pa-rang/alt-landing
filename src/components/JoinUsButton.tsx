@@ -25,7 +25,7 @@ export function JoinUsButton({ locale: initialLocale }: JoinUsButtonProps) {
   return (
     <Button variant="outline" size="sm" className="gap-2 rounded-full shadow-none text-[13px]" asChild>
       <Link href={`/${currentLocale}/about`}>
-        <span className="sr-only sm:not-sr-only">Join us</span>
+        <span>Join us</span>
       </Link>
     </Button>
   );
