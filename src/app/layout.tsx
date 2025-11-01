@@ -117,10 +117,7 @@ export default async function RootLayout({
   return (
     <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-G0XD46659S"
-          strategy="afterInteractive"
-        />
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-G0XD46659S" strategy="afterInteractive" />
         <Script
           id="google-analytics"
           strategy="afterInteractive"

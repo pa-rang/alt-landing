@@ -8,6 +8,20 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { DOWNLOAD_THRESHOLD_SCORE } from "@/lib/apple-game";
 import { DownloadButton } from "./download-button";
 
+// GA4 이벤트 추적 함수
+function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'score_submit', {
+      event_category: 'game',
+      event_label: 'leaderboard_submission',
+      score_value: score,
+      is_new_high_score: isNewHighScore,
+      player_rank: rank,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
 const STORAGE_EMAIL_KEY = "squareTomatoGameEmail";
 const STORAGE_NICKNAME_KEY = "squareTomatoGameNickname";
 
@@ -140,6 +154,9 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
         } catch (error) {
           console.error("제출 후 정보 저장 실패:", error);
         }
+
+        // GA4 이벤트 추적
+        trackScoreSubmit(score, data.isNewHighScore, data.rank);
 
         // 성공 상태로 전환 (신기록 여부와 관계없이)
         setState({

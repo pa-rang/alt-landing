@@ -8,6 +8,18 @@ import { type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { Button } from "@/components/ui/button";
 
+// GA4 이벤트 추적 함수
+function trackFeedbackClick(locale: string) {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'feedback_button_click', {
+      event_category: 'engagement',
+      event_label: 'feedback_button',
+      page_locale: locale,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
 type FeedbackButtonDictionary = Dictionary["feedback"];
 
 type FeedbackButtonProps = {
@@ -32,9 +44,13 @@ export function FeedbackButton({ locale: initialLocale, dictionary, labels }: Fe
   // 현재 locale에 맞는 라벨 표시
   const buttonLabel = labels?.[currentLocale] || dictionary.button;
 
+  const handleFeedbackClick = () => {
+    trackFeedbackClick(currentLocale);
+  };
+
   return (
     <Button variant="outline" size="sm" className="gap-2" asChild>
-      <Link href={`/${currentLocale}/feedback`}>
+      <Link href={`/${currentLocale}/feedback`} onClick={handleFeedbackClick}>
         <MessageSquare className="h-4 w-4" />
         <span className="sr-only sm:not-sr-only">{buttonLabel}</span>
       </Link>
