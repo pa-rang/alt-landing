@@ -48,12 +48,11 @@ export function GameLauncher({ locale, gameDictionary, buttonLabel, earlyAccessN
           <Button
             ref={buttonRef}
             onClick={handleGameStart}
-            className="whitespace-nowrap relative overflow-visible text-base rounded-xl px-4! py-6!"
-            size="lg"
+            className="whitespace-nowrap relative overflow-visible text-[#f2f1ed] font-mono font-semibold text-base bg-gradient-to-b from-zinc-800 to-zinc-900 border-2 border-zinc-700 rounded-lg px-6 py-5 shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)] hover:shadow-[0_2px_0_0_#27272a,0_3px_5px_rgba(0,0,0,0.25)] active:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)]"
             disabled={isAnimating}
           >
             {buttonLabel}
-            <ArrowDownToLine className="ml-1 h-5 w-5" />
+            <ArrowDownToLine className="ml-2 h-5 w-5" />
           </Button>
         </div>
         <p className="text-[13px] text-muted-foreground mt-2">{earlyAccessNote}</p>

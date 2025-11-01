@@ -20,7 +20,7 @@ export default async function AboutPage({ params }: { params: Promise<AboutPageP
       <section className="pt-12 pb-16 px-4 sm:px-8 lg:px-16">
         <div className="mx-auto max-w-4xl">
           <div className="space-y-6 text-left">
-            <h1 className="text-xl font-bold tracking-tight text-zinc-800">{dictionary.about.title}</h1>
+            <h1 className="text-xl font-bold tracking-tight text-zinc-800">Built to benefit everyone</h1>
 
             <div className="text-sm space-y-6 text-zinc-800">
               <div>
