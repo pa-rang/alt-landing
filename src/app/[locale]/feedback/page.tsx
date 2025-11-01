@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
-import { FeedbackForm } from "@/components/feedback-form";
+import { FeedbackForm } from "@/components/FeedbackForm";
 
 type FeedbackPageProps = {
   params: { locale: string };

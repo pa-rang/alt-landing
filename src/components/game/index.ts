@@ -1,3 +1,4 @@
-export { SquareTomatoGame } from "./square-tomato-game";
-export { GameScoreSubmit } from "./score-submit";
-export { GameLeaderboard } from "./leaderboard";
+export { SquareTomatoGame } from "./SquareTomatoGame";
+export { GameScoreSubmit } from "./ScoreSubmit";
+export { GameLeaderboard } from "./Leaderboard";
+export { DownloadButton } from "./DownloadButton";

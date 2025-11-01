@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { GameLeaderboard } from "./leaderboard";
+import { GameLeaderboard } from "./Leaderboard";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
 type LeaderboardBoxProps = {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { DOWNLOAD_THRESHOLD_SCORE } from "@/lib/apple-game";
-import { DownloadButton } from "./download-button";
+import { DownloadButton } from "./DownloadButton";
 
 // GA4 이벤트 추적 함수
 function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {

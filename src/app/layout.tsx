@@ -6,10 +6,10 @@ import Script from "next/script";
 
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
-import { LanguageSwitcher } from "@/components/language-switcher";
-import { FeedbackButton } from "@/components/feedback-button";
-import { JoinUsButton } from "@/components/join-us-button";
-import { HomeIcon } from "@/components/home-icon";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { FeedbackButton } from "@/components/FeedbackButton";
+import { JoinUsButton } from "@/components/JoinUsButton";
+import { HomeIcon } from "@/components/HomeIcon";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 

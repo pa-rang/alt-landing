@@ -15,37 +15,37 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
-import { GameScoreSubmit } from "./score-submit";
-import { LeaderboardBox } from "./leaderboard-box";
-import { DownloadButton } from "./download-button";
+import { GameScoreSubmit } from "./ScoreSubmit";
+import { LeaderboardBox } from "./LeaderboardBox";
+import { DownloadButton } from "./DownloadButton";
 
 // GA4 이벤트 추적 함수들
 function trackGameStart() {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'game_start', {
-      event_category: 'game',
-      event_label: 'game_play_start',
-      timestamp: new Date().toISOString()
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "game_start", {
+      event_category: "game",
+      event_label: "game_play_start",
+      timestamp: new Date().toISOString(),
     });
   }
 }
 
 function trackGameRetry() {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'game_retry', {
-      event_category: 'game',
-      event_label: 'game_retry_during_play',
-      timestamp: new Date().toISOString()
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "game_retry", {
+      event_category: "game",
+      event_label: "game_retry_during_play",
+      timestamp: new Date().toISOString(),
     });
   }
 }
 
 function trackGameRestart() {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'game_restart', {
-      event_category: 'game',
-      event_label: 'game_restart_after_end',
-      timestamp: new Date().toISOString()
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "game_restart", {
+      event_category: "game",
+      event_label: "game_restart_after_end",
+      timestamp: new Date().toISOString(),
     });
   }
 }
@@ -348,18 +348,24 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
               </div>
               <div className="flex items-center gap-2">
                 {gameState === "running" && (
-                  <Button variant="default" onClick={() => {
-                    trackGameRetry();
-                    resetGame();
-                  }}>
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      trackGameRetry();
+                      resetGame();
+                    }}
+                  >
                     {dictionary.retry}
                   </Button>
                 )}
                 {gameState === "ended" && (
-                  <Button variant="default" onClick={() => {
-                    trackGameRestart();
-                    resetGame();
-                  }}>
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      trackGameRestart();
+                      resetGame();
+                    }}
+                  >
                     {dictionary.restart}
                   </Button>
                 )}

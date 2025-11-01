@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { WaitlistDialog } from "./waitlist-dialog";
+import { WaitlistDialog } from "./WaitlistDialog";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 

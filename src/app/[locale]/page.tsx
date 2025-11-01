@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Shield, Languages, Pen, Gift } from "lucide-react";
-import { WaitlistForm } from "@/components/waitlist-form";
-import { FeatureCard } from "@/components/feature-card";
-import { KeyboardKey } from "@/components/keyboard-key";
+import { WaitlistForm } from "@/components/WaitlistForm";
+import { FeatureCard } from "@/components/FeatureCard";
+import { KeyboardKey } from "@/components/KeyboardKey";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 

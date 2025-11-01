@@ -5,7 +5,7 @@ import { ArrowDownToLine } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { Button } from "@/components/ui/button";
-import { WaitlistDialog } from "@/components/waitlist-dialog";
+import { WaitlistDialog } from "@/components/WaitlistDialog";
 import { SquareTomatoGame } from "@/components/game";
 
 // GA4 이벤트 추적 함수
