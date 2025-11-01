@@ -118,6 +118,22 @@ export default async function RootLayout({
     <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-G0XD46659S"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-G0XD46659S');
+            `,
+          }}
+        />
+        <Script
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
