@@ -41,13 +41,6 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
       h2AdditionalClassName: "text-zinc-800",
     },
     {
-      title: dictionary.home.features.realTimeTranslation.title,
-      description: dictionary.home.highlights.realTimeTranslation.description,
-      titleClassName: "",
-      descriptionClassName: "text-zinc-800",
-      h2AdditionalClassName: "text-zinc-800",
-    },
-    {
       title: dictionary.home.highlights.performance.title,
       description: dictionary.home.highlights.performance.description,
       titleClassName: "",
@@ -55,8 +48,13 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
       h2AdditionalClassName: "text-zinc-800",
     },
     {
+      title: dictionary.home.features.realTimeTranslation.title,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
       title: dictionary.home.highlights.online.title,
-      description: dictionary.home.highlights.online.description,
       titleClassName: "",
       descriptionClassName: "text-zinc-800",
       h2AdditionalClassName: "text-zinc-800",
@@ -91,11 +89,13 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
             </div>
 
             {/* Highlights List */}
-            <div className="flex flex-col gap-3 md:gap-4 mt-4 md:mt-6">
+            <div className="flex flex-col gap-2 md:gap-4 mt-4 md:mt-6">
               {highlights.map((item, index) => (
-                <h2 key={index} className={`text-xl md:text-2xl tracking-tight ${item.h2AdditionalClassName || ""}`}>
+                <h2 key={index} className={`text-lg md:text-2xl tracking-tight ${item.h2AdditionalClassName || ""}`}>
                   <span className={`font-semibold ${item.titleClassName}`}># {item.title}</span>
-                  <span className={`ml-3 ${item.descriptionClassName}`}>⏤ {item.description}</span>
+                  {item.description && (
+                    <span className={`ml-3 ${item.descriptionClassName}`}>⏤ {item.description}</span>
+                  )}
                 </h2>
               ))}
             </div>

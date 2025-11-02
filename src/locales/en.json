@@ -1,7 +1,7 @@
 {
   "home": {
     "focusLecture": "Just focus on your lecture",
-    "realTimeNoteTaking": " takes notes and organizes them in real-time",
+    "realTimeNoteTaking": "Alt takes notes and organizes them in real-time",
     "completelyFree": "100% free.",
     "noLoginRequired": " No login or internet required.",
     "aboutUs": "About us",
@@ -35,21 +35,20 @@
       },
       "localAi": {
         "title": "Local AI",
-        "description": "The AI model runs on your PC. It works without an internet, and we don't have servers."
+        "description": "The AI model runs on your PC. We don't have servers - it works offline."
       },
       "privacy": {
-        "description": "All your data is stored on your PC."
+        "description": "All your data is stored only on your PC."
       },
       "realTimeTranslation": {
         "description": "Multilingual translation is supported."
       },
       "performance": {
-        "title": "High Performance",
-        "description": "We've optimized battery consumption and improved accuracy by modifying the AI."
+        "title": "High AI Performance",
+        "description": "Minimized memory usage and battery consumption."
       },
       "online": {
-        "title": "Works with online classes too",
-        "description": "Supports system audio."
+        "title": "Works with online lectures"
       }
     }
   },
