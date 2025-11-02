@@ -27,6 +27,30 @@
         "title": "Completely Free",
         "description": "300 minutes per month limit? Lectures can last hours a day. With alt, use 1,000 hours and pay $0."
       }
+    },
+    "highlights": {
+      "free": {
+        "title": "100% Free",
+        "description": "It's free because there are no server or API costs involved. We didn't even build a payment option."
+      },
+      "localAi": {
+        "title": "Local AI",
+        "description": "The AI model runs on your PC. It works without an internet, and we don't have servers."
+      },
+      "privacy": {
+        "description": "All your data is stored on your PC."
+      },
+      "realTimeTranslation": {
+        "description": "Multilingual translation is supported."
+      },
+      "performance": {
+        "title": "High Performance",
+        "description": "We've optimized battery consumption and improved accuracy by modifying the AI."
+      },
+      "online": {
+        "title": "Works with online classes too",
+        "description": "Supports system audio."
+      }
     }
   },
   "languageSwitcher": {

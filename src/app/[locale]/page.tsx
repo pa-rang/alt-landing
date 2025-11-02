@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { GameLauncher } from "@/components/GameLauncher";
+import { AboutLetter } from "@/components/AboutLetter";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 
@@ -18,8 +18,53 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
 
   const dictionary = await getDictionary(locale);
 
+  const highlights = [
+    {
+      title: dictionary.home.highlights.free.title,
+      description: dictionary.home.highlights.free.description,
+      titleClassName: "bg-gradient-to-r from-orange-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "inline-block",
+    },
+    {
+      title: dictionary.home.highlights.localAi.title,
+      description: dictionary.home.highlights.localAi.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.features.privacy.title,
+      description: dictionary.home.highlights.privacy.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.features.realTimeTranslation.title,
+      description: dictionary.home.highlights.realTimeTranslation.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.highlights.performance.title,
+      description: dictionary.home.highlights.performance.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.highlights.online.title,
+      description: dictionary.home.highlights.online.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-linear-to-b from-background to-muted/30 max-w-7xl mx-auto">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-8 md:pt-18 pb-16 px-4 md:px-8">
         <div className="mx-auto">
@@ -47,53 +92,9 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
 
             {/* Highlights List */}
             <div className="flex flex-col gap-3 md:gap-4 mt-4 md:mt-6">
-              {[
-                {
-                  title: "#만 시간을 써도 무료",
-                  description: "서버, API 비용이 안들기 때문에 가능합니다. 결제도 안 붙였어요.",
-                  titleClassName:
-                    "bg-gradient-to-r from-orange-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "inline-block",
-                },
-                {
-                  title: "#로컬 AI",
-                  description: "AI 모델이 사용자 PC에서 실행됩니다. 인터넷 없어도 동작하고, 저흰 서버도 없습니다.",
-                  titleClassName: "",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "text-zinc-800",
-                },
-                {
-                  title: `#${dictionary.home.features.privacy.title}`,
-                  description: "모든 내용은 사용자 PC에 저장됩니다.",
-                  titleClassName: "",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "text-zinc-800",
-                },
-                {
-                  title: `#${dictionary.home.features.realTimeTranslation.title}`,
-                  description: "영어 수업을 듣는게 너무 고통스러웠어요.",
-                  titleClassName: "",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "text-zinc-800",
-                },
-                {
-                  title: `#높은 성능`,
-                  description: "배터리 소모를 최적화했어요. AI 수정으로 정확도를 높였어요.",
-                  titleClassName: "",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "text-zinc-800",
-                },
-                {
-                  title: `#온라인 수업도 문제없이`,
-                  description: "시스템 오디오를 지원해요.",
-                  titleClassName: "",
-                  descriptionClassName: "text-zinc-800",
-                  h2AdditionalClassName: "text-zinc-800",
-                },
-              ].map((item, index) => (
+              {highlights.map((item, index) => (
                 <h2 key={index} className={`text-xl md:text-2xl tracking-tight ${item.h2AdditionalClassName || ""}`}>
-                  <span className={`font-semibold ${item.titleClassName}`}>{item.title}</span>
+                  <span className={`font-semibold ${item.titleClassName}`}># {item.title}</span>
                   <span className={`ml-3 ${item.descriptionClassName}`}>⏤ {item.description}</span>
                 </h2>
               ))}
@@ -101,7 +102,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
 
             <div className="relative">
               <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
                 <Image
                   src="/alt_product_image.png"
                   alt="AI Transcript Platform Screenshot"
@@ -115,14 +116,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </div>
 
               {/* About us text */}
-              <div className="mt-14">
-                <Link
-                  href={`/${locale}/about`}
-                  className="text-stone-700 text-sm hover:underline hover:text-zinc-700 transition-colors"
-                >
-                  {dictionary.home.aboutUs}
-                </Link>
-              </div>
+              <AboutLetter locale={locale} />
             </div>
           </div>
         </div>

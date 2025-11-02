@@ -27,6 +27,30 @@
         "title": "완전 무료",
         "description": "월 300분 제한? 수업은 하루에도 몇시간하는데 너무 부족합니다. alt는 1,000시간을 써도 0원입니다."
       }
+    },
+    "highlights": {
+      "free": {
+        "title": "만 시간을 써도 무료",
+        "description": "서버, API 비용이 안들기 때문에 가능합니다. 결제도 안 붙였어요."
+      },
+      "localAi": {
+        "title": "로컬 AI",
+        "description": "AI 모델이 사용자 PC에서 실행됩니다. 인터넷 없어도 동작하고, 저흰 서버도 없습니다."
+      },
+      "privacy": {
+        "description": "모든 내용은 사용자 PC에 저장됩니다."
+      },
+      "realTimeTranslation": {
+        "description": "영어 수업을 듣는게 너무 고통스러웠어요."
+      },
+      "performance": {
+        "title": "높은 성능",
+        "description": "배터리 소모를 최적화했어요. AI 수정으로 정확도를 높였어요."
+      },
+      "online": {
+        "title": "온라인 수업도 문제없이",
+        "description": "시스템 오디오를 지원해요."
+      }
     }
   },
   "languageSwitcher": {
