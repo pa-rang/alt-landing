@@ -158,7 +158,7 @@ export default async function RootLayout({
         <div className="min-h-screen flex flex-col">
           <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="mx-auto max-w-7xl">
-              <div className="flex h-14 w-full items-center justify-between px-4 sm:px-8 lg:px-16">
+              <div className="flex h-14 w-full items-center justify-between px-4 md:px-8">
                 <div className="flex items-center space-x-4">
                   <HomeIcon locale={htmlLang as Locale} />
                 </div>

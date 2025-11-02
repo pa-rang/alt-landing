@@ -2,10 +2,16 @@
 
 import { useState, useRef } from "react";
 import { ArrowDownToLine } from "lucide-react";
+import { Sixtyfour } from "next/font/google";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { Button } from "@/components/ui/button";
 import { SquareTomatoGame } from "@/components/game";
+
+const sixtyfour = Sixtyfour({
+  subsets: ["latin"],
+  variable: "--font-sixtyfour",
+});
 
 // GA4 이벤트 추적 함수
 function trackGameStart(locale: string) {
@@ -77,19 +83,13 @@ export function GameLauncher({ locale, gameDictionary, buttonLabel, earlyAccessN
           {!showGame && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
-                <div className="flex flex-col items-center gap-3">
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-800 tracking-tight">
-                    download
-                  </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1200 tracking-tight">
-                    if
-                  </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-1600 tracking-tight">
-                    you
-                  </span>
-                  <span className="text-7xl font-bold text-primary-foreground animate-word-appear animation-delay-2000 tracking-tight">
-                    can
-                  </span>
+                <div
+                  className={`flex flex-col items-center gap-6 text-6xl font-bold text-primary-foreground tracking-tight scale-x-90 ${sixtyfour.className}`}
+                >
+                  <span className="animate-word-appear animation-delay-800">Download</span>
+                  <span className="animate-word-appear animation-delay-1200">if</span>
+                  <span className="animate-word-appear animation-delay-1600">you</span>
+                  <span className="animate-word-appear animation-delay-2000">can</span>
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 {
   "home": {
     "focusLecture": "강의에만 집중하세요.",
-    "realTimeNoteTaking": "가 실시간으로 필기하고, 정리합니다.",
+    "realTimeNoteTaking": "로컬 AI가 실시간으로 필기하고, 핵심을 요약합니다.",
     "completelyFree": "그것도 100% 무료로.",
     "noLoginRequired": " 로그인, 인터넷 아무것도 필요없어요.",
     "aboutUs": "About us",
@@ -12,7 +12,7 @@
     "features": {
       "title": "alt의 핵심 기능",
       "privacy": {
-        "title": "프라이버시",
+        "title": "철저한 보안",
         "description": "모든 내용은 사용자 PC에 저장됩니다. 인터넷이 없어도 동작하며, 저희는 서버도 없습니다."
       },
       "realTimeTranslation": {

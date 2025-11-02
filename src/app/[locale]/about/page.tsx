@@ -16,9 +16,9 @@ export default async function AboutPage({ params }: { params: Promise<AboutPageP
   const dictionary = await getDictionary(locale);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      <section className="pt-12 pb-16 px-4 sm:px-8 lg:px-16">
-        <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen max-w-7xl mx-auto">
+      <section className="pt-12 pb-16 px-4 md:px-8">
+        <div className="max-w-4xl">
           <div className="space-y-6 text-left">
             <h1 className="text-xl font-bold tracking-tight text-zinc-800">Built to benefit everyone</h1>
 
