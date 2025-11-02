@@ -215,7 +215,10 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="text-center mb-4">
-        <div className="mt-2 text-2xl font-bold text-blue-600">{score}점</div>
+        <div className="mt-2 text-2xl font-bold text-blue-600">
+          {score}
+          {dictionary.pointsUnit}
+        </div>
         {bestScore > 0 && (
           <div className="mt-1 text-sm text-gray-500">
             BEST <span className="font-semibold">{bestScore}</span>

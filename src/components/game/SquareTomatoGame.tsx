@@ -483,6 +483,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                       </>
                     )}
                   </div>
+                  {score < DOWNLOAD_THRESHOLD_SCORE && (
+                    <div className="text-sm text-gray-600 mb-3 text-center">{dictionary.gameOverTip}</div>
+                  )}
                   <GameScoreSubmit
                     score={score}
                     bestScore={bestScore}

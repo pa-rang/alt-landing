@@ -140,6 +140,7 @@
     "gameOver": "Game Over",
     "gameOverCongratulations": "Congratulations! You can download alt.",
     "gameOverNeedMorePoints": "Almost there! Just {{points}} more points to download alt.",
+    "gameOverTip": "Tip: Try playing with a friend",
     "finalScore": "Final Score",
     "downloadRequirement": "You need to score more than {{threshold}} points to download alt.",
     "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
@@ -164,6 +165,7 @@
     "scoreSubmit": {
       "title": "Submit to Leaderboard",
       "description": "Submit your score and compete with others!",
+      "pointsUnit": " points",
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
       "organizationLabel": "Organization",
