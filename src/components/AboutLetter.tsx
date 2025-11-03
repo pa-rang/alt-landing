@@ -8,7 +8,7 @@ export function AboutLetter({ locale }: AboutLetterProps) {
   return (
     <div className="mt-20">
       <h3 className="text-2xl font-bold text-zinc-800 mb-5">
-        {locale === "ko" && "KAIST 학생이 직접 필요해서 만든 서비스"}
+        {locale === "ko" && "KAIST 학생이 직접 쓰려고 만든 AI 강의 필기앱"}
       </h3>
       <div className="whitespace-pre-line leading-relaxed tracking-tighter mb-4 font-mono">
         {locale === "ko" ? (
