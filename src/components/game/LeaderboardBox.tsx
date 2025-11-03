@@ -15,7 +15,7 @@ type LeaderboardBoxProps = {
 type LeaderboardTabType = "personal" | "organization";
 
 export function LeaderboardBox({ dictionary, userEmail, userOrganization, refreshTrigger }: LeaderboardBoxProps) {
-  const [activeTab, setActiveTab] = useState<LeaderboardTabType>("personal");
+  const [activeTab, setActiveTab] = useState<LeaderboardTabType>("organization");
 
   return (
     <div className="bg-white rounded-lg border shadow-sm flex flex-col h-full">
@@ -25,15 +25,6 @@ export function LeaderboardBox({ dictionary, userEmail, userOrganization, refres
 
       {/* 리더보드 탭 */}
       <div className="flex border-b">
-        <button
-          onClick={() => setActiveTab("personal")}
-          className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-            activeTab === "personal" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
-          )}
-        >
-          {dictionary.tabs.personalLeaderboard}
-        </button>
         <button
           onClick={() => setActiveTab("organization")}
           className={cn(
@@ -45,10 +36,19 @@ export function LeaderboardBox({ dictionary, userEmail, userOrganization, refres
         >
           {dictionary.tabs.organizationLeaderboard}
         </button>
+        <button
+          onClick={() => setActiveTab("personal")}
+          className={cn(
+            "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+            activeTab === "personal" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
+          )}
+        >
+          {dictionary.tabs.personalLeaderboard}
+        </button>
       </div>
 
       {/* 리더보드 컨텐츠 */}
-      <div className="px-4 py-4 overflow-auto flex-1">
+      <div className="overflow-auto flex-1">
         {activeTab === "personal" && (
           <GameLeaderboard
             type="personal"

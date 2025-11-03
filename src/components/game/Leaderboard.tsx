@@ -94,7 +94,7 @@ export function GameLeaderboard({
   }
 
   return (
-    <div className="overflow-auto max-h-[400px]">
+    <div className="overflow-auto max-h-[460px]">
       <table className="w-full text-sm">
         <thead className="sticky top-0 bg-gray-50 border-b">
           <tr>
