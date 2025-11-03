@@ -295,7 +295,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
-          <div className="font-semibold text-lg sm:text-xl text-white">{dictionary.title}</div>
+          <div className="font-semibold text-lg sm:text-xl text-white">
+            {dictionary.title.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
+          </div>
           <div className="flex items-center gap-2">
             {score >= DOWNLOAD_THRESHOLD_SCORE && (
               <DownloadButton className="text-gray-900 bg-white hover:bg-white/80" />

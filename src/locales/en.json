@@ -130,7 +130,7 @@
     }
   },
   "game": {
-    "title": "Score over 65 points in the game below to download Alt 🎮",
+    "title": "Score over {{threshold}} points in the game below to download Alt 🎮",
     "close": "Close",
     "start": "Start Game",
     "retry": "Retry",
