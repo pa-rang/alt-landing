@@ -56,13 +56,12 @@ export function AboutLetter({ locale }: AboutLetterProps) {
           </>
         ) : (
           <>
-            {`Alt was started when I saw a friend struggling to follow lectures using a speech-to-text model.
+            {`Alt was started when I saw my friend transcribing and summarizing lectures using a speech-to-text model.
 
-Most AI note-taking apps have time limits — they run out after taking 3–4 lectures.
+Most AI note-taking apps have time limits. They run out after taking 3–4 lectures.
 
-I started with a small project because I thought I could make it easily 
-without knowing what kind of pain was waiting for me.
-It was harder than I thought to achieve high performance while reducing memory usage.
+This started as a small project as I thought it would be easy without knowing what kind of pain was waiting for me.
+It was hard to achieve high performance while reducing memory usage.
 I even made an `}
             <a
               href="https://github.com/altalt-org/Lightning-SimulWhisper"
@@ -74,14 +73,14 @@ I even made an `}
             </a>
             {` (stars appreciated!)
 
-Back when I was taking classes, there weren't tools like this, and studying in English was tough.
-If a service like this had existed, it would've been much easier.
+When I was taking classes, there weren't tools like this, and it was hard to listen while taking notes manually.
+If a service like this had existed, it would've made my life much easier.
 
 We want students around the world to study more easily.
-It is completely free. 
+It is completely free.
 That's possible because we don't run any servers or rely on paid APIs.
 
-Hope it's useful.
+We hope it's useful for you.
 There are still rough edges, so please send lots of `}
             <Link href={`/${locale}/feedback`} className="text-primary/70 hover:text-primary underline">
               feedback
