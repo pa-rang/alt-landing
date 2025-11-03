@@ -64,21 +64,16 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-muted/30 max-w-7xl mx-auto">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 md:pt-18 pb-16 px-4 md:px-8">
+      <section className="relative overflow-hidden pt-12 md:pt-24 pb-16 px-4 md:px-8">
         <div className="mx-auto">
           <div className="grid gap-8 md:gap-12 items-center">
             <div className="flex flex-col justify-center space-y-4 md:space-y-8">
-              <h1 className="text-2xl md:text-5xl tracking-tight leading-tight text-zinc-800">
+              <h1 className="font-semibold text-3xl md:text-5xl tracking-tight leading-tight text-zinc-800">
                 {dictionary.home.focusLecture}
                 <br /> {dictionary.home.realTimeNoteTaking}
               </h1>
 
-              {/* <p className="text-sm sm:text-base text-zinc-700">
-                {dictionary.home.subDescription} <br />
-                {dictionary.home.subDescriptionCta}
-              </p> */}
-
-              <div className="w-full max-w-md mt-2">
+              <div className="w-full max-w-md mt-6">
                 <GameLauncher
                   locale={locale}
                   gameDictionary={dictionary.game}
@@ -86,6 +81,20 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                   earlyAccessNote={dictionary.waitlistForm.earlyAccessNote}
                 />
               </div>
+            </div>
+
+            <div className="md:hidden relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+              <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
+              <Image
+                src="/alt_product_image.png"
+                alt="AI Transcript Platform Screenshot"
+                width={1600}
+                height={964}
+                className="relative z-10 w-full h-auto"
+                quality={100}
+                priority
+                unoptimized={false}
+              />
             </div>
 
             {/* Highlights List */}
@@ -100,8 +109,8 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               ))}
             </div>
 
-            <div className="relative">
-              <div className="relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+            <div className="relative ">
+              <div className="hidden md:block relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
                 <Image
                   src="/alt_product_image.png"
@@ -114,6 +123,8 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                   unoptimized={false}
                 />
               </div>
+
+              <div className="h-6 md:h-20" />
 
               {/* About us text */}
               <AboutLetter locale={locale} />
