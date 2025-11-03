@@ -24,11 +24,11 @@ function mapDatabaseError(
   if (error instanceof DatabaseError) {
     console.error("Database error:", error);
 
-    // 중복 이메일 처리
+    // 중복 사용자 처리 (동일한 닉네임과 organization 조합)
     if (error.code === "23505") {
       return {
         status: 409,
-        message: dictionary.messages.duplicateEmail,
+        message: dictionary.messages.duplicateEmail, // 메시지는 유지하되 실제로는 닉네임+organization 중복
       };
     }
 
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       const fieldErrors: GameScoreFieldErrors = {};
       for (const issue of parseResult.error.issues) {
         const key = issue.path[0];
-        if (key === "email" || key === "organization" || key === "nickname" || key === "score") {
+        if (key === "organization" || key === "nickname" || key === "score") {
           fieldErrors[key] = issue.message;
         }
       }
@@ -84,7 +84,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, organization, nickname, score } = parseResult.data;
+    const { organization, nickname, score } = parseResult.data;
+    
+    // email 필드에 "닉네임 (학교/직장)" 형식으로 저장
+    const email = `${nickname} (${organization})`;
 
     // 기존 점수 확인
     const existingResult = await query<GameScore>(

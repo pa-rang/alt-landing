@@ -7,19 +7,26 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
+    const nickname = searchParams.get("nickname");
+    const organization = searchParams.get("organization");
+
+    // nickname과 organization을 받아서 email 형식으로 변환
+    // 또는 기존 email 형식("닉네임 (학교/직장)")도 지원
+    const email = nickname && organization 
+      ? `${nickname} (${organization})` 
+      : searchParams.get("email");
 
     if (!email) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Email is required",
+          error: "Nickname and organization (or email) are required",
         },
         { status: 400 }
       );
     }
 
-    // 이메일로 최고점수와 닉네임 조회
+    // email 형식("닉네임 (학교/직장)")으로 최고점수와 닉네임 조회
     const result = await query<{ score: number; nickname: string }>(
       `SELECT score, nickname
        FROM public.game_scores
@@ -30,12 +37,12 @@ export async function GET(request: Request) {
     );
 
     const bestScore = result.rows[0]?.score || 0;
-    const nickname = result.rows[0]?.nickname || "";
+    const nicknameFromDb = result.rows[0]?.nickname || "";
 
     return NextResponse.json({
       ok: true,
       bestScore,
-      nickname,
+      nickname: nicknameFromDb,
     });
   } catch (error) {
     console.error("best-score GET failed", error);

@@ -107,7 +107,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
 
   const [showScoreSubmit, setShowScoreSubmit] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
-    email: string;
+    nickname: string;
     organization: string;
     rank: number;
   } | null>(null);
@@ -306,8 +306,8 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, [gameState, resetGame]);
 
-  const handleScoreSubmitSuccess = useCallback((data: { email: string; organization: string; rank: number }) => {
-    setSubmittedData({ email: data.email, organization: data.organization, rank: data.rank });
+  const handleScoreSubmitSuccess = useCallback((data: { nickname: string; organization: string; rank: number }) => {
+    setSubmittedData({ nickname: data.nickname, organization: data.organization, rank: data.rank });
     setShowScoreSubmit(false);
     // 리더보드 새로고침
     setLeaderboardRefreshTrigger((prev) => prev + 1);
@@ -583,7 +583,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
           <div className="flex-1">
             <LeaderboardBox
               dictionary={dictionary}
-              userEmail={submittedData?.email}
+              userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
               userOrganization={submittedData?.organization}
               refreshTrigger={leaderboardRefreshTrigger}
             />

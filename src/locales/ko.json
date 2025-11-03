@@ -192,8 +192,6 @@
         "genericError": "등록에 실패했습니다."
       },
       "validation": {
-        "emailRequired": "이메일을 입력하세요.",
-        "emailInvalid": "올바른 이메일 주소가 아닙니다.",
         "organizationRequired": "학교/직장을 입력하세요.",
         "organizationTooLong": "학교/직장명은 255자 이내로 입력하세요.",
         "nicknameRequired": "닉네임을 입력하세요.",

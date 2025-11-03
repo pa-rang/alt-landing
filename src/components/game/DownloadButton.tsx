@@ -18,13 +18,23 @@ function trackDownloadClick() {
 }
 
 const DEFAULT_DOWNLOAD_URL = "/api/mac";
-const STORAGE_EMAIL_KEY = "squareTomatoGameEmail";
+const STORAGE_NICKNAME_KEY = "squareTomatoGameNickname";
+const STORAGE_ORGANIZATION_KEY = "squareTomatoGameOrganization";
 
-// 로컬스토리지에서 이메일 가져오기
-function getEmailFromStorage(): string | null {
+// 로컬스토리지에서 닉네임과 organization 가져오기
+function getNicknameFromStorage(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return localStorage.getItem(STORAGE_EMAIL_KEY);
+    return localStorage.getItem(STORAGE_NICKNAME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function getOrganizationFromStorage(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(STORAGE_ORGANIZATION_KEY);
   } catch {
     return null;
   }
@@ -37,7 +47,8 @@ type DownloadButtonProps = {
   children?: React.ReactNode;
   downloadUrl?: string;
   icon?: React.ReactNode;
-  email?: string; // 선택적 이메일 prop
+  nickname?: string; // 선택적 닉네임 prop
+  organization?: string; // 선택적 organization prop
 };
 
 export function DownloadButton({
@@ -46,7 +57,8 @@ export function DownloadButton({
   size = "default",
   children = "Download for macOS",
   downloadUrl = DEFAULT_DOWNLOAD_URL,
-  email,
+  nickname,
+  organization,
 }: DownloadButtonProps) {
   const [isLogging, setIsLogging] = useState(false);
 
@@ -62,14 +74,17 @@ export function DownloadButton({
       setIsLogging(true);
 
       // 다운로드 이벤트 로깅 (서버에서 실제 URL을 알아냄)
-      const emailToLog = email || getEmailFromStorage();
+      const nicknameToLog = nickname || getNicknameFromStorage();
+      const organizationToLog = organization || getOrganizationFromStorage();
+      
       await fetch("/api/download/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: emailToLog,
+          nickname: nicknameToLog,
+          organization: organizationToLog,
           downloadUrl: downloadUrlToLog,
         }),
       }).catch((error) => {

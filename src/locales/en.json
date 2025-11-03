@@ -193,8 +193,6 @@
         "genericError": "Failed to submit."
       },
       "validation": {
-        "emailRequired": "Enter your email.",
-        "emailInvalid": "That doesn't look like a valid email address.",
         "organizationRequired": "Enter your organization.",
         "organizationTooLong": "Organization name must be within 255 characters.",
         "nicknameRequired": "Enter your nickname.",

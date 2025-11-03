@@ -70,7 +70,7 @@ async function resolveDownloadUrl(originalUrl: string, baseUrl: string): Promise
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, downloadUrl } = body;
+    const { nickname, organization, downloadUrl } = body;
 
     if (!downloadUrl) {
       return NextResponse.json(
@@ -94,12 +94,15 @@ export async function POST(request: Request) {
     const finalDownloadUrl = await resolveDownloadUrl(downloadUrl, baseUrl);
     const version = extractVersionFromUrl(finalDownloadUrl);
 
+    // email 필드에 "닉네임 (학교/직장)" 형식으로 저장
+    const email = nickname && organization ? `${nickname} (${organization})` : null;
+
     // DB에 다운로드 로그 저장
     const result = await query<DownloadLogEntry>(
       `INSERT INTO public.downloads (email, platform, user_agent, ip_address, download_url, version, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW())
        RETURNING id, email, platform, user_agent, ip_address, download_url, version, created_at`,
-      [email || null, platform, userAgent, ipAddress, finalDownloadUrl, version]
+      [email, platform, userAgent, ipAddress, finalDownloadUrl, version]
     );
 
     const downloadEntry = result.rows[0];

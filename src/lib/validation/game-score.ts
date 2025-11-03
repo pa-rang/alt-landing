@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 export type GameScoreValidationMessages = {
-  emailRequired: string;
-  emailInvalid: string;
   organizationRequired: string;
   organizationTooLong: string;
   nicknameRequired: string;
@@ -15,7 +13,6 @@ export type GameScoreValidationMessages = {
 
 export function createGameScoreSchema(messages: GameScoreValidationMessages) {
   return z.object({
-    email: z.string().trim().min(1, messages.emailRequired).email(messages.emailInvalid),
     organization: z.string().trim().min(1, messages.organizationRequired).max(255, messages.organizationTooLong),
     nickname: z
       .string()
