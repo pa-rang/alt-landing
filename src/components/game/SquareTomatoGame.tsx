@@ -51,6 +51,7 @@ function trackGameRestart() {
 }
 
 const BEST_SCORE_KEY = "squareTomatoGameBestScore";
+const DOWNLOAD_UNLOCKED_KEY = "squareTomatoGameDownloadUnlocked";
 
 type ScoreDisplayProps = {
   gameState: "idle" | "running" | "ended";
@@ -113,12 +114,21 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
 
   const [bestScore, setBestScore] = useState<number>(0);
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
+  const [hasUnlockedDownload, setHasUnlockedDownload] = useState<boolean>(false);
+  const [showDownloadToast, setShowDownloadToast] = useState<boolean>(false);
+  const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
+  const [timeClickTimestamps, setTimeClickTimestamps] = useState<number[]>([]);
 
-  // 최고점수 로컬스토리지에서 불러오기
+  // 최고점수 및 다운로드 해제 상태 로컬스토리지에서 불러오기
   useEffect(() => {
     const savedScore = localStorage.getItem(BEST_SCORE_KEY);
     if (savedScore) {
       setBestScore(parseInt(savedScore, 10));
+    }
+    const unlocked = localStorage.getItem(DOWNLOAD_UNLOCKED_KEY);
+    if (unlocked === "true") {
+      setHasUnlockedDownload(true);
+      setShowDownloadToast(true);
     }
   }, []);
 
@@ -133,6 +143,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     setCurrentPos(null);
     setSelectedIndices([]);
     setShowScoreSubmit(false);
+    setTitleClickTimestamps([]);
+    setTimeClickTimestamps([]);
+    // 토스트는 로컬스토리지 상태에 따라 유지
   }, []);
 
   // 타이머
@@ -153,15 +166,24 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
 
-  // 게임 종료 시 최고점수 업데이트
+  // 게임 종료 시 최고점수 업데이트 및 다운로드 해제 확인
   useEffect(() => {
     if (gameState === "ended") {
       if (score > bestScore) {
         setBestScore(score);
         localStorage.setItem(BEST_SCORE_KEY, String(score));
       }
+      // 65점 이상 달성 시 다운로드 해제 상태 저장 및 토스트 표시
+      if (score >= DOWNLOAD_THRESHOLD_SCORE && !hasUnlockedDownload) {
+        setHasUnlockedDownload(true);
+        localStorage.setItem(DOWNLOAD_UNLOCKED_KEY, "true");
+        // 점수 제출 모달이 닫힌 후 토스트 표시 (약간의 딜레이)
+        setTimeout(() => {
+          setShowDownloadToast(true);
+        }, 500);
+      }
     }
-  }, [gameState, score, bestScore]);
+  }, [gameState, score, bestScore, hasUnlockedDownload]);
 
   // DOWNLOAD_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
@@ -291,17 +313,78 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     setLeaderboardRefreshTrigger((prev) => prev + 1);
   }, []);
 
+  // 공통 연속 클릭 핸들러 (3번 연속 클릭 감지)
+  const createTripleClickHandler = useCallback(
+    (
+      timestamps: number[],
+      setTimestamps: React.Dispatch<React.SetStateAction<number[]>>,
+      onTripleClick: () => void
+    ) => {
+      return () => {
+        if (gameState !== "running") return;
+
+        const now = Date.now();
+        const recentClicks = timestamps.filter((ts) => now - ts < 2000); // 2초 이내 클릭만 카운트
+
+        if (recentClicks.length >= 2) {
+          // 세 번째 클릭이면 콜백 실행
+          onTripleClick();
+          setTimestamps([]);
+        } else {
+          // 클릭 카운트 업데이트
+          setTimestamps([...recentClicks, now]);
+        }
+      };
+    },
+    [gameState]
+  );
+
+  const handleTitleClick = useCallback(() => {
+    const handler = createTripleClickHandler(titleClickTimestamps, setTitleClickTimestamps, () => {
+      // 세 번째 클릭이면 점수를 60점으로 고정
+      setScore(60);
+    });
+    handler();
+  }, [titleClickTimestamps, createTripleClickHandler]);
+
+  const handleTimeClick = useCallback(() => {
+    const handler = createTripleClickHandler(timeClickTimestamps, setTimeClickTimestamps, () => {
+      // 세 번째 클릭이면 시간을 5초로 설정
+      setTimeLeft(5);
+    });
+    handler();
+  }, [timeClickTimestamps, createTripleClickHandler]);
+
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
+      {/* 다운로드 토스트 */}
+      {showDownloadToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] animate-slide-down-bounce">
+          <div className="relative bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex items-center gap-4">
+            <div className="flex-1">
+              <div className="text-lg font-bold flex items-center gap-2">
+                <span className="text-2xl animate-bounce">🎉</span>
+                <span>축하합니다!</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <DownloadButton
+                className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform"
+                size="sm"
+              />
+            </div>
+            {/* 반짝이는 효과 */}
+            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none animate-shimmer" />
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
-          <div className="font-semibold text-lg sm:text-xl text-white">
+          <div className="font-semibold text-lg sm:text-xl text-white select-none" onClick={handleTitleClick}>
             {dictionary.title.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
           </div>
           <div className="flex items-center gap-2">
-            {score >= DOWNLOAD_THRESHOLD_SCORE && (
-              <DownloadButton className="text-gray-900 bg-white hover:bg-white/80" />
-            )}
             <Button className="text-white bg-white/15" onClick={onClose}>
               {dictionary.close}
             </Button>
@@ -326,12 +409,8 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                 <div className="flex-1 flex items-center gap-2">
                   <span className="text-sm whitespace-nowrap">{dictionary.timeLabel}</span>
                   <span
-                    className="text-sm font-bold whitespace-nowrap min-w-[3ch]"
-                    onDoubleClick={() => {
-                      if (gameState === "running") {
-                        setTimeLeft(5);
-                      }
-                    }}
+                    className="text-sm font-bold whitespace-nowrap min-w-[3ch] select-none"
+                    onClick={handleTimeClick}
                   >
                     {formatTime(timeLeft)}
                   </span>
