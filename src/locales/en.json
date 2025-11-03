@@ -169,7 +169,7 @@
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
       "organizationLabel": "Organization",
-      "organizationPlaceholder": "example.com",
+      "organizationPlaceholder": "e.g. KAIST, Google, Naver",
       "nicknameLabel": "Nickname",
       "nicknamePlaceholder": "Your Name",
       "submit": "Submit to Leaderboard",

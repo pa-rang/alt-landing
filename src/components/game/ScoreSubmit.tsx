@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Dictionary } from "@/lib/i18n/dictionary";
+import { cn } from "@/lib/utils";
 
 // GA4 이벤트 추적 함수
 function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {
@@ -41,6 +42,10 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
   const [nickname, setNickname] = useState("");
   const [state, setState] = useState<SubmitState>({ status: "idle" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [organizationSuggestions, setOrganizationSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 로컬스토리지에서 닉네임/학교·직장 불러오기
   useEffect(() => {
@@ -73,6 +78,65 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
       console.error("로컬스토리지에 정보를 저장하지 못했습니다.", error);
     }
   }, [nickname, organization]);
+
+  // organization 검색 (debounce)
+  const fetchOrganizationSuggestions = useCallback(
+    async (search: string) => {
+      if (search.length < 1) {
+        setOrganizationSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      setIsLoadingSuggestions(true);
+      try {
+        const response = await fetch(`/api/game/organizations?search=${encodeURIComponent(search)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.ok) {
+            setOrganizationSuggestions(data.organizations);
+            setShowSuggestions(true);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch organization suggestions:", error);
+      } finally {
+        setIsLoadingSuggestions(false);
+      }
+    },
+    []
+  );
+
+  // organization 입력 변경 핸들러 (debounce)
+  const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setOrganization(value);
+    
+    // 이전 timeout 취소
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // debounce: 300ms 후에 검색
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchOrganizationSuggestions(value);
+    }, 300);
+  };
+
+  // 컴포넌트 언마운트 시 timeout 정리
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // suggestion 선택 핸들러
+  const handleSuggestionSelect = (suggestion: string) => {
+    setOrganization(suggestion);
+    setShowSuggestions(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,21 +264,57 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
         {fieldErrors.nickname && <p className="text-xs text-red-500 mt-1 ml-28">{fieldErrors.nickname}</p>}
       </div>
 
-      <div>
+      <div className="relative">
         <div className="flex items-center gap-3">
           <Label htmlFor="organization" className="w-24 text-sm shrink-0">
             {dictionary.organizationLabel}
           </Label>
-          <Input
-            id="organization"
-            type="text"
-            placeholder={dictionary.organizationPlaceholder || "학교/직장명"}
-            value={organization}
-            onChange={(e) => setOrganization(e.target.value)}
-            disabled={isSubmitting}
-            required
-            className="h-8 text-sm"
-          />
+          <div className="flex-1 relative">
+            <Input
+              id="organization"
+              type="text"
+              placeholder={dictionary.organizationPlaceholder || "예: 카이스트, 구글, 네이버"}
+              value={organization}
+              onChange={handleOrganizationChange}
+              onFocus={() => {
+                if (organizationSuggestions.length > 0) {
+                  setShowSuggestions(true);
+                }
+              }}
+              onBlur={() => {
+                // 약간의 딜레이를 주어 클릭 이벤트가 먼저 발생하도록
+                setTimeout(() => setShowSuggestions(false), 200);
+              }}
+              disabled={isSubmitting}
+              required
+              className="h-8 text-sm"
+            />
+            {showSuggestions && organizationSuggestions.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-auto">
+                {organizationSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={cn(
+                      "w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors",
+                      suggestion === organization && "bg-blue-50"
+                    )}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSuggestionSelect(suggestion);
+                    }}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+            {isLoadingSuggestions && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                검색 중...
+              </div>
+            )}
+          </div>
         </div>
         {fieldErrors.organization && <p className="text-xs text-red-500 mt-1 ml-28">{fieldErrors.organization}</p>}
       </div>

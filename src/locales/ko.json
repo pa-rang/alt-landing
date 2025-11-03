@@ -168,7 +168,7 @@
       "emailLabel": "이메일",
       "emailPlaceholder": "you@example.com",
       "organizationLabel": "학교/직장",
-      "organizationPlaceholder": "example.com",
+      "organizationPlaceholder": "예: 카이스트, 구글, 네이버",
       "nicknameLabel": "닉네임",
       "nicknamePlaceholder": "홍길동",
       "submit": "리더보드 등록하기",
