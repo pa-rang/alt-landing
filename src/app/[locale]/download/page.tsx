@@ -1,0 +1,137 @@
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import { DownloadButton } from "@/components/game/DownloadButton";
+import { AboutLetter } from "@/components/AboutLetter";
+import { isSupportedLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionary";
+
+type DownloadPageProps = {
+  params: { locale: string };
+};
+
+export default async function DownloadPage({ params }: { params: Promise<DownloadPageProps["params"]> }) {
+  const { locale } = await params;
+
+  if (!isSupportedLocale(locale)) {
+    notFound();
+  }
+
+  const dictionary = await getDictionary(locale);
+
+  const highlights = [
+    {
+      title: dictionary.home.highlights.free.title,
+      description: dictionary.home.highlights.free.description,
+      titleClassName: "bg-gradient-to-r from-orange-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "inline-block",
+    },
+    {
+      title: dictionary.home.highlights.localAi.title,
+      description: dictionary.home.highlights.localAi.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.features.privacy.title,
+      description: dictionary.home.highlights.privacy.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.highlights.performance.title,
+      description: dictionary.home.highlights.performance.description,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.features.realTimeTranslation.title,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+    {
+      title: dictionary.home.highlights.online.title,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-linear-to-b from-background to-muted/30 max-w-7xl mx-auto">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-12 md:pt-24 pb-16 px-4 md:px-8">
+        <div className="mx-auto">
+          <div className="grid gap-8 md:gap-12 items-center">
+            <div className="flex flex-col justify-center space-y-4 md:space-y-8">
+              <h1 className="font-semibold text-3xl md:text-5xl tracking-tight leading-tight text-zinc-800">
+                {dictionary.home.focusLecture}
+                <br /> {dictionary.home.realTimeNoteTaking}
+              </h1>
+
+              <div className="w-full max-w-md mt-6">
+                <div className="flex flex-col xs:flex-row gap-2">
+                  <DownloadButton className="whitespace-nowrap relative overflow-visible text-[#f2f1ed] font-mono font-semibold text-base bg-gradient-to-b from-zinc-800 to-zinc-900 border-2 border-zinc-700 rounded-lg px-6 py-5 shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)] hover:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] active:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)]">
+                    {dictionary.waitlistForm.submit.idle}
+                  </DownloadButton>
+                </div>
+                <p className="text-[13px] text-muted-foreground mt-2">{dictionary.waitlistForm.earlyAccessNote}</p>
+              </div>
+            </div>
+
+            <div className="md:hidden relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+              <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
+              <Image
+                src="/alt_product_image.png"
+                alt="AI Transcript Platform Screenshot"
+                width={1600}
+                height={964}
+                className="relative z-10 w-full h-auto"
+                quality={100}
+                priority
+                unoptimized={false}
+              />
+            </div>
+
+            {/* Highlights List */}
+            <div className="flex flex-col gap-2 md:gap-4 mt-4 md:mt-6">
+              {highlights.map((item, index) => (
+                <h2 key={index} className={`text-lg md:text-2xl tracking-tight ${item.h2AdditionalClassName || ""}`}>
+                  <span className={`font-semibold ${item.titleClassName}`}># {item.title}</span>
+                  {item.description && (
+                    <span className={`ml-3 ${item.descriptionClassName}`}>⏤ {item.description}</span>
+                  )}
+                </h2>
+              ))}
+            </div>
+
+            <div className="relative ">
+              <div className="hidden md:block relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+                <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
+                <Image
+                  src="/alt_product_image.png"
+                  alt="AI Transcript Platform Screenshot"
+                  width={1600}
+                  height={964}
+                  className="relative z-10 w-full h-auto"
+                  quality={100}
+                  priority
+                  unoptimized={false}
+                />
+              </div>
+
+              <div className="h-6 md:h-20" />
+
+              {/* About us text */}
+              <AboutLetter locale={locale} />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
