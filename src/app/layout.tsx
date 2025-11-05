@@ -10,6 +10,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { JoinUsButton } from "@/components/JoinUsButton";
 import { HomeIcon } from "@/components/HomeIcon";
+import { GameLinkButton } from "@/components/GameLinkButton";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -114,6 +115,18 @@ export default async function RootLayout({
     return acc;
   }, {} as Record<Locale, string>);
 
+  // 각 locale의 다운로드 게임 버튼 라벨 가져오기
+  const gameLabels = await Promise.all(
+    SUPPORTED_LOCALES.map(async (loc) => {
+      const dict = await getDictionary(loc);
+      return { locale: loc, label: dict.game.downloadGameButton };
+    })
+  );
+  const gameButtonLabels = gameLabels.reduce((acc, { locale, label }) => {
+    acc[locale] = label;
+    return acc;
+  }, {} as Record<Locale, string>);
+
   return (
     <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -163,6 +176,7 @@ export default async function RootLayout({
                   <HomeIcon locale={htmlLang as Locale} />
                 </div>
                 <div className="flex items-center space-x-2">
+                  <GameLinkButton locale={htmlLang as Locale} dictionary={dictionary.game} labels={gameButtonLabels} />
                   <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} labels={labels} />
                   <JoinUsButton locale={htmlLang as Locale} />
                   <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />

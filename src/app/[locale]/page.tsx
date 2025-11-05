@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { GameLauncher } from "@/components/GameLauncher";
+import { DownloadButton } from "@/components/game/DownloadButton";
 import { AboutLetter } from "@/components/AboutLetter";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -74,12 +74,12 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </h1>
 
               <div className="w-full max-w-md mt-6">
-                <GameLauncher
-                  locale={locale}
-                  gameDictionary={dictionary.game}
-                  buttonLabel={dictionary.waitlistForm.submit.idle}
-                  earlyAccessNote={dictionary.waitlistForm.earlyAccessNote}
-                />
+                <div className="flex flex-col xs:flex-row gap-2">
+                  <DownloadButton className="whitespace-nowrap relative overflow-visible text-[#f2f1ed] font-mono font-semibold text-base bg-gradient-to-b from-zinc-800 to-zinc-900 border-2 border-zinc-700 rounded-lg px-6 py-5 shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)] hover:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] active:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)]">
+                    {dictionary.waitlistForm.submit.idle}
+                  </DownloadButton>
+                </div>
+                <p className="text-[13px] text-muted-foreground mt-2">{dictionary.waitlistForm.earlyAccessNote}</p>
               </div>
             </div>
 

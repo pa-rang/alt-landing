@@ -130,6 +130,7 @@
     }
   },
   "game": {
+    "downloadGameButton": "Download Game",
     "title": "Score over {{threshold}} points in the game below to download Alt 🎮",
     "close": "Close",
     "start": "Start Game",
