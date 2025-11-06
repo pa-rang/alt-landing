@@ -9,10 +9,10 @@
  * 실행: npm run generate-keys
  */
 
-const crypto = require("crypto");
+import * as nodeCrypto from "crypto";
 
 function generateKeyPair() {
-  const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+  const { publicKey, privateKey } = nodeCrypto.generateKeyPairSync("rsa", {
     modulusLength: 2048,
     publicKeyEncoding: {
       type: "spki",
