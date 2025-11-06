@@ -7,7 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "apple-test": "ts-node --compiler-options '{\"allowImportingTsExtensions\":true}' scripts/test-apple-game.ts"
+    "apple-test": "ts-node --compiler-options '{\"allowImportingTsExtensions\":true}' scripts/test-apple-game.ts",
+    "generate-keys": "node scripts/generate-encryption-keys.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

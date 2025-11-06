@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import { resolveLocale } from "@/lib/i18n/utils";
 import { createGameScoreSchema, type GameScoreInput, type GameScore } from "@/lib/validation/game-score";
+import { decryptScore } from "@/lib/decryption";
 
 type GameScoreFieldErrors = Partial<Record<keyof GameScoreInput, string>>;
 
@@ -69,8 +70,10 @@ export async function POST(request: Request) {
       const fieldErrors: GameScoreFieldErrors = {};
       for (const issue of parseResult.error.issues) {
         const key = issue.path[0];
-        if (key === "organization" || key === "nickname" || key === "score") {
-          fieldErrors[key] = issue.message;
+        if (key === "organization" || key === "nickname" || key === "encryptedScore") {
+          // 클라이언트에서 기대하는 필드명으로 매핑
+          const mappedKey = key === "encryptedScore" ? "score" : key;
+          fieldErrors[mappedKey as keyof GameScoreFieldErrors] = issue.message;
         }
       }
 
@@ -84,16 +87,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const { organization, nickname, score } = parseResult.data;
-    
+    const { organization, nickname, encryptedScore } = parseResult.data;
+
+    // 암호화된 점수를 복호화
+    let score: number;
+    try {
+      score = decryptScore(encryptedScore);
+    } catch (error) {
+      console.error("Failed to decrypt score:", error);
+      return NextResponse.json(
+        {
+          ok: false,
+          error: dictionary.messages.validationError,
+          fieldErrors: { score: dictionary.validation.scoreInvalid },
+        },
+        { status: 400 }
+      );
+    }
+
+    // 복호화된 점수 검증
+    if (!Number.isInteger(score) || score < 0) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: dictionary.messages.validationError,
+          fieldErrors: { score: dictionary.validation.scoreInvalid },
+        },
+        { status: 400 }
+      );
+    }
+
     // email 필드에 "닉네임 (학교/직장)" 형식으로 저장
     const email = `${nickname} (${organization})`;
 
     // 기존 점수 확인
-    const existingResult = await query<GameScore>(
-      `SELECT score FROM public.game_scores WHERE email = $1`,
-      [email]
-    );
+    const existingResult = await query<GameScore>(`SELECT score FROM public.game_scores WHERE email = $1`, [email]);
     const previousScore = existingResult.rows[0]?.score;
 
     // UPSERT: 이메일이 이미 존재하면 정보를 덮어쓰기

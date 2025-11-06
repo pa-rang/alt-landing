@@ -20,12 +20,7 @@ export function createGameScoreSchema(messages: GameScoreValidationMessages) {
       .min(1, messages.nicknameRequired)
       .max(100, messages.nicknameTooLong)
       .regex(/^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s_-]+$/, messages.nicknameInvalid),
-    score: z
-      .number({
-        message: messages.scoreInvalid,
-      })
-      .int({ message: messages.scoreInvalid })
-      .nonnegative({ message: messages.scoreNegative }),
+    encryptedScore: z.string().min(1, messages.scoreRequired), // 암호화된 점수는 문자열로 받음
   });
 }
 

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { cn } from "@/lib/utils";
+import { encryptScore } from "@/lib/encryption";
 
 // GA4 이벤트 추적 함수
 function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {
@@ -145,13 +146,16 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
     setState({ status: "submitting" });
 
     try {
+      // 점수를 암호화
+      const encryptedScore = await encryptScore(score);
+
       const response = await fetch("/api/game/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           organization,
           nickname,
-          score,
+          encryptedScore, // 암호화된 점수 전송
         }),
       });
 
