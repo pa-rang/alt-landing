@@ -14,7 +14,7 @@ function getPrivateKey(): crypto.KeyObject {
     try {
       // PEM 형식의 개인키를 파싱
       privateKey = crypto.createPrivateKey(keyString);
-    } catch (error) {
+    } catch {
       // 환경변수가 없으면 기본 키 쌍 생성 및 사용
       const keyPair = generateDefaultKeyPair();
       privateKey = crypto.createPrivateKey(keyPair.privateKey);
@@ -49,7 +49,7 @@ export function getPublicKey(): string {
   return publicKeyObj.export({
     type: "spki",
     format: "pem",
-  });
+  }) as string;
 }
 
 /**
