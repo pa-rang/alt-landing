@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/i18n/dictionary";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { JoinUsButton } from "@/components/JoinUsButton";
+import { JoinCommunityButton } from "@/components/JoinCommunityButton";
 import { HomeIcon } from "@/components/HomeIcon";
 import { GameLinkButton } from "@/components/GameLinkButton";
 import { Toaster } from "@/components/ui/sonner";
@@ -177,6 +178,7 @@ export default async function RootLayout({
                 </div>
                 <div className="flex items-center space-x-2">
                   <GameLinkButton locale={htmlLang as Locale} dictionary={dictionary.game} labels={gameButtonLabels} />
+                  <JoinCommunityButton locale={htmlLang as Locale} />
                   <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} labels={labels} />
                   <JoinUsButton locale={htmlLang as Locale} />
                   <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
