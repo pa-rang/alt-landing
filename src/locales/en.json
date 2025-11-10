@@ -63,7 +63,7 @@
   "waitlistForm": {
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
-    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon (M1-5 MacBooks)",
+    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon",
     "platformLabel": "Platform",
     "platformOptions": {
       "mac": "Mac",

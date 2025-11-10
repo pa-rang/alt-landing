@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { DownloadButton } from "@/components/game/DownloadButton";
 import { AboutLetter } from "@/components/AboutLetter";
+import { CopyableCode } from "@/components/CopyableCode";
+import { CopyableInlineCode } from "@/components/CopyableInlineCode";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 
@@ -73,11 +75,24 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
                 <br /> {dictionary.home.realTimeNoteTaking}
               </h1>
 
-              <div className="w-full max-w-md mt-6">
-                <div className="flex flex-col xs:flex-row gap-2">
+              <div className="w-full max-w-md mt-10">
+                {/* 모바일: inline code block 사용 */}
+                <div className="md:hidden flex flex-col items-start gap-3">
                   <DownloadButton className="whitespace-nowrap relative overflow-visible text-[#f2f1ed] font-mono font-semibold text-base bg-gradient-to-b from-zinc-800 to-zinc-900 border-2 border-zinc-700 rounded-lg px-6 py-5 shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)] hover:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] active:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)]">
                     {dictionary.waitlistForm.submit.idle}
                   </DownloadButton>
+                  <span className="text-zinc-600 font-medium text-[13px]">
+                    or <CopyableInlineCode code="brew install --cask altalt-org/alt/alt" />
+                  </span>
+                </div>
+
+                {/* 데스크탑: CopyableCode 사용 */}
+                <div className="hidden md:flex md:flex-row items-center gap-3">
+                  <DownloadButton className="whitespace-nowrap relative overflow-visible text-[#f2f1ed] font-mono font-semibold text-base bg-gradient-to-b from-zinc-800 to-zinc-900 border-2 border-zinc-700 rounded-lg px-6 py-5 shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)] hover:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] active:shadow-[inset_0_2px_3px_rgba(0,0,0,0.4)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_3px_0_0_#27272a,0_4px_6px_rgba(0,0,0,0.3)]">
+                    {dictionary.waitlistForm.submit.idle}
+                  </DownloadButton>
+                  <span className="text-zinc-600 font-medium">or</span>
+                  <CopyableCode code="brew install --cask altalt-org/alt/alt" />
                 </div>
                 <p className="text-[13px] text-muted-foreground mt-2">{dictionary.waitlistForm.earlyAccessNote}</p>
               </div>

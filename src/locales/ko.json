@@ -62,7 +62,7 @@
   "waitlistForm": {
     "emailLabel": "이메일",
     "emailPlaceholder": "you@example.com",
-    "earlyAccessNote": "MacOS 13.3 이상, Apple Silicon (M1-5 MacBooks) 전용",
+    "earlyAccessNote": "Requires macOS 13.3+ with Apple Silicon",
     "platformLabel": "플랫폼",
     "platformOptions": {
       "mac": "Mac",
