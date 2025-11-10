@@ -6,12 +6,7 @@ import Script from "next/script";
 
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { FeedbackButton } from "@/components/FeedbackButton";
-import { JoinUsButton } from "@/components/JoinUsButton";
-import { JoinCommunityButton } from "@/components/JoinCommunityButton";
-import { HomeIcon } from "@/components/HomeIcon";
-import { GameLinkButton } from "@/components/GameLinkButton";
+import { Header } from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -170,22 +165,12 @@ export default async function RootLayout({
           }}
         />
         <div className="min-h-screen flex flex-col">
-          <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="mx-auto max-w-7xl">
-              <div className="flex h-14 w-full items-center justify-between px-4 md:px-8">
-                <div className="flex items-center space-x-4">
-                  <HomeIcon locale={htmlLang as Locale} />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <GameLinkButton locale={htmlLang as Locale} dictionary={dictionary.game} labels={gameButtonLabels} />
-                  <JoinCommunityButton locale={htmlLang as Locale} />
-                  <FeedbackButton locale={htmlLang as Locale} dictionary={dictionary.feedback} labels={labels} />
-                  <JoinUsButton locale={htmlLang as Locale} />
-                  <LanguageSwitcher locale={htmlLang as Locale} dictionary={dictionary.languageSwitcher} />
-                </div>
-              </div>
-            </div>
-          </header>
+          <Header
+            locale={htmlLang as Locale}
+            dictionary={dictionary}
+            gameButtonLabels={gameButtonLabels}
+            feedbackLabels={labels}
+          />
           <main className="flex-1">{children}</main>
         </div>
         <Toaster />
