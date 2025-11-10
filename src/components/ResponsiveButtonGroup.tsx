@@ -278,7 +278,7 @@ export function ResponsiveButtonGroup({ children }: ResponsiveButtonGroupProps) 
                 return (
                   <DropdownMenuItem key={visibleCount + index} asChild>
                     <MenuItemContent {...menuItemProps}>
-                      {icon && <span className="shrink-0">{icon}</span>}
+                      {icon && <span className="shrink-0 rounded-full overflow-hidden">{icon}</span>}
                       <span>{text}</span>
                     </MenuItemContent>
                   </DropdownMenuItem>
