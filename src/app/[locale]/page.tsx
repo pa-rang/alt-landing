@@ -107,7 +107,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
             <div className="md:hidden relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
               <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
               <Image
-                src="/alt_product_image.png"
+                src="/alt_reddit.png"
                 alt="AI Transcript Platform Screenshot"
                 width={1600}
                 height={964}
@@ -134,7 +134,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               <div className="hidden md:block relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
                 <Image
-                  src="/alt_product_image.png"
+                  src="/alt_reddit.png"
                   alt="AI Transcript Platform Screenshot"
                   width={1600}
                   height={964}
