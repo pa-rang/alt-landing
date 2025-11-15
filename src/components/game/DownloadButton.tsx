@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, Loader2 } from "lucide-react";
 
 // GA4 이벤트 추적 함수
 function trackDownloadClick() {
@@ -60,7 +60,7 @@ export function DownloadButton({
   nickname,
   organization,
 }: DownloadButtonProps) {
-  const [isLogging, setIsLogging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDownload = async () => {
     // GA4 이벤트 추적
@@ -69,15 +69,19 @@ export function DownloadButton({
     // 다운로드 URL (리디렉션될 수 있으므로 원본 URL 사용)
     const downloadUrlToLog = downloadUrl;
 
-    try {
-      // 다운로드 로그 기록 시도 (실패해도 다운로드는 진행)
-      setIsLogging(true);
+    // 로딩 상태 시작
+    setIsLoading(true);
 
-      // 다운로드 이벤트 로깅 (서버에서 실제 URL을 알아냄)
+    // 다운로드 즉시 시작 (로그 기록과 독립적으로)
+    window.open(downloadUrl, "_blank");
+
+    // 다운로드 로그 기록 (비동기, 실패해도 다운로드는 이미 진행됨)
+    try {
       const nicknameToLog = nickname || getNicknameFromStorage();
       const organizationToLog = organization || getOrganizationFromStorage();
       
-      await fetch("/api/download/log", {
+      // 로그 기록은 비동기로 처리하고 응답을 기다리지 않음
+      fetch("/api/download/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,12 +96,12 @@ export function DownloadButton({
       });
     } catch (error) {
       console.error("다운로드 로그 기록 실패:", error);
-    } finally {
-      setIsLogging(false);
     }
 
-    // 실제 다운로드 진행
-    window.open(downloadUrl, "_blank");
+    // 짧은 딜레이 후 로딩 상태 해제 (사용자 경험 개선)
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   return (
@@ -107,10 +111,19 @@ export function DownloadButton({
       className={cn(className)}
       onClick={handleDownload}
       type="button"
-      disabled={isLogging}
+      disabled={isLoading}
     >
-      {children}
-      <ArrowDownToLine className="h-4 w-4" />
+      {isLoading ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {children}
+        </>
+      ) : (
+        <>
+          {children}
+          <ArrowDownToLine className="h-4 w-4" />
+        </>
+      )}
     </Button>
   );
 }

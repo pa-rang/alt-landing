@@ -107,8 +107,11 @@ export async function POST(request: Request) {
 
     const downloadEntry = result.rows[0];
 
-    // Slack 알림 전송 (비동기, 실패해도 다운로드는 진행)
-    Promise.resolve().then(() => {
+    // Slack 알림 전송 (완전 비동기, fire-and-forget 방식)
+    // 다운로드 응답을 기다리지 않고 즉시 반환
+    // queueMicrotask를 사용하여 현재 실행 컨텍스트가 끝난 직후 실행되도록 함
+    // setTimeout(..., 0)보다 더 빠르고 효율적이며, 브라우저와 Node.js 모두에서 동작
+    queueMicrotask(() => {
       sendDownloadNotification(downloadEntry).catch((error) => {
         console.error("Slack notification error:", error);
       });
