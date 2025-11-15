@@ -50,6 +50,9 @@
       },
       "online": {
         "title": "Works with online lectures"
+      },
+      "languages": {
+        "title": "Supports 100 Languages"
       }
     }
   },

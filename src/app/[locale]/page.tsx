@@ -61,6 +61,12 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
       descriptionClassName: "text-zinc-800",
       h2AdditionalClassName: "text-zinc-800",
     },
+    {
+      title: dictionary.home.highlights.languages.title,
+      titleClassName: "",
+      descriptionClassName: "text-zinc-800",
+      h2AdditionalClassName: "text-zinc-800",
+    },
   ];
 
   return (
