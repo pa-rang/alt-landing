@@ -7,6 +7,7 @@ import Script from "next/script";
 import { isSupportedLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { Header } from "@/components/Header";
+import { RecruitmentBanner } from "@/components/RecruitmentBanner";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -123,6 +124,8 @@ export default async function RootLayout({
     return acc;
   }, {} as Record<Locale, string>);
 
+  const showBanner = htmlLang === "ko";
+
   return (
     <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -165,11 +168,13 @@ export default async function RootLayout({
           }}
         />
         <div className="min-h-screen flex flex-col">
+          {showBanner && <RecruitmentBanner />}
           <Header
             locale={htmlLang as Locale}
             dictionary={dictionary}
             gameButtonLabels={gameButtonLabels}
             feedbackLabels={labels}
+            hasBanner={showBanner}
           />
           <main className="flex-1">{children}</main>
         </div>
