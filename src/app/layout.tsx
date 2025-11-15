@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "alt - ai lecture notetaker",
+  title: "Alt - AI Lecture Notetaker",
   description:
     "Transform your lectures into organized, searchable notes with AI. alt automatically transcribes, summarizes, and structures your academic content for better learning outcomes.",
   keywords: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   publisher: "alt",
   robots: "index, follow",
   openGraph: {
-    title: "alt - ai lecture notetaker",
+    title: "Alt - AI Lecture Notetaker",
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     type: "website",
@@ -51,13 +51,13 @@ export const metadata: Metadata = {
         url: "https://altalt.io/alt_reddit.png",
         width: 1200,
         height: 630,
-        alt: "alt - ai lecture notetaker",
+        alt: "Alt - AI Lecture Notetaker",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "alt - ai lecture notetaker",
+    title: "Alt - AI Lecture Notetaker",
     description:
       "Transform your lectures into organized, searchable notes with AI. Join the waitlist for early access.",
     creator: "@alt_app",
@@ -149,7 +149,7 @@ export default async function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "alt - ai lecture notetaker",
+              name: "Alt - AI Lecture Notetaker",
               description:
                 "Transform your lectures into organized, searchable notes with AI. alt automatically transcribes, summarizes, and structures your academic content for better learning outcomes.",
               url: "https://altalt.io",
