@@ -223,9 +223,10 @@
     "contact": "Contact:"
   },
   "auth": {
-    "title": "로그인 / 회원가입",
+    "title": "Welcome to Alt",
+    "subtitle": "학생 계정으로 가입 시, 이후 적용될 Edu 혜택을 쉽게 적용받을 수 있습니다.",
     "emailLabel": "이메일",
-    "emailPlaceholder": "you@example.com",
+    "emailPlaceholder": "이메일 주소",
     "otpLabel": "인증 코드",
     "otpPlaceholder": "6자리 코드를 입력하세요",
     "sendCode": "인증 코드 전송",

@@ -41,7 +41,7 @@ export function AuthPageClient({ locale, dictionary }: AuthPageClientProps) {
 
       toast.success(dictionary.auth.messages.codeSent);
       setStep("otp");
-    } catch (error) {
+    } catch {
       toast.error(dictionary.auth.messages.serverError);
     } finally {
       setLoading(false);
@@ -69,7 +69,7 @@ export function AuthPageClient({ locale, dictionary }: AuthPageClientProps) {
       toast.success(dictionary.auth.messages.verificationSuccess);
       router.push(`/${locale}`);
       router.refresh();
-    } catch (error) {
+    } catch {
       toast.error(dictionary.auth.messages.serverError);
     } finally {
       setLoading(false);
@@ -77,27 +77,26 @@ export function AuthPageClient({ locale, dictionary }: AuthPageClientProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6">
-        <h1 className="text-2xl font-bold text-center">
-          {dictionary.auth.title}
-        </h1>
+    <div className="flex items-center justify-center px-4 md:pt-32 pt-20">
+      <div className="w-full max-w-md space-y-10">
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl font-bold">{dictionary.auth.title}</h1>
+          <p className="text-sm text-muted-foreground">{dictionary.auth.subtitle}</p>
+        </div>
 
         {step === "email" ? (
-          <form onSubmit={handleSendCode} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">{dictionary.auth.emailLabel}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={dictionary.auth.emailPlaceholder}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+          <form onSubmit={handleSendCode} className="space-y-3">
+            <Input
+              id="email"
+              type="email"
+              className="h-10 border-none shadow-none bg-[#ecede6]"
+              placeholder={dictionary.auth.emailPlaceholder}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+            />
+            <Button type="submit" className="w-full h-10" disabled={loading}>
               {loading ? dictionary.auth.sending : dictionary.auth.sendCode}
             </Button>
           </form>
@@ -139,4 +138,3 @@ export function AuthPageClient({ locale, dictionary }: AuthPageClientProps) {
     </div>
   );
 }
-

@@ -224,9 +224,10 @@
     "contact": "Contact:"
   },
   "auth": {
-    "title": "Sign In / Sign Up",
+    "title": "Welcome to Alt",
+    "subtitle": "Students who sign up with their student email can easily get Edu benefits that will be applied later.",
     "emailLabel": "Email",
-    "emailPlaceholder": "you@example.com",
+    "emailPlaceholder": "Email address",
     "otpLabel": "Verification Code",
     "otpPlaceholder": "Enter 6-digit code",
     "sendCode": "Send Code",
