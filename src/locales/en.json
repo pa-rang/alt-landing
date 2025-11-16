@@ -222,5 +222,31 @@
     },
     "mission": "Starting with alt, we aim to create tools that maximize individual productivity based on On-Device AI.<br/>If you're interested in building together, let's have a casual coffee chat.",
     "contact": "Contact:"
+  },
+  "auth": {
+    "title": "Sign In / Sign Up",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "otpLabel": "Verification Code",
+    "otpPlaceholder": "Enter 6-digit code",
+    "sendCode": "Send Code",
+    "verifyCode": "Verify",
+    "sending": "Sending...",
+    "verifying": "Verifying...",
+    "backToEmail": "Back to Email",
+    "messages": {
+      "codeSent": "Verification code has been sent to your email.",
+      "verificationSuccess": "Verification successful!",
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "That doesn't look like a valid email address.",
+      "otpRequired": "Enter the verification code.",
+      "otpInvalid": "Invalid verification code.",
+      "genericError": "An error occurred.",
+      "serverError": "A server error occurred."
+    },
+    "header": {
+      "login": "Sign In",
+      "logout": "Sign Out"
+    }
   }
 }

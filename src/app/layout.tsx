@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/i18n/dictionary";
 import { Header } from "@/components/Header";
 import { RecruitmentBanner } from "@/components/RecruitmentBanner";
 import { Toaster } from "@/components/ui/sonner";
+import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -126,6 +127,11 @@ export default async function RootLayout({
 
   const showBanner = htmlLang === "ko";
 
+  // 인증 상태 확인
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
+
   return (
     <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -175,6 +181,7 @@ export default async function RootLayout({
             gameButtonLabels={gameButtonLabels}
             feedbackLabels={labels}
             hasBanner={showBanner}
+            isAuthenticated={isAuthenticated}
           />
           <main className="flex-1">{children}</main>
         </div>

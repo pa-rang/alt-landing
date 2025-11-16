@@ -9,6 +9,7 @@ import { JoinCommunityButton } from "@/components/JoinCommunityButton";
 import { HomeIcon } from "@/components/HomeIcon";
 import { GameLinkButton } from "@/components/GameLinkButton";
 import { ResponsiveButtonGroup } from "@/components/ResponsiveButtonGroup";
+import { AuthButton } from "@/components/AuthButton";
 
 type HeaderProps = {
   locale: Locale;
@@ -16,9 +17,10 @@ type HeaderProps = {
   gameButtonLabels: Record<Locale, string>;
   feedbackLabels: Record<Locale, string>;
   hasBanner?: boolean;
+  isAuthenticated?: boolean;
 };
 
-export function Header({ locale, dictionary, gameButtonLabels, feedbackLabels, hasBanner = false }: HeaderProps) {
+export function Header({ locale, dictionary, gameButtonLabels, feedbackLabels, hasBanner = false, isAuthenticated = false }: HeaderProps) {
   const headerContent = (
     <div className="mx-auto max-w-7xl">
       <div className="flex h-15 w-full items-center justify-between px-4 md:px-8">
@@ -32,6 +34,7 @@ export function Header({ locale, dictionary, gameButtonLabels, feedbackLabels, h
             <FeedbackButton locale={locale} dictionary={dictionary.feedback} labels={feedbackLabels} />
             <JoinUsButton locale={locale} />
           </ResponsiveButtonGroup>
+          <AuthButton locale={locale} dictionary={dictionary} isAuthenticated={isAuthenticated} />
           <LanguageSwitcher locale={locale} dictionary={dictionary.languageSwitcher} />
         </div>
       </div>
