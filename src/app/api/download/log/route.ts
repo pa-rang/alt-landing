@@ -107,20 +107,33 @@ export async function POST(request: Request) {
 
     const downloadEntry = result.rows[0];
 
-    // Slack 알림 전송 (완전 비동기, fire-and-forget 방식)
-    // 다운로드 응답을 기다리지 않고 즉시 반환
-    // queueMicrotask를 사용하여 현재 실행 컨텍스트가 끝난 직후 실행되도록 함
-    // setTimeout(..., 0)보다 더 빠르고 효율적이며, 브라우저와 Node.js 모두에서 동작
-    queueMicrotask(() => {
-      sendDownloadNotification(downloadEntry).catch((error) => {
-        console.error("Slack notification error:", error);
-      });
-    });
-
-    return NextResponse.json({
+    // 응답을 먼저 준비 (빠른 응답 보장)
+    const response = NextResponse.json({
       ok: true,
       downloadId: downloadEntry.id,
     });
+
+    // Slack 알림 전송 (비동기, fire-and-forget)
+    // 응답 반환 전에 Promise를 시작하여 서버리스 환경에서도 실행 보장
+    // 짧은 타임아웃으로 빠른 응답, 알림은 백그라운드에서 계속 진행
+    const notificationPromise = sendDownloadNotification(downloadEntry).catch((error) => {
+      console.error("Slack notification error:", error);
+    });
+
+    // 최대 500ms까지만 대기 (빠른 응답 보장)
+    // 500ms 내 완료되면 그 후 응답 반환, 아니면 타임아웃 후 응답 반환
+    // 알림은 백그라운드에서 계속 진행됨 (Promise가 이미 시작되었으므로)
+    const timeoutPromise = new Promise<void>((resolve) => {
+      setTimeout(() => resolve(), 500);
+    });
+
+    // 둘 중 먼저 완료되는 것을 기다림 (최대 500ms)
+    // await를 통해 Promise가 시작되도록 보장하되, 빠르게 응답 반환
+    await Promise.race([notificationPromise, timeoutPromise]).catch(() => {
+      // 에러는 이미 notificationPromise에서 처리됨
+    });
+
+    return response;
   } catch (error) {
     console.error("download log POST failed", error);
 
