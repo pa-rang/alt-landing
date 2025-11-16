@@ -18,9 +18,18 @@ type HeaderProps = {
   feedbackLabels: Record<Locale, string>;
   hasBanner?: boolean;
   isAuthenticated?: boolean;
+  userEmail?: string | null;
 };
 
-export function Header({ locale, dictionary, gameButtonLabels, feedbackLabels, hasBanner = false, isAuthenticated = false }: HeaderProps) {
+export function Header({
+  locale,
+  dictionary,
+  gameButtonLabels,
+  feedbackLabels,
+  hasBanner = false,
+  isAuthenticated = false,
+  userEmail,
+}: HeaderProps) {
   const headerContent = (
     <div className="mx-auto max-w-7xl">
       <div className="flex h-15 w-full items-center justify-between px-4 md:px-8">
@@ -34,7 +43,7 @@ export function Header({ locale, dictionary, gameButtonLabels, feedbackLabels, h
             <FeedbackButton locale={locale} dictionary={dictionary.feedback} labels={feedbackLabels} />
             <JoinUsButton locale={locale} />
           </ResponsiveButtonGroup>
-          <AuthButton locale={locale} dictionary={dictionary} isAuthenticated={isAuthenticated} />
+          <AuthButton locale={locale} dictionary={dictionary} isAuthenticated={isAuthenticated} userEmail={userEmail} />
           <LanguageSwitcher locale={locale} dictionary={dictionary.languageSwitcher} />
         </div>
       </div>

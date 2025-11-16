@@ -129,8 +129,11 @@ export default async function RootLayout({
 
   // 인증 상태 확인
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const isAuthenticated = !!user;
+  const userEmail = user?.email ?? null;
 
   return (
     <html lang={htmlLang} suppressHydrationWarning>
@@ -182,6 +185,7 @@ export default async function RootLayout({
             feedbackLabels={labels}
             hasBanner={showBanner}
             isAuthenticated={isAuthenticated}
+            userEmail={userEmail}
           />
           <main className="flex-1">{children}</main>
         </div>
