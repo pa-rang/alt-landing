@@ -107,6 +107,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
   if (session.mode === "subscription" && session.payment_status === "paid") {
     data.subscription_status = "active";
+
+    // checkout session에 subscription이 있으면 current_period_end 저장
+    if (session.subscription && typeof session.subscription === "string") {
+      try {
+        const subscription = await stripe.subscriptions.retrieve(session.subscription);
+        if ("current_period_end" in subscription && typeof subscription.current_period_end === "number") {
+          data.current_period_end = new Date(subscription.current_period_end * 1000).toISOString();
+        }
+      } catch (error) {
+        console.error("❌ [WEBHOOK] Failed to retrieve subscription from checkout session:", error);
+      }
+    }
   }
 
   await updateUserProfile({
@@ -120,13 +132,20 @@ async function handleSubscriptionEvent(subscription: Stripe.Subscription, forced
   const customerId = extractCustomerId(subscription.customer);
   const normalizedStatus = forcedStatus ?? normalizeSubscriptionStatus(subscription.status);
 
+  const data: Record<string, unknown> = {
+    stripe_customer_id: customerId ?? undefined,
+    subscription_status: normalizedStatus,
+  };
+
+  // current_period_end 저장 (Stripe는 Unix timestamp로 반환)
+  if ("current_period_end" in subscription && typeof subscription.current_period_end === "number") {
+    data.current_period_end = new Date(subscription.current_period_end * 1000).toISOString();
+  }
+
   await updateUserProfile({
     userId: subscription.metadata?.user_id,
     customerId,
-    data: {
-      stripe_customer_id: customerId ?? undefined,
-      subscription_status: normalizedStatus,
-    },
+    data,
   });
 }
 
@@ -134,11 +153,42 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const customerId = extractCustomerId(invoice.customer);
   if (!customerId) return;
 
+  const data: Record<string, unknown> = {
+    subscription_status: "active",
+  };
+
+  // invoice.subscription이 확장된 객체인 경우 current_period_end 업데이트
+  // 타입 단언을 사용하여 subscription 속성에 접근
+  const invoiceWithSubscription = invoice as Stripe.Invoice & {
+    subscription?: string | Stripe.Subscription | null;
+  };
+
+  if (
+    invoiceWithSubscription.subscription &&
+    typeof invoiceWithSubscription.subscription === "object" &&
+    "current_period_end" in invoiceWithSubscription.subscription
+  ) {
+    const subscription = invoiceWithSubscription.subscription as Stripe.Subscription & {
+      current_period_end?: number;
+    };
+    if (typeof subscription.current_period_end === "number") {
+      data.current_period_end = new Date(subscription.current_period_end * 1000).toISOString();
+    }
+  } else if (invoiceWithSubscription.subscription && typeof invoiceWithSubscription.subscription === "string") {
+    // subscription이 ID만 있는 경우, Stripe API로 조회
+    try {
+      const subscription = await stripe.subscriptions.retrieve(invoiceWithSubscription.subscription);
+      if ("current_period_end" in subscription && typeof subscription.current_period_end === "number") {
+        data.current_period_end = new Date(subscription.current_period_end * 1000).toISOString();
+      }
+    } catch (error) {
+      console.error("❌ [WEBHOOK] Failed to retrieve subscription for invoice:", error);
+    }
+  }
+
   await updateUserProfile({
     customerId,
-    data: {
-      subscription_status: "active",
-    },
+    data,
   });
 }
 
@@ -157,7 +207,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice) {
 // GET 핸들러: 웹훅 엔드포인트가 정상적으로 등록되었는지 확인
 export async function GET() {
   try {
-    const webhookSecret = getWebhookSecret();
+    getWebhookSecret(); // 웹훅 시크릿이 설정되어 있는지 확인
     return NextResponse.json({
       status: "ok",
       message: "Webhook endpoint is accessible",
