@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { PricingPlanCard } from "@/components/PricingPlanCard";
 import { useStripePortal } from "@/hooks/useStripePortal";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
@@ -127,74 +127,18 @@ export default function PricingPageClient({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-3xl border bg-background/50 p-6 shadow-sm sm:p-8">
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{freePlan.name}</p>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-4xl font-semibold">{freePlan.price}</span>
-                <span className="text-sm text-muted-foreground">{freePlan.pricePeriod}</span>
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">{freePlan.description}</p>
-            </div>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              {freePlan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2">
-                  <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-zinc-400" aria-hidden="true" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <Button variant="outline" size="lg" className="w-full rounded-2xl" disabled>
-              {freePlan.cta}
-            </Button>
-          </div>
-        </div>
+        <PricingPlanCard plan={freePlan} />
 
-        <div className="rounded-3xl border border-primary bg-white p-6 shadow-lg sm:p-8">
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary">{proPlan.name}</p>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-4xl font-semibold">{proPlan.price}</span>
-                <span className="text-sm text-muted-foreground">{proPlan.pricePeriod}</span>
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">{proPlan.description}</p>
-            </div>
-
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              {proPlan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2">
-                  <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="space-y-3">
-              {!isSubscribed ? (
-                <Button size="lg" className="w-full rounded-2xl" onClick={handleSubscribe} disabled={isCheckoutLoading}>
-                  {isAuthenticated ? proPlan.ctaSubscribe : proPlan.ctaLogin}
-                </Button>
-              ) : (
-                <>
-                  <Button size="lg" className="w-full rounded-2xl" variant="secondary" disabled>
-                    {proPlan.ctaSubscribed}
-                  </Button>
-                  <Button
-                    size="lg"
-                    className="w-full rounded-2xl"
-                    variant="default"
-                    onClick={handleManageSubscription}
-                    disabled={isPortalLoading}
-                  >
-                    {proPlan.ctaManage}
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+        <PricingPlanCard
+          plan={proPlan}
+          isPro
+          isSubscribed={isSubscribed}
+          isAuthenticated={isAuthenticated}
+          onSubscribe={handleSubscribe}
+          onManageSubscription={handleManageSubscription}
+          isCheckoutLoading={isCheckoutLoading}
+          isPortalLoading={isPortalLoading}
+        />
       </div>
     </div>
   );
