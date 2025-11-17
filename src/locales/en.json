@@ -223,6 +223,47 @@
     "mission": "Starting with alt, we aim to create tools that maximize individual productivity based on On-Device AI.<br/>If you're interested in building together, let's have a casual coffee chat.",
     "contact": "Contact:"
   },
+  "pricing": {
+    "title": "Simple pricing for everyone",
+    "subtitle": "Alt stays free for unlimited local recording. Upgrade to Pro when you need premium AI summaries and better study workflows.",
+    "badge": "MVP",
+    "nav": "Pricing",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "pricePeriod": "Forever free",
+        "description": "Local-first transcription and summaries with no limits.",
+        "cta": "Keep using alt for free",
+        "features": [
+          "Unlimited local recording & summaries",
+          "No login required on desktop app",
+          "Works fully offline"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$4",
+        "pricePeriod": "per month",
+        "description": "Support development and unlock faster AI updates.",
+        "ctaSubscribe": "Subscribe",
+        "ctaSubscribed": "Subscribed",
+        "ctaLogin": "Sign in to subscribe",
+        "ctaManage": "Manage subscription",
+        "features": [
+          "Priority access to new AI models",
+          "Premium lecture summaries & exports",
+          "Early beta access and faster support"
+        ]
+      }
+    },
+    "messages": {
+      "success": "Thanks! Your subscription is now active.",
+      "cancelled": "Checkout was cancelled. You can try again anytime.",
+      "checkoutError": "Unable to start checkout. Please try again.",
+      "portalError": "We couldn't open the billing portal. Try again soon."
+    }
+  },
   "auth": {
     "title": "Welcome to Alt",
     "subtitle": "Students who sign up with their student email can easily get Edu benefits that will be applied later.",
@@ -247,7 +288,8 @@
     },
     "header": {
       "login": "Sign In",
-      "logout": "Sign Out"
+      "logout": "Sign Out",
+      "manageSubscription": "Manage subscription"
     }
   }
 }

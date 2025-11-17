@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleUserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,10 +14,14 @@ type AuthButtonProps = {
   dictionary: Dictionary;
   isAuthenticated: boolean;
   userEmail?: string | null;
+  subscriptionStatus?: string | null;
 };
 
-export function AuthButton({ locale, dictionary, isAuthenticated, userEmail }: AuthButtonProps) {
+const managedStatuses = new Set(["active", "trialing", "past_due"]);
+
+export function AuthButton({ locale, dictionary, isAuthenticated, userEmail, subscriptionStatus }: AuthButtonProps) {
   const router = useRouter();
+  const [isPortalLoading, setPortalLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -30,12 +35,40 @@ export function AuthButton({ locale, dictionary, isAuthenticated, userEmail }: A
         toast.error(data.error || dictionary.auth.messages.genericError);
         return;
       }
-
       router.refresh();
-    } catch (error) {
+    } catch {
       toast.error(dictionary.auth.messages.serverError);
     }
   };
+
+  const handleManageSubscription = async () => {
+    try {
+      setPortalLoading(true);
+      const response = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to open portal");
+      }
+
+      const payload = (await response.json()) as { url?: string };
+      if (!payload.url) {
+        throw new Error("Missing portal url");
+      }
+
+      window.location.href = payload.url;
+    } catch (error) {
+      console.error("❌ [AUTH BUTTON] Portal error:", error);
+      toast.error(dictionary.pricing?.messages.portalError || dictionary.auth.messages.genericError);
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
+  const canManageSubscription = subscriptionStatus ? managedStatuses.has(subscriptionStatus) : false;
 
   if (isAuthenticated && userEmail) {
     const emailPrefix = userEmail.split("@")[0];
@@ -49,6 +82,11 @@ export function AuthButton({ locale, dictionary, isAuthenticated, userEmail }: A
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {canManageSubscription && (
+            <DropdownMenuItem onClick={handleManageSubscription} disabled={isPortalLoading}>
+              {dictionary.auth.header.manageSubscription}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={handleLogout}>{dictionary.auth.header.logout}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

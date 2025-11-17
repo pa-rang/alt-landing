@@ -10,6 +10,7 @@ import { Header } from "@/components/Header";
 import { RecruitmentBanner } from "@/components/RecruitmentBanner";
 import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "@/lib/supabase/server";
+import { query } from "@/lib/db";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -134,6 +135,19 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
   const isAuthenticated = !!user;
   const userEmail = user?.email ?? null;
+  let subscriptionStatus: string | null = null;
+
+  if (user) {
+    try {
+      const result = await query<{ subscription_status: string | null }>(
+        "select subscription_status from user_profiles where id = $1",
+        [user.id]
+      );
+      subscriptionStatus = result.rows[0]?.subscription_status ?? "free";
+    } catch (error) {
+      console.error("❌ [LAYOUT] Failed to load subscription status:", error);
+    }
+  }
 
   return (
     <html lang={htmlLang} suppressHydrationWarning>
@@ -186,6 +200,7 @@ export default async function RootLayout({
             hasBanner={showBanner}
             isAuthenticated={isAuthenticated}
             userEmail={userEmail}
+            subscriptionStatus={subscriptionStatus ?? undefined}
           />
           <main className="flex-1">{children}</main>
         </div>
