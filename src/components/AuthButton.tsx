@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleUserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
 import { toast } from "sonner";
+import { useStripePortal } from "@/hooks/useStripePortal";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
@@ -21,7 +21,7 @@ const managedStatuses = new Set(["active", "trialing", "past_due"]);
 
 export function AuthButton({ locale, dictionary, isAuthenticated, userEmail, subscriptionStatus }: AuthButtonProps) {
   const router = useRouter();
-  const [isPortalLoading, setPortalLoading] = useState(false);
+  const { openPortal, isLoading: isPortalLoading } = useStripePortal({ locale, dictionary });
 
   const handleLogout = async () => {
     try {
@@ -41,33 +41,6 @@ export function AuthButton({ locale, dictionary, isAuthenticated, userEmail, sub
     }
   };
 
-  const handleManageSubscription = async () => {
-    try {
-      setPortalLoading(true);
-      const response = await fetch("/api/stripe/portal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locale }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to open portal");
-      }
-
-      const payload = (await response.json()) as { url?: string };
-      if (!payload.url) {
-        throw new Error("Missing portal url");
-      }
-
-      window.location.href = payload.url;
-    } catch (error) {
-      console.error("❌ [AUTH BUTTON] Portal error:", error);
-      toast.error(dictionary.pricing?.messages.portalError || dictionary.auth.messages.genericError);
-    } finally {
-      setPortalLoading(false);
-    }
-  };
-
   const canManageSubscription = subscriptionStatus ? managedStatuses.has(subscriptionStatus) : false;
 
   if (isAuthenticated && userEmail) {
@@ -83,7 +56,7 @@ export function AuthButton({ locale, dictionary, isAuthenticated, userEmail, sub
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {canManageSubscription && (
-            <DropdownMenuItem onClick={handleManageSubscription} disabled={isPortalLoading}>
+            <DropdownMenuItem onClick={openPortal} disabled={isPortalLoading}>
               {dictionary.auth.header.manageSubscription}
             </DropdownMenuItem>
           )}

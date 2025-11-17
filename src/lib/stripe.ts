@@ -39,10 +39,6 @@ const STRIPE_SECRET_KEY = requireEnv(
   activeConfig.secretKey,
   STRIPE_MODE === "live" ? "STRIPE_LIVE_SECRET_KEY" : "STRIPE_TEST_SECRET_KEY"
 );
-const STRIPE_WEBHOOK_SECRET = requireEnv(
-  activeConfig.webhookSecret,
-  STRIPE_MODE === "live" ? "STRIPE_LIVE_WEBHOOK_SECRET" : "STRIPE_TEST_WEBHOOK_SECRET"
-);
 const STRIPE_PRICE_ID = requireEnv(
   activeConfig.priceId,
   STRIPE_MODE === "live" ? "STRIPE_LIVE_PRICE_ID" : "STRIPE_TEST_PRICE_ID"
@@ -57,7 +53,30 @@ export const stripe = new Stripe(STRIPE_SECRET_KEY, {
 
 export const STRIPE_PUBLISHABLE_KEY = activeConfig.publishableKey;
 export const STRIPE_IS_LIVE = STRIPE_MODE === "live";
-export { STRIPE_WEBHOOK_SECRET };
+
+/**
+ * 웹훅 시크릿을 지연 로드합니다.
+ * 웹훅 라우트에서만 호출되어야 하며, 호출 시점에 환경 변수가 없으면 에러를 던집니다.
+ *
+ * @throws {Error} 웹훅 시크릿이 설정되지 않은 경우
+ */
+export function getWebhookSecret(): string {
+  const webhookSecret = activeConfig.webhookSecret;
+  const envKey = STRIPE_MODE === "live" ? "STRIPE_LIVE_WEBHOOK_SECRET" : "STRIPE_TEST_WEBHOOK_SECRET";
+
+  if (!webhookSecret) {
+    throw new Error(
+      `${envKey} 환경 변수가 설정되어 있지 않습니다.\n\n` +
+        `웹훅 시크릿을 설정하려면:\n` +
+        `1. Stripe CLI를 실행: STRIPE_MODE=${STRIPE_MODE} node scripts/stripe-webhook.js\n` +
+        `2. 출력된 "whsec_..." 값을 .env 파일의 ${envKey}에 추가\n` +
+        `3. 개발 서버를 재시작하세요.\n\n` +
+        `자세한 내용은 README.md의 "Stripe 웹훅 리스너" 섹션을 참고하세요.`
+    );
+  }
+
+  return webhookSecret;
+}
 
 type BuildReturnUrlOptions = {
   locale?: string;

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useStripePortal } from "@/hooks/useStripePortal";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
@@ -12,6 +13,7 @@ type PricingDictionary = Dictionary["pricing"];
 
 type PricingPageClientProps = {
   dictionary: PricingDictionary;
+  fullDictionary: Dictionary;
   locale: Locale;
   isAuthenticated: boolean;
   subscriptionStatus: string;
@@ -19,13 +21,22 @@ type PricingPageClientProps = {
 
 const activeStatuses = new Set(["active", "trialing", "past_due"]);
 
-export default function PricingPageClient({ dictionary, locale, isAuthenticated, subscriptionStatus }: PricingPageClientProps) {
+export default function PricingPageClient({
+  dictionary,
+  fullDictionary,
+  locale,
+  isAuthenticated,
+  subscriptionStatus,
+}: PricingPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasHandledStatus = useRef(false);
 
   const [isCheckoutLoading, setCheckoutLoading] = useState(false);
-  const [isPortalLoading, setPortalLoading] = useState(false);
+  const { openPortal, isLoading: isPortalLoading } = useStripePortal({
+    locale,
+    dictionary: fullDictionary,
+  });
 
   const isSubscribed = useMemo(() => activeStatuses.has(subscriptionStatus ?? "free"), [subscriptionStatus]);
 
@@ -93,39 +104,12 @@ export default function PricingPageClient({ dictionary, locale, isAuthenticated,
     }
   }, [dictionary.messages.checkoutError, isAuthenticated, isSubscribed, locale, router]);
 
-  const handleManageSubscription = useCallback(async () => {
+  const handleManageSubscription = useCallback(() => {
     if (!isSubscribed) {
       return;
     }
-
-    setPortalLoading(true);
-    try {
-      const response = await fetch("/api/stripe/portal", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ locale }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create portal session");
-      }
-
-      const payload = (await response.json()) as { url?: string };
-
-      if (!payload.url) {
-        throw new Error("Missing portal url");
-      }
-
-      window.location.href = payload.url;
-    } catch (error) {
-      console.error("❌ [PRICING] Portal error:", error);
-      toast.error(dictionary.messages.portalError);
-    } finally {
-      setPortalLoading(false);
-    }
-  }, [dictionary.messages.portalError, isSubscribed, locale]);
+    openPortal();
+  }, [isSubscribed, openPortal]);
 
   const freePlan = dictionary.plans.free;
   const proPlan = dictionary.plans.pro;
@@ -215,4 +199,3 @@ export default function PricingPageClient({ dictionary, locale, isAuthenticated,
     </div>
   );
 }
-

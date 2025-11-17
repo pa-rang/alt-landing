@@ -45,6 +45,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <PricingPageClient
           dictionary={dictionary.pricing}
+          fullDictionary={dictionary}
           locale={locale as Locale}
           isAuthenticated={!!user}
           subscriptionStatus={subscriptionStatus}

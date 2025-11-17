@@ -11,7 +11,7 @@ Alt의 마케팅/구독 온보딩을 위한 Next.js 15 + Supabase 기반 애플�
 
 ## 환경 변수
 
-다음 변수를 `.env.local`에 설정해야 합니다.
+다음 변수를 `.env` 파일에 설정해야 합니다.
 
 | Key                                                                                          | 설명                                                 |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
@@ -22,7 +22,7 @@ Alt의 마케팅/구독 온보딩을 위한 Next.js 15 + Supabase 기반 애플�
 | `DATABASE_URL`                                                                               | Supabase/Postgres 연결 문자열 (`sslmode=require`)    |
 | `STRIPE_MODE`                                                                                | `test`(기본) 또는 `live`                             |
 | `STRIPE_TEST_SECRET_KEY` / `STRIPE_LIVE_SECRET_KEY`                                          | Stripe 대시보드에서 발급한 Secret key                |
-| `STRIPE_TEST_WEBHOOK_SECRET` / `STRIPE_LIVE_WEBHOOK_SECRET`                                  | `stripe listen` 혹은 대시보드에서 발급된 웹훅 시크릿 |
+| `STRIPE_TEST_WEBHOOK_SECRET` / `STRIPE_LIVE_WEBHOOK_SECRET`                                  | 웹훅 시크릿 (처음에는 없어도 됨, 아래 가이드 참고)   |
 | `STRIPE_TEST_PRICE_ID` / `STRIPE_LIVE_PRICE_ID`                                              | Pro 플랜 Price ID (`price_xxx`)                      |
 | `NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY` / `NEXT_PUBLIC_STRIPE_LIVE_PUBLISHABLE_KEY` (선택) | Stripe JS가 필요할 때 사용                           |
 
@@ -36,6 +36,45 @@ pnpm dev
 기본적으로 [http://localhost:3000](http://localhost:3000)에서 동작합니다. `NEXT_PUBLIC_APP_URL`을 설정하면 Stripe 리다이렉트 URL도 동일 값을 사용합니다.
 
 ## Stripe 웹훅 리스너
+
+### 처음 설정하는 경우
+
+**중요**: 웹훅 시크릿(`STRIPE_TEST_WEBHOOK_SECRET`)은 처음에는 없어도 서버가 정상적으로 시작됩니다. 웹훅을 테스트할 때만 필요합니다.
+
+1. **개발 서버 실행** (웹훅 시크릿 없이도 가능)
+
+   ```bash
+   pnpm dev
+   ```
+
+2. **다른 터미널에서 Stripe CLI 실행**
+
+   ```bash
+   STRIPE_MODE=test node scripts/stripe-webhook.js
+   ```
+
+3. **웹훅 시크릿 복사**
+
+   - Stripe CLI 실행 시 다음과 같은 출력이 나타납니다:
+
+   ```
+   > Ready! Your webhook signing secret is whsec_xxxxxxxxxxxxx (^C to quit)
+   ```
+
+   - `whsec_...` 값을 복사합니다.
+
+4. **`.env` 파일에 추가**
+
+   ```bash
+   STRIPE_TEST_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxx
+   ```
+
+5. **개발 서버 재시작**
+   - 서버를 중지하고 다시 `pnpm dev`를 실행합니다.
+
+이제 웹훅 이벤트가 정상적으로 처리됩니다.
+
+### 이미 설정된 경우
 
 ```bash
 STRIPE_MODE=test node scripts/stripe-webhook.js

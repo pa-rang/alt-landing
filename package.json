@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:stripe": "concurrently \"pnpm dev\" \"NODE_ENV=development STRIPE_MODE=test node scripts/stripe-webhook.js\" --names \"NEXT,STRIPE\" --prefix-colors \"blue,green\"",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
@@ -43,6 +44,7 @@
     "@types/pg": "^8.15.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4",
