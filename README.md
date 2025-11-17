@@ -5,7 +5,7 @@ Alt의 마케팅/구독 온보딩을 위한 Next.js 15 + Supabase 기반 애플�
 ## 요구 사항
 
 - Node.js 20+
-- npm 10+
+- pnpm
 - Stripe CLI (웹훅 테스트용)
 - Supabase 프로젝트 (Database + Auth)
 
@@ -29,8 +29,8 @@ Alt의 마케팅/구독 온보딩을 위한 Next.js 15 + Supabase 기반 애플�
 ## 개발 서버 실행
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 기본적으로 [http://localhost:3000](http://localhost:3000)에서 동작합니다. `NEXT_PUBLIC_APP_URL`을 설정하면 Stripe 리다이렉트 URL도 동일 값을 사용합니다.
@@ -47,7 +47,7 @@ STRIPE_MODE=test node scripts/stripe-webhook.js
 
 ## 수동 검증 체크리스트
 
-1. `npm run dev`로 앱을 실행합니다.
+1. `pnpm dev`로 앱을 실행합니다.
 2. 다른 터미널에서 `STRIPE_MODE=test node scripts/stripe-webhook.js`를 실행해 Stripe CLI 웹훅을 연결합니다.
 3. Supabase에 가입한 테스트 계정을 만들고 `/en/pricing` 페이지에서 구독 버튼을 눌러 Checkout이 열리는지 확인합니다.
 4. Stripe CLI에서 `stripe trigger checkout.session.completed` 혹은 `stripe trigger customer.subscription.updated`를 실행해 이벤트가 웹훅으로 들어오는지 확인합니다.
