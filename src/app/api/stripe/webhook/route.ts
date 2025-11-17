@@ -17,7 +17,7 @@ const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proces
 
 const stripeStatusMap: Record<string, string> = {
   active: "active",
-  trialing: "trialing",
+  trialing: "active", // trial을 제공하지 않으므로 trialing이 오면 active로 처리
   past_due: "past_due",
   unpaid: "past_due",
   incomplete: "past_due",

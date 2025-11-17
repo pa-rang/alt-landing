@@ -10,7 +10,7 @@
 
 - **`user_profiles` 테이블**
   - `stripe_customer_id`: Stripe 고객 ID 저장
-  - `subscription_status`: 구독 상태 (`free`, `active`, `trialing`, `past_due`, `canceled`)
+  - `subscription_status`: 구독 상태 (`free`, `active`, `past_due`, `canceled`)
 
 - **`stripe_events` 테이블**
   - 모든 웹훅 이벤트를 멱등성 보장을 위해 저장
@@ -67,7 +67,7 @@ Stripe가 다음 이벤트를 전송하면 자동으로 처리됩니다:
 
 - **`customer.subscription.created` / `customer.subscription.updated`**
   - 구독 상태를 `subscription_status`로 동기화
-  - 상태 매핑: `active` → `active`, `trialing` → `trialing`, `past_due` → `past_due`, `canceled` → `canceled`, 기타 → `free`
+  - 상태 매핑: `active` → `active`, `trialing` → `active` (trial 미제공), `past_due` → `past_due`, `canceled` → `canceled`, 기타 → `free`
 
 - **`customer.subscription.deleted`**
   - `subscription_status`를 `canceled`로 설정
@@ -82,7 +82,7 @@ Stripe가 다음 이벤트를 전송하면 자동으로 처리됩니다:
 
 ### 4. 구독 관리 (`/api/stripe/portal`)
 
-- 구독 중인 사용자만 접근 가능 (`subscription_status`가 `active`, `trialing`, `past_due` 중 하나)
+- 구독 중인 사용자만 접근 가능 (`subscription_status`가 `active` 또는 `past_due`)
 - Stripe Customer Portal 세션 생성
 - 사용자가 결제 수단 변경, 구독 취소 등을 직접 처리
 
@@ -208,7 +208,7 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 
 ### 구독/결제 관리 메뉴가 보이지 않음
 
-**원인**: `subscription_status`가 `active`, `trialing`, `past_due` 중 하나가 아닙니다.
+**원인**: `subscription_status`가 `active` 또는 `past_due`가 아닙니다.
 
 **해결 방법**:
 1. `user_profiles` 테이블에서 `subscription_status` 확인

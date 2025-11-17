@@ -17,7 +17,7 @@ type AuthButtonProps = {
   subscriptionStatus?: string | null;
 };
 
-const managedStatuses = new Set(["active", "trialing", "past_due"]);
+const managedStatuses = new Set(["active", "past_due"]);
 
 export function AuthButton({ locale, dictionary, isAuthenticated, userEmail, subscriptionStatus }: AuthButtonProps) {
   const router = useRouter();

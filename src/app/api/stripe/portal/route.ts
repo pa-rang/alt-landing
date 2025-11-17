@@ -10,7 +10,7 @@ type PortalRequestPayload = {
   locale?: string;
 };
 
-const MANAGEABLE_STATUSES = new Set(["active", "trialing", "past_due"]);
+const MANAGEABLE_STATUSES = new Set(["active", "past_due"]);
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as PortalRequestPayload;

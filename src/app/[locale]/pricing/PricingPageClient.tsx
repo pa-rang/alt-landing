@@ -19,7 +19,7 @@ type PricingPageClientProps = {
   subscriptionStatus: string;
 };
 
-const activeStatuses = new Set(["active", "trialing", "past_due"]);
+const activeStatuses = new Set(["active", "past_due"]);
 
 export default function PricingPageClient({
   dictionary,
