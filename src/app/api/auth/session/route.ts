@@ -11,7 +11,6 @@ export async function GET(request: Request) {
     // Authorization 헤더 확인 (일렉트론 앱용)
     const authHeader = request.headers.get("authorization");
     if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.substring(7);
       // 토큰으로 사용자 정보 확인
       // Supabase JWT를 직접 검증하기 위해 Supabase 클라이언트 생성
       const supabase = await createClient();
