@@ -55,8 +55,13 @@ Response:
     "expires_in": 3600
   },
   "user": {
-    "id": "...",
-    "email": "user@example.com"
+    "id": "uuid-string",
+    "email": "user@example.com",
+    "display_name": "사용자 이름" | null,
+    "avatar_url": "https://..." | null,
+    "stripe_customer_id": "cus_xxx" | null,
+    "subscription_status": "free" | "active" | "past_due" | "canceled" | null,
+    "current_period_end": "2024-12-31T23:59:59Z" | null
   }
 }
 또는
@@ -192,15 +197,15 @@ class AuthService {
     }
 
     // 세션 저장
-    if (data.session) {
+    if (data.session && data.user) {
       const session: Session = {
         accessToken: data.session.access_token,
         refreshToken: data.session.refresh_token,
         expiresAt: data.session.expires_at,
-        email: data.user?.email || email,
+        email: data.user.email,
       };
       this.store.set("session", session);
-      return { success: true, session };
+      return { success: true, session, user: data.user };
     }
 
     return { success: false, error: "No session returned" };
