@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { PricingPlanCard } from "@/components/PricingPlanCard";
 import { useStripePortal } from "@/hooks/useStripePortal";
+import { useMagicLinkAuth } from "@/hooks/useMagicLinkAuth";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
@@ -39,6 +40,11 @@ export default function PricingPageClient({
   });
 
   const isSubscribed = useMemo(() => activeStatuses.has(subscriptionStatus ?? "free"), [subscriptionStatus]);
+
+  // Magic Link 인증 처리
+  useMagicLinkAuth({
+    errorMessage: dictionary.messages.checkoutError,
+  });
 
   useEffect(() => {
     if (hasHandledStatus.current) {

@@ -7,7 +7,6 @@ const PUBLIC_FILE = /\.[^\/]+$/;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log("Middleware: pathname =", pathname);
 
   if (
     pathname.startsWith("/_next") ||
@@ -15,7 +14,6 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     PUBLIC_FILE.test(pathname)
   ) {
-    console.log("Middleware: Skipping for system file");
     return NextResponse.next();
   }
 
