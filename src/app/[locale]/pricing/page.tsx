@@ -42,7 +42,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-muted/30">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:py-16">
         <PricingPageClient
           dictionary={dictionary.pricing}
           fullDictionary={dictionary}
@@ -54,4 +54,3 @@ export default async function PricingPage({ params }: PricingPageProps) {
     </div>
   );
 }
-
