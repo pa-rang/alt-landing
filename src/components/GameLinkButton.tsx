@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { Button } from "@/components/ui/button";
@@ -28,35 +27,19 @@ function GameControllerIcon() {
 type GameLinkButtonProps = {
   locale: Locale;
   dictionary: Dictionary["game"];
-  // 각 locale의 다운로드 게임 버튼 라벨
+  // 각 locale의 게임 버튼 라벨
   labels: Record<Locale, string>;
 };
 
 export function GameLinkButton({ locale: initialLocale, dictionary, labels }: GameLinkButtonProps) {
   const pathname = usePathname();
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth <= 480);
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
 
   // URL에서 현재 locale 추출
   const segments = pathname.split("/").filter(Boolean);
   const currentLocale = (segments[0] || initialLocale) as Locale;
 
   // 현재 locale에 맞는 라벨 표시
-  let buttonLabel = labels?.[currentLocale] || dictionary.downloadGameButton;
-
-  // 화면 너비가 480px 이하이면 "다운로드 게임"을 "게임"으로 변경
-  if (isSmallScreen && buttonLabel === "다운로드 게임") {
-    buttonLabel = "게임";
-  }
+  const buttonLabel = labels?.[currentLocale] || dictionary.gameButton;
 
   const handleClick = () => {
     trackGameStart(currentLocale);

@@ -114,11 +114,11 @@ export default async function RootLayout({
     return acc;
   }, {} as Record<Locale, string>);
 
-  // 각 locale의 다운로드 게임 버튼 라벨 가져오기
+  // 각 locale의 게임 버튼 라벨 가져오기
   const gameLabels = await Promise.all(
     SUPPORTED_LOCALES.map(async (loc) => {
       const dict = await getDictionary(loc);
-      return { locale: loc, label: dict.game.downloadGameButton };
+      return { locale: loc, label: dict.game.gameButton };
     })
   );
   const gameButtonLabels = gameLabels.reduce((acc, { locale, label }) => {

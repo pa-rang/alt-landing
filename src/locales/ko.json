@@ -132,7 +132,7 @@
     }
   },
   "game": {
-    "downloadGameButton": "다운로드 게임",
+    "gameButton": "게임",
     "title": "아래 게임에서 {{threshold}}점을 넘어야 Alt를 다운받을 수 있어요 🎮",
     "close": "닫기",
     "start": "게임 시작",
@@ -234,11 +234,7 @@
         "pricePeriod": "영원히 무료",
         "description": "로컬에서 돌아가는 기본 기능은 모두 무료입니다.",
         "cta": "지금도 계속 무료로 쓰기",
-        "features": [
-          "로컬에서 무제한 필기 · 요약",
-          "데스크톱 앱은 로그인 없이 바로 실행",
-          "인터넷이 없어도 100% 동작"
-        ]
+        "features": ["로컬에서 무제한 필기 · 요약", "데스크톱 앱은 로그인 없이 바로 실행", "인터넷이 없어도 100% 동작"]
       },
       "pro": {
         "name": "Pro",
@@ -260,7 +256,9 @@
       "success": "구독이 시작되었습니다. 고마워요!",
       "cancelled": "결제를 취소했습니다. 언제든 다시 시도할 수 있어요.",
       "checkoutError": "결제 세션을 생성하지 못했습니다. 잠시 후 다시 시도해주세요.",
-      "portalError": "Stripe 포털을 열지 못했어요. 잠시 후 다시 시도해주세요."
+      "portalError": "Stripe 포털을 열지 못했어요. 잠시 후 다시 시도해주세요.",
+      "successModalDescription": "Alt 앱을 실행하고 로그인을 해주세요.",
+      "successModalConfirm": "확인"
     }
   },
   "auth": {

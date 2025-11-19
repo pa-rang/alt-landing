@@ -133,7 +133,7 @@
     }
   },
   "game": {
-    "downloadGameButton": "Download Game",
+    "gameButton": "Game",
     "title": "Score over {{threshold}} points in the game below to download Alt 🎮",
     "close": "Close",
     "start": "Start Game",
@@ -235,11 +235,7 @@
         "pricePeriod": "Forever free",
         "description": "Local-first transcription and summaries with no limits.",
         "cta": "Keep using alt for free",
-        "features": [
-          "Unlimited local recording & summaries",
-          "No login required on desktop app",
-          "Works fully offline"
-        ]
+        "features": ["Unlimited local recording & summaries", "No login required on desktop app", "Works fully offline"]
       },
       "pro": {
         "name": "Pro",
@@ -261,7 +257,9 @@
       "success": "Thanks! Your subscription is now active.",
       "cancelled": "Checkout was cancelled. You can try again anytime.",
       "checkoutError": "Unable to start checkout. Please try again.",
-      "portalError": "We couldn't open the billing portal. Try again soon."
+      "portalError": "We couldn't open the billing portal. Try again soon.",
+      "successModalDescription": "Please launch the Alt app and sign in.",
+      "successModalConfirm": "OK"
     }
   },
   "auth": {

@@ -187,11 +187,13 @@ export default function PricingPageClient({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center text-2xl">🎉 {dictionary.messages.success}</DialogTitle>
-            <DialogDescription className="text-center pt-2">Alt 앱을 실행하고 로그인을 해주세요.</DialogDescription>
+            <DialogDescription className="text-center pt-2">
+              {dictionary.messages.successModalDescription}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
             <Button className="w-full sm:w-auto" onClick={() => setShowSuccessModal(false)}>
-              확인
+              {dictionary.messages.successModalConfirm}
             </Button>
           </DialogFooter>
         </DialogContent>
