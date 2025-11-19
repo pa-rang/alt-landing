@@ -227,7 +227,7 @@
     "title": "Simple pricing for everyone",
     "subtitle": "Alt stays free for unlimited local recording. Upgrade to Pro when you need premium AI summaries and better study workflows.",
     "badge": "MVP",
-    "nav": "Pricing",
+    "nav": "Pro",
     "plans": {
       "free": {
         "name": "Free",

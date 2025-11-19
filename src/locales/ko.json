@@ -226,7 +226,7 @@
     "title": "가장 단순한 요금제",
     "subtitle": "Alt는 무제한 로컬 필기/요약 기능을 계속 무료로 제공합니다. 더 빠른 AI 업데이트와 실험 기능은 Pro로 지원해주세요.",
     "badge": "MVP",
-    "nav": "가격",
+    "nav": "Pro",
     "plans": {
       "free": {
         "name": "Free",
