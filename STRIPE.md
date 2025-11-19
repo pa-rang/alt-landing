@@ -9,6 +9,7 @@
 ### 데이터베이스 스키마
 
 - **`user_profiles` 테이블**
+
   - `stripe_customer_id`: Stripe 고객 ID 저장
   - `subscription_status`: 구독 상태 (`free`, `active`, `past_due`, `canceled`)
 
@@ -62,17 +63,21 @@ src/
 Stripe가 다음 이벤트를 전송하면 자동으로 처리됩니다:
 
 - **`checkout.session.completed`**
+
   - `stripe_customer_id` 저장
   - `subscription_status`를 `active`로 설정 (subscription 모드이고 결제 완료된 경우)
 
 - **`customer.subscription.created` / `customer.subscription.updated`**
+
   - 구독 상태를 `subscription_status`로 동기화
   - 상태 매핑: `active` → `active`, `trialing` → `active` (trial 미제공), `past_due` → `past_due`, `canceled` → `canceled`, 기타 → `free`
 
 - **`customer.subscription.deleted`**
+
   - `subscription_status`를 `canceled`로 설정
 
 - **`invoice.paid`**
+
   - `subscription_status`를 `active`로 설정
 
 - **`invoice.payment_failed`**
@@ -86,20 +91,31 @@ Stripe가 다음 이벤트를 전송하면 자동으로 처리됩니다:
 - Stripe Customer Portal 세션 생성
 - 사용자가 결제 수단 변경, 구독 취소 등을 직접 처리
 
+### 5. 환경 간 Customer ID 불일치 자동 복구
+
+Test Mode와 Live Mode(프로덕션)는 데이터가 완전히 격리되어 있어, Test Mode에서 생성된 `stripe_customer_id`는 Live Mode에서 유효하지 않습니다.
+
+- **문제 상황**: 개발 환경(Test Mode)에서 생성된 계정으로 프로덕션(Live Mode)에서 결제 시도 시 `resource_missing` 에러 발생
+- **해결 로직**: `/api/stripe/checkout`에서 `resource_missing` 에러 감지 시:
+  1. 자동으로 현재 환경(Live)에 맞는 새로운 Stripe Customer 생성
+  2. DB의 `stripe_customer_id` 업데이트
+  3. 결제 세션 생성 재시도
+- **개발자 조치**: 별도 조치 불필요 (자동 처리됨)
+
 ## 환경 변수 설정
 
 `.env` 파일에 다음 변수들을 설정해야 합니다:
 
-| 변수명 | 설명 |
-|--------|------|
-| `STRIPE_MODE` | `test` (기본) 또는 `live` |
-| `STRIPE_TEST_SECRET_KEY` | 테스트 모드 Secret Key |
-| `STRIPE_LIVE_SECRET_KEY` | 라이브 모드 Secret Key |
-| `STRIPE_TEST_WEBHOOK_SECRET` | 테스트 모드 웹훅 시크릿 |
-| `STRIPE_LIVE_WEBHOOK_SECRET` | 라이브 모드 웹훅 시크릿 |
-| `STRIPE_TEST_PRICE_ID` | 테스트 모드 Pro 플랜 Price ID |
-| `STRIPE_LIVE_PRICE_ID` | 라이브 모드 Pro 플랜 Price ID |
-| `NEXT_PUBLIC_APP_URL` | 프로덕션 URL (예: `https://altalt.io`) |
+| 변수명                       | 설명                                   |
+| ---------------------------- | -------------------------------------- |
+| `STRIPE_MODE`                | `test` (기본) 또는 `live`              |
+| `STRIPE_TEST_SECRET_KEY`     | 테스트 모드 Secret Key                 |
+| `STRIPE_LIVE_SECRET_KEY`     | 라이브 모드 Secret Key                 |
+| `STRIPE_TEST_WEBHOOK_SECRET` | 테스트 모드 웹훅 시크릿                |
+| `STRIPE_LIVE_WEBHOOK_SECRET` | 라이브 모드 웹훅 시크릿                |
+| `STRIPE_TEST_PRICE_ID`       | 테스트 모드 Pro 플랜 Price ID          |
+| `STRIPE_LIVE_PRICE_ID`       | 라이브 모드 Pro 플랜 Price ID          |
+| `NEXT_PUBLIC_APP_URL`        | 프로덕션 URL (예: `https://altalt.io`) |
 
 ## 로컬 개발 환경 설정
 
@@ -201,6 +217,7 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 **원인**: 웹훅 이벤트가 서버에 도달하지 않았습니다.
 
 **해결 방법**:
+
 1. Stripe CLI가 실행 중인지 확인
 2. `.env`의 `STRIPE_TEST_WEBHOOK_SECRET`이 최신 값인지 확인
 3. Stripe CLI 창에서 이벤트 로그가 나타나는지 확인
@@ -211,6 +228,7 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 **원인**: `subscription_status`가 `active` 또는 `past_due`가 아닙니다.
 
 **해결 방법**:
+
 1. `user_profiles` 테이블에서 `subscription_status` 확인
 2. 웹훅이 정상적으로 처리되었는지 확인 (`stripe_events` 테이블 확인)
 3. 필요시 `stripe trigger customer.subscription.updated`로 수동 동기화
@@ -220,6 +238,7 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 **원인**: `.env`의 웹훅 시크릿이 Stripe CLI에서 발급된 값과 일치하지 않습니다.
 
 **해결 방법**:
+
 1. Stripe CLI를 재시작하여 새로운 `whsec_...` 값 받기
 2. `.env` 파일 업데이트
 3. dev 서버 재시작
@@ -229,8 +248,9 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 **원인**: Stripe CLI가 백엔드와 다른 Stripe 계정을 사용하고 있습니다.
 
 **해결 방법**:
+
 - `scripts/stripe-webhook.js`가 자동으로 `.env`의 API 키를 사용하도록 수정되어 있습니다.
-- 스크립트 실행 시 "Using API key: sk_test_..." 메시지가 나타나는지 확인
+- 스크립트 실행 시 "Using API key: sk*test*..." 메시지가 나타나는지 확인
 - 백엔드에서 사용하는 `STRIPE_TEST_SECRET_KEY`와 동일한지 확인
 
 ## 주의사항
@@ -238,14 +258,17 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 ### ⚠️ 꼭 기억해야 할 것
 
 1. **Stripe CLI와 백엔드가 동일한 Stripe 계정을 사용해야 합니다**
+
    - 다른 계정을 사용하면 로컬 Checkout 이벤트가 절대 도착하지 않습니다
    - `scripts/stripe-webhook.js`가 자동으로 `.env`의 키를 사용하므로 이 문제는 해결되었습니다
 
 2. **웹훅 시크릿을 변경할 때마다 dev 서버를 재시작해야 합니다**
+
    - 새로운 `whsec_...` 값을 받으면 반드시 `.env` 업데이트 후 서버 재시작
    - 그렇지 않으면 모든 웹훅 요청이 서명 검증 실패로 400 에러 반환
 
 3. **`stripe_events` 테이블이 비어있다면 웹훅이 도달하지 않은 것입니다**
+
    - 코드 문제가 아니라 이벤트 전달 경로 문제일 가능성이 높습니다
    - Stripe CLI 로그를 먼저 확인하세요
 
@@ -259,4 +282,3 @@ Vercel 등의 배포 플랫폼에서 다음 환경 변수를 설정:
 - [Stripe Webhooks Guide](https://docs.stripe.com/webhooks.md)
 - [Stripe Customer Portal](https://docs.stripe.com/payments/checkout/custom-success-page.md)
 - [Stripe Testing Guide](https://docs.stripe.com/testing.md)
-
