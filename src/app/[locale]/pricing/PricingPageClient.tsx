@@ -3,10 +3,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 import { PricingPlanCard } from "@/components/PricingPlanCard";
 import { useStripePortal } from "@/hooks/useStripePortal";
 import { useMagicLinkAuth } from "@/hooks/useMagicLinkAuth";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
@@ -34,6 +44,7 @@ export default function PricingPageClient({
   const hasHandledStatus = useRef(false);
 
   const [isCheckoutLoading, setCheckoutLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { openPortal, isLoading: isPortalLoading } = useStripePortal({
     locale,
     dictionary: fullDictionary,
@@ -59,7 +70,32 @@ export default function PricingPageClient({
     hasHandledStatus.current = true;
 
     if (statusParam === "success") {
-      toast.success(dictionary.messages.success);
+      setShowSuccessModal(true);
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        });
+      }, 250);
     } else if (statusParam === "cancelled") {
       toast.info(dictionary.messages.cancelled);
     }
@@ -146,6 +182,20 @@ export default function PricingPageClient({
           isPortalLoading={isPortalLoading}
         />
       </div>
+
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl">🎉 {dictionary.messages.success}</DialogTitle>
+            <DialogDescription className="text-center pt-2">Alt 앱을 실행하고 로그인을 해주세요.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button className="w-full sm:w-auto" onClick={() => setShowSuccessModal(false)}>
+              확인
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
