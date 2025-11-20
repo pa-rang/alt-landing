@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -39,14 +39,10 @@ export function PricingPlanCard({
     ? "text-sm font-semibold uppercase tracking-wide text-primary"
     : "text-sm font-semibold uppercase tracking-wide text-muted-foreground";
 
-  const dotClassName = isPro
-    ? "mt-0.5 h-1.5 w-1.5 rounded-full bg-primary"
-    : "mt-0.5 h-1.5 w-1.5 rounded-full bg-zinc-400";
-
   const renderButton = () => {
     if (!isPro) {
       return (
-        <Button variant="outline" size="lg" className="w-full rounded-2xl" disabled>
+        <Button variant="outline" size="lg" className="w-full rounded-lg" disabled>
           {plan.cta}
         </Button>
       );
@@ -56,7 +52,7 @@ export function PricingPlanCard({
       return (
         <Button
           size="lg"
-          className="w-full rounded-2xl flex items-center"
+          className="w-full rounded-lg flex items-center"
           variant="default"
           onClick={onManageSubscription}
           disabled={isPortalLoading}
@@ -68,7 +64,7 @@ export function PricingPlanCard({
     }
 
     return (
-      <Button size="lg" className="w-full rounded-2xl" onClick={onSubscribe} disabled={isCheckoutLoading}>
+      <Button size="lg" className="w-full rounded-lg" onClick={onSubscribe} disabled={isCheckoutLoading}>
         {isAuthenticated ? plan.ctaSubscribe : plan.ctaLogin}
       </Button>
     );
@@ -79,6 +75,9 @@ export function PricingPlanCard({
       <div className="space-y-4">
         <div>
           <p className={nameClassName}>{plan.name}</p>
+          <div>
+            <p className="text-sm text-muted-foreground">{plan.description}</p>
+          </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-4xl font-semibold">{plan.price}</span>
             <span className="text-sm text-muted-foreground">{plan.pricePeriod}</span>
@@ -87,14 +86,13 @@ export function PricingPlanCard({
 
         {renderButton()}
 
-        <div>
-          <p className="text-sm text-muted-foreground">{plan.description}</p>
-        </div>
-
         <ul className="space-y-3 text-sm text-muted-foreground">
           {plan.features.map((feature) => (
             <li key={feature} className="flex items-start gap-2">
-              <span className={dotClassName} aria-hidden="true" />
+              <Check
+                className={isPro ? "mt-0.5 h-4 w-4 text-primary shrink-0" : "mt-0.5 h-4 w-4 text-zinc-400 shrink-0"}
+                aria-hidden="true"
+              />
               <span>{feature}</span>
             </li>
           ))}
