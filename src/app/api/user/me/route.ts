@@ -4,11 +4,13 @@ import { query } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+type SubscriptionStatus = "free" | "active" | "past_due" | "canceled";
+
 type ProfileData = {
   display_name: string | null;
   avatar_url: string | null;
   stripe_customer_id: string | null;
-  subscription_status: string | null;
+  subscription_status: SubscriptionStatus | null;
   current_period_end: string | null;
 };
 
@@ -53,7 +55,7 @@ export async function GET(request: Request) {
       display_name: profileData?.display_name || null,
       avatar_url: profileData?.avatar_url || null,
       stripe_customer_id: profileData?.stripe_customer_id || null,
-      subscription_status: profileData?.subscription_status || "free",
+      subscription_status: (profileData?.subscription_status || "free") as SubscriptionStatus,
       current_period_end: profileData?.current_period_end || null,
     });
   } catch (error) {
@@ -61,4 +63,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }
-
