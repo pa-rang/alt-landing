@@ -23,13 +23,18 @@ export async function GET(request: Request) {
   try {
     const supabase = await createClient();
 
+    // Bearer 토큰 추출
+    const authHeader = request.headers.get("authorization");
+    const accessToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7).trim() : undefined;
+
     // 사용자 인증 확인 (쿠키 기반 또는 Bearer 토큰)
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = accessToken ? await supabase.auth.getUser(accessToken) : await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("Authentication failed:", authError?.message);
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
