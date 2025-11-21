@@ -6,6 +6,7 @@ import { CopyableCode } from "@/components/CopyableCode";
 import { CopyableInlineCode } from "@/components/CopyableInlineCode";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
+import { accentGradient } from "@/lib/utils";
 
 type HomePageProps = {
   params: { locale: string };
@@ -24,7 +25,7 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
     {
       title: dictionary.home.highlights.free.title,
       description: dictionary.home.highlights.free.description,
-      titleClassName: "bg-gradient-to-r from-orange-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent",
+      titleClassName: accentGradient.text,
       descriptionClassName: "text-zinc-800",
       h2AdditionalClassName: "inline-block",
     },
