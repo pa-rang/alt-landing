@@ -272,7 +272,7 @@
         "description": "For peak performance",
         "ctaSubscribe": "Subscribe",
         "ctaSubscribed": "Subscribed",
-        "ctaLogin": "Sign in to subscribe",
+        "ctaLogin": "Get Pro",
         "ctaManage": "Manage subscription",
         "coreFeatures": ["Includes all Free plan features", "Unlimited latest frontier models"],
         "otherFeatures": [

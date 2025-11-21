@@ -371,6 +371,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
               <DownloadButton
                 className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform"
                 size="sm"
+                location="game"
               />
             </div>
             {/* 반짝이는 효과 */}

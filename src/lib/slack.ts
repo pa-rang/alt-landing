@@ -255,6 +255,7 @@ interface DownloadEntry {
   ip_address?: string | null;
   download_url: string;
   version?: string | null;
+  location?: string | null;
   created_at: string;
 }
 
@@ -266,7 +267,8 @@ export async function sendDownloadNotification(entry: DownloadEntry): Promise<bo
     return false;
   }
 
-  const platformText = entry.platform === "macos" ? "🖥️ macOS" : entry.platform === "windows" ? "🪟 Windows" : entry.platform;
+  const platformText =
+    entry.platform === "macos" ? "🖥️ macOS" : entry.platform === "windows" ? "🪟 Windows" : entry.platform;
   const emailText = entry.email || "익명 사용자";
   const timeText = new Date(entry.created_at).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -308,6 +310,15 @@ export async function sendDownloadNotification(entry: DownloadEntry): Promise<bo
                 {
                   title: "📌 버전",
                   value: entry.version,
+                  short: true,
+                },
+              ]
+            : []),
+          ...(entry.location
+            ? [
+                {
+                  title: "📍 위치",
+                  value: entry.location,
                   short: true,
                 },
               ]

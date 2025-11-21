@@ -49,6 +49,7 @@ type DownloadButtonProps = {
   icon?: React.ReactNode;
   nickname?: string; // 선택적 닉네임 prop
   organization?: string; // 선택적 organization prop
+  location?: string; // 다운로드 버튼 위치 (예: "home", "pricing", "game")
 };
 
 export function DownloadButton({
@@ -59,6 +60,7 @@ export function DownloadButton({
   downloadUrl = DEFAULT_DOWNLOAD_URL,
   nickname,
   organization,
+  location,
 }: DownloadButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -79,7 +81,7 @@ export function DownloadButton({
     try {
       const nicknameToLog = nickname || getNicknameFromStorage();
       const organizationToLog = organization || getOrganizationFromStorage();
-      
+
       // 로그 기록은 비동기로 처리하고 응답을 기다리지 않음
       fetch("/api/download/log", {
         method: "POST",
@@ -90,6 +92,7 @@ export function DownloadButton({
           nickname: nicknameToLog,
           organization: organizationToLog,
           downloadUrl: downloadUrlToLog,
+          location: location,
         }),
       }).catch((error) => {
         console.error("다운로드 로그 기록 실패:", error);

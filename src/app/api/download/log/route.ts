@@ -12,6 +12,7 @@ interface DownloadLogEntry {
   ip_address?: string | null;
   download_url: string;
   version?: string | null;
+  location?: string | null;
   created_at: string;
 }
 
@@ -70,7 +71,7 @@ async function resolveDownloadUrl(originalUrl: string, baseUrl: string): Promise
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nickname, organization, downloadUrl } = body;
+    const { nickname, organization, downloadUrl, location } = body;
 
     if (!downloadUrl) {
       return NextResponse.json(
@@ -99,10 +100,10 @@ export async function POST(request: Request) {
 
     // DB에 다운로드 로그 저장
     const result = await query<DownloadLogEntry>(
-      `INSERT INTO public.downloads (email, platform, user_agent, ip_address, download_url, version, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW())
-       RETURNING id, email, platform, user_agent, ip_address, download_url, version, created_at`,
-      [email, platform, userAgent, ipAddress, finalDownloadUrl, version]
+      `INSERT INTO public.downloads (email, platform, user_agent, ip_address, download_url, version, location, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+       RETURNING id, email, platform, user_agent, ip_address, download_url, version, location, created_at`,
+      [email, platform, userAgent, ipAddress, finalDownloadUrl, version, location || null]
     );
 
     const downloadEntry = result.rows[0];

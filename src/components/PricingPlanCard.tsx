@@ -1,6 +1,10 @@
+"use client";
+
 import { ChevronRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/game/DownloadButton";
+import { accentGradient } from "@/lib/utils";
 
 type Plan = {
   name: string;
@@ -44,15 +48,15 @@ export function PricingPlanCard({
   featureLabels,
 }: PricingPlanCardProps) {
   const nameClassName = isPro
-    ? "text-sm font-semibold uppercase tracking-wide text-primary"
+    ? `text-sm font-semibold uppercase tracking-wide ${accentGradient.text}`
     : "text-sm font-semibold uppercase tracking-wide text-muted-foreground";
 
   const renderButton = () => {
     if (!isPro) {
       return (
-        <Button variant="outline" size="lg" className="w-full rounded-lg" disabled>
+        <DownloadButton variant="outline" size="lg" className="w-full rounded-lg" location="pricing">
           {plan.cta}
-        </Button>
+        </DownloadButton>
       );
     }
 
@@ -82,7 +86,7 @@ export function PricingPlanCard({
     <div className="rounded-2xl bg-white p-4 sm:p-6">
       <div className="space-y-4">
         <div>
-          <p className={nameClassName}>{plan.name}</p>
+          <span className={nameClassName}>{plan.name}</span>
           <div>
             <p className={`mt-1 text-3xl font-light ${isPro ? "text-primary" : "text-foreground"}`}>
               {plan.description}
