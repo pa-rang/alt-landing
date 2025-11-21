@@ -54,6 +54,16 @@
       "languages": {
         "title": "Supports 100 Languages"
       }
+    },
+    "members": {
+      "jeongyeon": {
+        "name": "Jeongyeon Lee",
+        "history": ["(Former) Karrot Frontend Developer, Product Designer", "KAIST Computer Science/Industrial Design"]
+      },
+      "sangwoo": {
+        "name": "Sangwoo Ye",
+        "history": ["KAIST Presidential Fellowship (KPF)", "KAIST Computer Science", "Korea Science Academy Graduate"]
+      }
     }
   },
   "languageSwitcher": {
@@ -224,33 +234,53 @@
     "contact": "Contact:"
   },
   "pricing": {
-    "title": "Simple pricing for everyone",
-    "subtitle": "Alt stays free for unlimited local recording. Upgrade to Pro when you need premium AI summaries and better study workflows.",
+    "title": "If you want to use top-tier models, subscribe to the Pro plan",
+    "subtitle": "Don't misunderstand. Alt is still completely free with no time limits.",
     "badge": "MVP",
     "nav": "Pro",
+    "featureLabels": {
+      "core": "Core Value",
+      "others": "Includes:"
+    },
     "plans": {
       "free": {
         "name": "Free",
         "price": "$0",
-        "pricePeriod": "Forever free",
-        "description": "Local-first transcription and summaries with no limits.",
+        "pricePeriod": "",
+        "description": "For absolute privacy",
+        "highlight": "The AI model runs on your PC",
         "cta": "Keep using alt for free",
-        "features": ["Unlimited local recording & summaries", "No login required on desktop app", "Works fully offline"]
+        "coreFeatures": [
+          "Not a single bit of data leaves your device",
+          "Unlimited Transcript, Summary (No time/count limits)",
+          "Offline environment support"
+        ],
+        "otherFeatures": [
+          "Unlimited Local LLM access",
+          "Support for 100 languages",
+          "Real-time translation",
+          "Online support (Zoom, Google Meet, etc.)",
+          "Meeting minutes and PDF AI summary",
+          "Limited access to low-cost models"
+        ],
+        "features": []
       },
       "pro": {
         "name": "Pro",
         "price": "$4",
-        "pricePeriod": "per month",
-        "description": "Support development and unlock faster AI updates.",
+        "pricePeriod": "/mo",
+        "description": "For peak performance",
         "ctaSubscribe": "Subscribe",
         "ctaSubscribed": "Subscribed",
         "ctaLogin": "Sign in to subscribe",
         "ctaManage": "Manage subscription",
-        "features": [
-          "Priority access to new AI models",
-          "Premium lecture summaries & exports",
-          "Early beta access and faster support"
-        ]
+        "coreFeatures": ["Includes all Free plan features", "Unlimited latest frontier models"],
+        "otherFeatures": [
+          "Instant access to Gemini 3 Pro, GPT 5.1",
+          "No need to download/install heavy models",
+          "Priority access to new features (Early Access)"
+        ],
+        "features": []
       }
     },
     "messages": {

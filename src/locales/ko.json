@@ -223,33 +223,53 @@
     "contact": "Contact:"
   },
   "pricing": {
-    "title": "가장 단순한 요금제",
-    "subtitle": "Alt는 무제한 로컬 필기/요약 기능을 계속 무료로 제공합니다. 더 빠른 AI 업데이트와 실험 기능은 Pro로 지원해주세요.",
+    "title": "만약 최고 성능 모델을 사용하고 싶다면, Pro 플랜을 구독하세요",
+    "subtitle": "오해하지마세요. Alt는 여전히 완전히 무료고, 시간제한이 없습니다.",
     "badge": "MVP",
     "nav": "Pro",
+    "featureLabels": {
+      "core": "핵심 가치",
+      "others": "포함:"
+    },
     "plans": {
       "free": {
         "name": "Free",
         "price": "$0",
-        "pricePeriod": "영원히 무료",
-        "description": "로컬에서 돌아가는 기본 기능은 모두 무료입니다.",
+        "pricePeriod": "",
+        "description": "완벽한 보안을 위해",
+        "highlight": "The AI model runs on your PC",
         "cta": "지금도 계속 무료로 쓰기",
-        "features": ["로컬에서 무제한 필기 · 요약", "데스크톱 앱은 로그인 없이 바로 실행", "인터넷이 없어도 100% 동작"]
+        "coreFeatures": [
+          "데이터도 한톨도 외부로 나가지 않음",
+          "무제한 Transcript, Summary (시간/횟수 제한 없음)",
+          "오프라인 환경 지원"
+        ],
+        "otherFeatures": [
+          "Local LLM 무제한 액세스",
+          "100개 언어 지원",
+          "실시간 번역",
+          "Zoom, Google Meet 등 온라인 지원",
+          "회의록 및 PDF AI 요약",
+          "저가형 모델 제한적 액세스"
+        ],
+        "features": []
       },
       "pro": {
         "name": "Pro",
         "price": "$4",
-        "pricePeriod": "월 구독",
-        "description": "개발을 후원하고 더 빠른 AI 기능을 가장 먼저 써보세요.",
+        "pricePeriod": "/월",
+        "description": "최고의 성능을 위해",
         "ctaSubscribe": "구독하기",
         "ctaSubscribed": "구독 중",
         "ctaLogin": "로그인 후 구독하기",
         "ctaManage": "구독/결제 관리",
-        "features": [
-          "최신 AI 요약 · 하이라이트 우선 적용",
-          "프리미엄 내보내기 및 자료 공유",
-          "베타 기능 · 고객 지원 우선권"
-        ]
+        "coreFeatures": ["Free 플랜의 모든 기능 포함", "최신 프론티어 모델 무제한"],
+        "otherFeatures": [
+          "Gemini 3 Pro, GPT 5.1 즉시 사용",
+          "무거운 모델 다운로드/설치 불필요",
+          "신규 기능 우선 액세스(Early Access)"
+        ],
+        "features": []
       }
     },
     "messages": {

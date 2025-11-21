@@ -158,10 +158,7 @@ export default function PricingPageClient({
 
   return (
     <div className="space-y-12">
-      <div className="text-center space-y-4">
-        <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary/80">
-          {dictionary.badge}
-        </span>
+      <div className="text-left space-y-6">
         <div className="space-y-3">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{dictionary.title}</h1>
           <p className="text-base text-muted-foreground sm:text-lg">{dictionary.subtitle}</p>
@@ -169,10 +166,11 @@ export default function PricingPageClient({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <PricingPlanCard plan={freePlan} />
+        <PricingPlanCard plan={freePlan} featureLabels={dictionary.featureLabels} />
 
         <PricingPlanCard
           plan={proPlan}
+          featureLabels={dictionary.featureLabels}
           isPro
           isSubscribed={isSubscribed}
           isAuthenticated={isAuthenticated}
