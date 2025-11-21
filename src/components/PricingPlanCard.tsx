@@ -83,7 +83,12 @@ export function PricingPlanCard({
   };
 
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-6">
+    <div
+      className="rounded-2xl bg-white p-4 sm:p-6"
+      style={{
+        boxShadow: "0 2px 24px rgba(0, 0, 0, 0.02)",
+      }}
+    >
       <div className="space-y-4">
         <div>
           <span className={nameClassName}>{plan.name}</span>
@@ -100,19 +105,14 @@ export function PricingPlanCard({
 
         {renderButton()}
 
-        <div className="space-y-6">
+        <div className="space-y-6 mt-2">
           {(plan.coreFeatures || plan.features) && (
             <div className="space-y-3">
               {plan.highlight && <p className="text-sm font-semibold text-foreground">{plan.highlight}</p>}
-              <ul className="space-y-3 text-sm text-muted-foreground">
+              <ul className="space-y-3 text-sm text-stone-800">
                 {(plan.coreFeatures || plan.features || []).map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
-                    <Check
-                      className={
-                        isPro ? "mt-0.5 h-4 w-4 text-primary shrink-0" : "mt-0.5 h-4 w-4 text-zinc-400 shrink-0"
-                      }
-                      aria-hidden="true"
-                    />
+                    <Check className="mt-0.5 h-4 w-4 text-stone-800 shrink-0" aria-hidden="true" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -123,15 +123,10 @@ export function PricingPlanCard({
           {plan.otherFeatures && (
             <div className="space-y-3">
               {featureLabels && <p className="text-sm font-semibold text-foreground">{featureLabels.others}</p>}
-              <ul className="space-y-3 text-sm text-muted-foreground">
+              <ul className="space-y-3 text-sm text-stone-800">
                 {plan.otherFeatures.map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
-                    <Check
-                      className={
-                        isPro ? "mt-0.5 h-4 w-4 text-primary shrink-0" : "mt-0.5 h-4 w-4 text-zinc-400 shrink-0"
-                      }
-                      aria-hidden="true"
-                    />
+                    <Check className="mt-0.5 h-4 w-4 text-stone-800 shrink-0" aria-hidden="true" />
                     <span>{feature}</span>
                   </li>
                 ))}

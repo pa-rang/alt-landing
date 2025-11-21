@@ -157,11 +157,13 @@ export default function PricingPageClient({
   const proPlan = dictionary.plans.pro;
 
   return (
-    <div className="space-y-12">
-      <div className="text-left space-y-6">
-        <div className="space-y-3">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{dictionary.title}</h1>
-          <p className="text-base text-muted-foreground sm:text-lg">{dictionary.subtitle}</p>
+    <div className="space-y-8 md:space-y-16">
+      <div className="text-center space-y-6">
+        <div className="space-y-5">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-5xl whitespace-pre-line leading-tight">
+            {dictionary.title}
+          </h1>
+          <p className="text-base text-regular text-stone-700 sm:text-xl">{dictionary.subtitle}</p>
         </div>
       </div>
 

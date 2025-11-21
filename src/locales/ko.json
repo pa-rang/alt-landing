@@ -223,8 +223,8 @@
     "contact": "Contact:"
   },
   "pricing": {
-    "title": "만약 최고 성능 모델을 사용하고 싶다면, Pro 플랜을 구독하세요",
-    "subtitle": "오해하지마세요. Alt는 여전히 완전히 무료고, 시간제한이 없습니다.",
+    "title": "최고 성능 모델을 원한다면, \nPro 플랜을 구독하세요",
+    "subtitle": "오해하지 마세요. Alt는 완전히 무료고, 여전히 시간 제한은 없습니다.",
     "badge": "MVP",
     "nav": "Pro",
     "featureLabels": {
@@ -237,12 +237,12 @@
         "price": "$0",
         "pricePeriod": "",
         "description": "완벽한 보안을 위해",
-        "highlight": "The AI model runs on your PC",
-        "cta": "지금도 계속 무료로 쓰기",
+        "highlight": "AI 모델이 사용자 PC에서 실행됩니다",
+        "cta": "무료로 시작하기",
         "coreFeatures": [
-          "데이터도 한톨도 외부로 나가지 않음",
-          "무제한 Transcript, Summary (시간/횟수 제한 없음)",
-          "오프라인 환경 지원"
+          "모든 데이터는 사용자 PC에서 처리",
+          "무제한 받아쓰기, 요약 (시간/횟수 제한 없음)",
+          "인터넷 없이 사용가능"
         ],
         "otherFeatures": [
           "Local LLM 무제한 액세스",
@@ -264,11 +264,7 @@
         "ctaLogin": "Pro 시작하기",
         "ctaManage": "구독/결제 관리",
         "coreFeatures": ["Free 플랜의 모든 기능 포함", "최신 프론티어 모델 무제한"],
-        "otherFeatures": [
-          "Gemini 3 Pro, GPT 5.1 즉시 사용",
-          "무거운 모델 다운로드/설치 불필요",
-          "신규 기능 우선 액세스(Early Access)"
-        ],
+        "otherFeatures": ["Gemini 3 Pro, GPT 5.1 즉시 사용", "무거운 모델 설치 불필요", "신규 기능 우선 액세스"],
         "features": []
       }
     },

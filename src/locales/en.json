@@ -234,7 +234,7 @@
     "contact": "Contact:"
   },
   "pricing": {
-    "title": "If you want to use top-tier models, subscribe to the Pro plan",
+    "title": "If you want to use top-tier models,\nsubscribe to the Pro plan",
     "subtitle": "Don't misunderstand. Alt is still completely free with no time limits.",
     "badge": "MVP",
     "nav": "Pro",
@@ -249,11 +249,11 @@
         "pricePeriod": "",
         "description": "For absolute privacy",
         "highlight": "The AI model runs on your PC",
-        "cta": "Keep using alt for free",
+        "cta": "Try it free",
         "coreFeatures": [
-          "Not a single bit of data leaves your device",
+          "All data is processed on your PC",
           "Unlimited Transcript, Summary (No time/count limits)",
-          "Offline environment support"
+          "No internet required"
         ],
         "otherFeatures": [
           "Unlimited Local LLM access",
@@ -277,8 +277,8 @@
         "coreFeatures": ["Includes all Free plan features", "Unlimited latest frontier models"],
         "otherFeatures": [
           "Instant access to Gemini 3 Pro, GPT 5.1",
-          "No need to download/install heavy models",
-          "Priority access to new features (Early Access)"
+          "No need to install heavy models",
+          "Priority access to new features"
         ],
         "features": []
       }
