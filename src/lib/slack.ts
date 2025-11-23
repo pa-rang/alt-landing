@@ -247,6 +247,16 @@ export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<bo
   return false;
 }
 
+interface GameScoreEntry {
+  id: number;
+  email: string;
+  organization: string;
+  nickname: string;
+  score: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface DownloadEntry {
   id: number;
   email?: string | null;
@@ -372,6 +382,109 @@ export async function sendDownloadNotification(entry: DownloadEntry): Promise<bo
 
       if (attempt === maxRetries) {
         console.error(`슬랙 알림 최종 실패: 다운로드 ID ${entry.id} - ${errorMessage}`);
+        return false;
+      }
+
+      // 재시도 전 대기 (exponential backoff)
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  return false;
+}
+
+export async function sendGameScoreNotification(entry: GameScoreEntry): Promise<boolean> {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    console.warn("SLACK_WEBHOOK_URL이 설정되지 않았습니다. 슬랙 알림을 건너뜁니다.");
+    return false;
+  }
+
+  const timeText = new Date(entry.created_at).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const message: SlackMessage = {
+    text: "🎮 리더보드에 새로운 점수가 등록되었습니다!",
+    attachments: [
+      {
+        color: "good",
+        fields: [
+          {
+            title: "👤 닉네임",
+            value: entry.nickname,
+            short: true,
+          },
+          {
+            title: "🏢 Organization",
+            value: entry.organization,
+            short: true,
+          },
+          {
+            title: "🎯 점수",
+            value: `${entry.score.toLocaleString()}점`,
+            short: true,
+          },
+          {
+            title: "🕐 등록 시간",
+            value: timeText,
+            short: true,
+          },
+          {
+            title: "🆔 ID",
+            value: `#${entry.id}`,
+            short: true,
+          },
+        ],
+      },
+    ],
+  };
+
+  // 재시도 로직 포함
+  const maxRetries = 2;
+  const baseTimeout = 10000; // 10초
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const timeout = baseTimeout * attempt; // 점진적 타임아웃 증가
+
+      const response = await fetchWithTimeout(
+        webhookUrl,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(message),
+        },
+        timeout
+      );
+
+      if (!response.ok) {
+        console.warn(`슬랙 API 응답 오류 (시도 ${attempt}/${maxRetries}): ${response.status} ${response.statusText}`);
+        if (attempt === maxRetries) {
+          console.error(`슬랙 알림 최종 실패: ${entry.nickname} (ID: ${entry.id})`);
+          return false;
+        }
+        // 재시도 전 대기
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        continue;
+      }
+
+      console.log(`슬랙 알림 전송 성공: ${entry.nickname} (ID: ${entry.id})`);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`슬랙 알림 전송 실패 (시도 ${attempt}/${maxRetries}):`, errorMessage);
+
+      if (attempt === maxRetries) {
+        console.error(`슬랙 알림 최종 실패: ${entry.nickname} (ID: ${entry.id}) - ${errorMessage}`);
         return false;
       }
 

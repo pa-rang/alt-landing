@@ -8,6 +8,7 @@ import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import { resolveLocale } from "@/lib/i18n/utils";
 import { createGameScoreSchema, type GameScoreInput, type GameScore } from "@/lib/validation/game-score";
 import { decryptScore } from "@/lib/decryption";
+import { sendGameScoreNotification } from "@/lib/slack";
 
 type GameScoreFieldErrors = Partial<Record<keyof GameScoreInput, string>>;
 
@@ -154,11 +155,11 @@ export async function POST(request: Request) {
 
     const rank = rankResult.rows[0]?.rank || 1;
 
-    // TODO: Slack 알림 전송 (선택적)
-    // setImmediate(() => {
-    //   sendGameScoreNotification(savedScore)
-    //     .catch((error) => console.error("Slack notification error:", error));
-    // });
+    // Slack 알림 전송 (비동기, fire-and-forget)
+    setImmediate(() => {
+      sendGameScoreNotification(savedScore)
+        .catch((error) => console.error("Slack notification error:", error));
+    });
 
     return NextResponse.json({
       ok: true,
