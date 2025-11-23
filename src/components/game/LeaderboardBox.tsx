@@ -21,7 +21,6 @@ export function LeaderboardBox({ dictionary, userEmail, userOrganization, refres
     <div className="bg-white rounded-lg border shadow-sm flex flex-col h-full">
       <div className="px-4 py-3 border-b">
         <h3 className="font-semibold text-lg">{dictionary.leaderboardTitle}</h3>
-        <p className="text-xs text-gray-500 mt-1">해킹 막았어요. 이래도 뚫으면 인정합니다^^</p>
       </div>
 
       {/* 리더보드 탭 */}
