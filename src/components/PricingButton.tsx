@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CakeSlice } from "lucide-react";
+import { Gem } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/lib/i18n/config";
@@ -26,7 +26,7 @@ export function PricingButton({ locale: initialLocale, label }: PricingButtonPro
       asChild
     >
       <Link href={`/${currentLocale}/pricing`} className="relative z-10 flex items-center">
-        <CakeSlice className="size-3.5 text-purple-500" />
+        <Gem className="size-3.5 text-purple-500" />
         <span className={`font-semibold ${accentGradient.text}`}>{label}</span>
       </Link>
     </Button>
