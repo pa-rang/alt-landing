@@ -263,7 +263,7 @@
         "ctaSubscribed": "구독 중",
         "ctaLogin": "Pro 시작하기",
         "ctaManage": "구독/결제 관리",
-        "coreFeatures": ["Free 플랜의 모든 기능 포함", "최신 프론티어 모델 무제한"],
+        "coreFeatures": ["Free 플랜의 모든 기능 포함", "요약, 번역, AI 채팅(예정) 등 AI 기능에 최신 프론티어 모델 적용"],
         "otherFeatures": ["Gemini 3 Pro, GPT 5.1 즉시 사용", "무거운 모델 설치 불필요", "신규 기능 우선 액세스"],
         "features": []
       }

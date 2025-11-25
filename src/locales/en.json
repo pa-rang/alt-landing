@@ -274,7 +274,7 @@
         "ctaSubscribed": "Subscribed",
         "ctaLogin": "Get Pro",
         "ctaManage": "Manage subscription",
-        "coreFeatures": ["Includes all Free plan features", "Unlimited latest frontier models"],
+        "coreFeatures": ["Includes all Free plan features", "Latest frontier models applied to AI features such as summarization, translation, AI chat (coming soon)"],
         "otherFeatures": [
           "Instant access to Gemini 3 Pro, GPT 5.1",
           "No need to install heavy models",
