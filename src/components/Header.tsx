@@ -10,7 +10,7 @@ import { HomeIcon } from "@/components/HomeIcon";
 import { GameLinkButton } from "@/components/GameLinkButton";
 import { ResponsiveButtonGroup } from "@/components/ResponsiveButtonGroup";
 import { AuthButton } from "@/components/AuthButton";
-// import { PricingButton } from "@/components/PricingButton";
+import { PricingButton } from "@/components/PricingButton";
 
 type HeaderProps = {
   locale: Locale;
@@ -42,7 +42,7 @@ export function Header({
         <div className="flex items-center space-x-2 flex-1 justify-end min-w-0">
           <ResponsiveButtonGroup>
             <GameLinkButton locale={locale} dictionary={dictionary.game} labels={gameButtonLabels} />
-            {/* <PricingButton locale={locale} label={dictionary.pricing?.nav ?? "Pricing"} /> */}
+            <PricingButton locale={locale} label={dictionary.pricing?.nav ?? "Pricing"} />
             <JoinCommunityButton locale={locale} />
             <FeedbackButton locale={locale} dictionary={dictionary.feedback} labels={feedbackLabels} />
             <JoinUsButton locale={locale} />
