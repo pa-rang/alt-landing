@@ -4,6 +4,7 @@ import Stripe from "stripe";
 
 import { stripe, getWebhookSecret } from "@/lib/stripe";
 import { query } from "@/lib/db";
+import { sendStripeSubscriptionNotification } from "@/lib/slack";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +120,20 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         console.error("❌ [WEBHOOK] Failed to retrieve subscription from checkout session:", error);
       }
     }
+
+    // Slack 알림 전송 (비동기, fire-and-forget)
+    sendStripeSubscriptionNotification({
+      customerId,
+      userId,
+      email: session.customer_details?.email || undefined,
+      subscriptionId: typeof session.subscription === "string" ? session.subscription : undefined,
+      status: "active",
+      amount: session.amount_total,
+      currency: session.currency,
+      created_at: new Date().toISOString(),
+    }).catch((error) => {
+      console.error("❌ [WEBHOOK] Failed to send Slack notification:", error);
+    });
   }
 
   await updateUserProfile({

@@ -1,3 +1,13 @@
+// Slack 알림 채널 타입 정의
+const SLACK_CHANNELS = {
+  DOWNLOAD: "#noti-download",
+  TOMATO_GAME: "#noti-tomato-game",
+  STRIPE: "#noti-stripe",
+  FEEDBACK: "#noti-feedback",
+} as const;
+
+type SlackChannel = (typeof SLACK_CHANNELS)[keyof typeof SLACK_CHANNELS];
+
 interface WaitlistEntry {
   id: number;
   email: string;
@@ -18,6 +28,7 @@ interface FeedbackEntry {
 
 interface SlackMessage {
   text: string;
+  channel: SlackChannel;
   attachments: Array<{
     color: string;
     fields: Array<{
@@ -59,6 +70,7 @@ export async function sendWaitlistNotification(entry: WaitlistEntry): Promise<bo
 
   const message: SlackMessage = {
     text: "🎉 alt의 새로운 웨이트리스트 신청이 있습니다!",
+    channel: SLACK_CHANNELS.DOWNLOAD,
     attachments: [
       {
         color: "good",
@@ -163,6 +175,7 @@ export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<bo
 
   const message: SlackMessage = {
     text: "📝 새로운 피드백이 접수되었습니다!",
+    channel: SLACK_CHANNELS.FEEDBACK,
     attachments: [
       {
         color: entry.feedback_type === "issue" ? "danger" : "warning",
@@ -291,6 +304,7 @@ export async function sendDownloadNotification(entry: DownloadEntry): Promise<bo
 
   const message: SlackMessage = {
     text: "📦 alt 다운로드가 발생했습니다!",
+    channel: SLACK_CHANNELS.DOWNLOAD,
     attachments: [
       {
         color: "good",
@@ -393,6 +407,145 @@ export async function sendDownloadNotification(entry: DownloadEntry): Promise<bo
   return false;
 }
 
+// Stripe 구독 결제 알림용 인터페이스
+interface StripeSubscriptionEntry {
+  customerId: string;
+  userId?: string;
+  email?: string;
+  subscriptionId?: string;
+  status: string;
+  amount?: number | null;
+  currency?: string | null;
+  productName?: string;
+  created_at: string;
+}
+
+export async function sendStripeSubscriptionNotification(entry: StripeSubscriptionEntry): Promise<boolean> {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    console.warn("SLACK_WEBHOOK_URL이 설정되지 않았습니다. 슬랙 알림을 건너뜁니다.");
+    return false;
+  }
+
+  const timeText = new Date(entry.created_at).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // 금액 포맷팅 (센트 단위를 달러/원 단위로 변환)
+  const formatAmount = (amount: number | null | undefined, currency: string | null | undefined): string => {
+    if (amount === null || amount === undefined) return "정보 없음";
+    const actualAmount = amount / 100; // Stripe는 센트 단위
+    const currencyUpper = (currency || "USD").toUpperCase();
+    return `${actualAmount.toLocaleString()} ${currencyUpper}`;
+  };
+
+  const message: SlackMessage = {
+    text: "💳 새로운 Stripe 구독 결제가 완료되었습니다!",
+    channel: SLACK_CHANNELS.STRIPE,
+    attachments: [
+      {
+        color: "#6772e5", // Stripe 브랜드 컬러
+        fields: [
+          {
+            title: "📧 이메일",
+            value: entry.email || "정보 없음",
+            short: true,
+          },
+          {
+            title: "💰 결제 금액",
+            value: formatAmount(entry.amount, entry.currency),
+            short: true,
+          },
+          {
+            title: "🎫 구독 ID",
+            value: entry.subscriptionId || "정보 없음",
+            short: true,
+          },
+          {
+            title: "👤 고객 ID",
+            value: entry.customerId,
+            short: true,
+          },
+          {
+            title: "🕐 결제 시간",
+            value: timeText,
+            short: true,
+          },
+          {
+            title: "✅ 상태",
+            value: entry.status,
+            short: true,
+          },
+          ...(entry.userId
+            ? [
+                {
+                  title: "🆔 사용자 ID",
+                  value: entry.userId,
+                  short: false,
+                },
+              ]
+            : []),
+        ],
+      },
+    ],
+  };
+
+  // 재시도 로직 포함
+  const maxRetries = 2;
+  const baseTimeout = 10000; // 10초
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const timeout = baseTimeout * attempt; // 점진적 타임아웃 증가
+
+      const response = await fetchWithTimeout(
+        webhookUrl,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(message),
+        },
+        timeout
+      );
+
+      if (!response.ok) {
+        console.warn(`슬랙 API 응답 오류 (시도 ${attempt}/${maxRetries}): ${response.status} ${response.statusText}`);
+        if (attempt === maxRetries) {
+          console.error(`슬랙 알림 최종 실패: Stripe 구독 ${entry.subscriptionId || entry.customerId}`);
+          return false;
+        }
+        // 재시도 전 대기
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        continue;
+      }
+
+      console.log(`슬랙 알림 전송 성공: Stripe 구독 ${entry.subscriptionId || entry.customerId}`);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`슬랙 알림 전송 실패 (시도 ${attempt}/${maxRetries}):`, errorMessage);
+
+      if (attempt === maxRetries) {
+        console.error(`슬랙 알림 최종 실패: Stripe 구독 ${entry.subscriptionId || entry.customerId} - ${errorMessage}`);
+        return false;
+      }
+
+      // 재시도 전 대기 (exponential backoff)
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  return false;
+}
+
 export async function sendGameScoreNotification(entry: GameScoreEntry): Promise<boolean> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
@@ -412,6 +565,7 @@ export async function sendGameScoreNotification(entry: GameScoreEntry): Promise<
 
   const message: SlackMessage = {
     text: "🎮 리더보드에 새로운 점수가 등록되었습니다!",
+    channel: SLACK_CHANNELS.TOMATO_GAME,
     attachments: [
       {
         color: "good",
