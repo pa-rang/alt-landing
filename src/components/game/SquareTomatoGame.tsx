@@ -18,6 +18,7 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./ScoreSubmit";
 import { LeaderboardBox } from "./LeaderboardBox";
 import { DownloadButton } from "./DownloadButton";
+import { VolumeControl } from "./VolumeControl";
 
 // GA4 이벤트 추적 함수들
 function trackGameStart() {
@@ -91,6 +92,21 @@ type Cell = {
 
 export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
+
+  // BGM 초기화
+  useEffect(() => {
+    bgmRef.current = new Audio("/tomato-game-bgm.wav");
+    bgmRef.current.loop = true;
+    bgmRef.current.volume = 0.3;
+
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current = null;
+      }
+    };
+  }, []);
 
   const [cells, setCells] = useState<Cell[]>(() => {
     const values = generateValues(ROWS, COLS);
@@ -118,6 +134,31 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
   const [showDownloadToast, setShowDownloadToast] = useState<boolean>(false);
   const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
   const [timeClickTimestamps, setTimeClickTimestamps] = useState<number[]>([]);
+
+  // BGM 볼륨 상태
+  const [bgmVolume, setBgmVolume] = useState<number>(0.3);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  // 게임 상태에 따라 BGM 재생/중지
+  useEffect(() => {
+    if (!bgmRef.current) return;
+
+    if (gameState === "running") {
+      bgmRef.current.play().catch(() => {
+        // 자동 재생 차단 시 무시
+      });
+    } else {
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
+  }, [gameState]);
+
+  // 볼륨 및 음소거 상태 동기화
+  useEffect(() => {
+    if (bgmRef.current) {
+      bgmRef.current.volume = isMuted ? 0 : bgmVolume;
+    }
+  }, [bgmVolume, isMuted]);
 
   // 최고점수 및 다운로드 해제 상태 로컬스토리지에서 불러오기
   useEffect(() => {
@@ -313,6 +354,14 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     setLeaderboardRefreshTrigger((prev) => prev + 1);
   }, []);
 
+  // 게임 닫기 핸들러 (BGM 중지 후 닫기)
+  const handleClose = useCallback(() => {
+    if (bgmRef.current) {
+      bgmRef.current.pause();
+    }
+    onClose();
+  }, [onClose]);
+
   // 공통 연속 클릭 핸들러 (3번 연속 클릭 감지)
   const createTripleClickHandler = useCallback(
     (
@@ -386,7 +435,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
             {dictionary.title.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
           </div>
           <div className="flex items-center gap-2">
-            <Button className="text-white bg-white/15" onClick={onClose}>
+            <Button className="text-white bg-white/15" onClick={handleClose}>
               {dictionary.close}
             </Button>
           </div>
@@ -426,6 +475,18 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                       }}
                     />
                   </div>
+                  <VolumeControl
+                    volume={bgmVolume}
+                    isMuted={isMuted}
+                    onVolumeChange={(newVolume) => {
+                      setBgmVolume(newVolume);
+                      if (newVolume > 0 && isMuted) {
+                        setIsMuted(false);
+                      }
+                    }}
+                    onMuteToggle={() => setIsMuted(!isMuted)}
+                    variant="light"
+                  />
                 </div>
               </div>
               <div className="flex items-center gap-2">
