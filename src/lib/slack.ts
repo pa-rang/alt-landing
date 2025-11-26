@@ -30,14 +30,17 @@ interface SlackMessage {
   }>;
 }
 
-// Promise.race를 사용한 수동 타임아웃 구현
+// AbortController를 사용한 타임아웃 구현 (타임아웃 시 요청도 함께 취소)
 function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
-  return Promise.race([
-    fetch(url, options),
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Request timeout after ${timeoutMs}ms`)), timeoutMs)
-    ),
-  ]);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  return fetch(url, {
+    ...options,
+    signal: controller.signal,
+  }).finally(() => {
+    clearTimeout(timeoutId);
+  });
 }
 
 export async function sendFeedbackNotification(entry: FeedbackEntry): Promise<boolean> {
