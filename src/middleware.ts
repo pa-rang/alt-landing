@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { resolveLocale } from "@/lib/i18n/utils";
 
 const PUBLIC_FILE = /\.[^\/]+$/;
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
@@ -38,15 +39,39 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // 지원되는 locale인 경우 헤더에 설정하고 통과
+  // 지원되는 locale인 경우 헤더에 설정
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-next-locale", localeFromPath);
 
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+
+  // Supabase 세션 갱신 (권장 패턴)
+  // 매 요청마다 세션을 갱신하여 refresh_token_not_found 에러 방지
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+
+  // 세션 갱신 시도 - 에러가 나도 무시 (미로그인 상태일 수 있음)
+  await supabase.auth.getUser();
+
+  return response;
 }
 
 export const config = {

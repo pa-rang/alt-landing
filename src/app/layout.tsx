@@ -128,7 +128,7 @@ export default async function RootLayout({
 
   const showBanner = htmlLang === "ko";
 
-  // 인증 상태 확인
+  // 인증 상태 확인 (middleware에서 세션 갱신됨)
   const supabase = await createClient();
   const {
     data: { user },

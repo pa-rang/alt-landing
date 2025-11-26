@@ -21,6 +21,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
 
   const dictionary = await getDictionary(locale);
 
+  // 인증 상태 확인 (middleware에서 세션 갱신됨)
   const supabase = await createClient();
   const {
     data: { user },
