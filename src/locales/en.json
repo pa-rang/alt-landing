@@ -289,7 +289,9 @@
       "checkoutError": "Unable to start checkout. Please try again.",
       "portalError": "We couldn't open the billing portal. Try again soon.",
       "successModalDescription": "Please launch the Alt app and sign in.",
-      "successModalConfirm": "OK"
+      "successModalConfirm": "OK",
+      "successModalOpenApp": "Open App",
+      "successModalClose": "Close"
     }
   },
   "auth": {

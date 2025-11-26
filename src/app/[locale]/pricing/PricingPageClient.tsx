@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { openAppOnSubscriptionSuccess } from "@/lib/deep-link";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 
@@ -104,8 +105,17 @@ export default function PricingPageClient({
     next.delete("status");
 
     const queryString = next.toString();
-    router.replace(`/${locale}/pricing${queryString ? `?${queryString}` : ""}`, { scroll: false });
+    router.replace(`/pricing${queryString ? `?${queryString}` : ""}`, { scroll: false });
   }, [dictionary.messages.cancelled, dictionary.messages.success, locale, router, searchParams]);
+
+  // 구독 시작 모달이 열릴 때 alt 앱 딥링크 트리거
+  useEffect(() => {
+    if (showSuccessModal) {
+      // 딥링크를 통해 앱 열기 (fallback: 다운로드 페이지)
+      const fallbackUrl = `/download`;
+      openAppOnSubscriptionSuccess(fallbackUrl);
+    }
+  }, [showSuccessModal, locale]);
 
   const handleSubscribe = useCallback(async () => {
     if (isSubscribed) {
@@ -191,9 +201,20 @@ export default function PricingPageClient({
               {dictionary.messages.successModalDescription}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-center">
-            <Button className="w-full sm:w-auto" onClick={() => setShowSuccessModal(false)}>
-              {dictionary.messages.successModalConfirm}
+          <DialogFooter className="sm:justify-center gap-2 flex-col sm:flex-row">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setShowSuccessModal(false)}>
+              {dictionary.messages.successModalClose}
+            </Button>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                // 앱 열기 버튼 클릭 시 딥링크 실행
+                const fallbackUrl = `/download`;
+                openAppOnSubscriptionSuccess(fallbackUrl);
+                setShowSuccessModal(false);
+              }}
+            >
+              {dictionary.messages.successModalOpenApp}
             </Button>
           </DialogFooter>
         </DialogContent>
