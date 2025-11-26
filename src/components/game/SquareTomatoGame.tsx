@@ -93,6 +93,7 @@ type Cell = {
 export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const clearSfxRef = useRef<HTMLAudioElement | null>(null);
 
   // BGM 초기화
   useEffect(() => {
@@ -100,11 +101,16 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     bgmRef.current.loop = true;
     bgmRef.current.volume = 0.3;
 
+    // 클리어 효과음 초기화
+    clearSfxRef.current = new Audio("/tomato-clear-bgm.wav");
+    clearSfxRef.current.volume = 0.5;
+
     return () => {
       if (bgmRef.current) {
         bgmRef.current.pause();
         bgmRef.current = null;
       }
+      clearSfxRef.current = null;
     };
   }, []);
 
@@ -312,13 +318,19 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
           return next;
         });
         setScore((s) => s + selectedIndices.length);
+        // 클리어 효과음 재생
+        if (clearSfxRef.current && !isMuted) {
+          clearSfxRef.current.currentTime = 0;
+          clearSfxRef.current.volume = bgmVolume;
+          clearSfxRef.current.play().catch(() => {});
+        }
       }
       clearSelection();
       try {
         (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
       } catch {}
     },
-    [isDragging, selectionSum, selectedIndices, clearSelection]
+    [isDragging, selectionSum, selectedIndices, clearSelection, isMuted, bgmVolume]
   );
 
   const selectionRect = useMemo(() => {

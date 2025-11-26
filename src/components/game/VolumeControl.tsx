@@ -10,13 +10,7 @@ type VolumeControlProps = {
   variant?: "light" | "dark";
 };
 
-export function VolumeControl({
-  volume,
-  isMuted,
-  onVolumeChange,
-  onMuteToggle,
-  variant = "dark",
-}: VolumeControlProps) {
+export function VolumeControl({ volume, isMuted, onVolumeChange, onMuteToggle, variant = "dark" }: VolumeControlProps) {
   const isLight = variant === "light";
 
   return (
@@ -55,4 +49,3 @@ export function VolumeControl({
     </div>
   );
 }
-
