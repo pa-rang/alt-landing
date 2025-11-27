@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,10 @@ import {
   TOMATO_COLS as COLS,
   TOMATO_ROWS as ROWS,
   GAME_SECONDS,
-  DOWNLOAD_THRESHOLD_SCORE,
+  PROMO_THRESHOLD_SCORE,
+  PROMO_CODE,
+  SUPER_PROMO_THRESHOLD_SCORE,
+  SUPER_PROMO_CODE,
   computeSelectedIndicesFromRect,
   formatTime,
   generateValues,
@@ -17,8 +21,8 @@ import {
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "./ScoreSubmit";
 import { LeaderboardBox } from "./LeaderboardBox";
-import { DownloadButton } from "./DownloadButton";
 import { VolumeControl } from "./VolumeControl";
+import { Copy, Check } from "lucide-react";
 
 // GA4 이벤트 추적 함수들
 function trackGameStart() {
@@ -52,7 +56,8 @@ function trackGameRestart() {
 }
 
 const BEST_SCORE_KEY = "squareTomatoGameBestScore";
-const DOWNLOAD_UNLOCKED_KEY = "squareTomatoGameDownloadUnlocked";
+const PROMO_UNLOCKED_KEY = "squareTomatoGamePromoUnlocked";
+const SUPER_PROMO_UNLOCKED_KEY = "squareTomatoGameSuperPromoUnlocked";
 
 type ScoreDisplayProps = {
   gameState: "idle" | "running" | "ended";
@@ -136,8 +141,11 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
 
   const [bestScore, setBestScore] = useState<number>(0);
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
-  const [hasUnlockedDownload, setHasUnlockedDownload] = useState<boolean>(false);
-  const [showDownloadToast, setShowDownloadToast] = useState<boolean>(false);
+  const [hasUnlockedPromo, setHasUnlockedPromo] = useState<boolean>(false);
+  const [hasUnlockedSuperPromo, setHasUnlockedSuperPromo] = useState<boolean>(false);
+  const [showPromoToast, setShowPromoToast] = useState<boolean>(false);
+  const [showSuperPromoToast, setShowSuperPromoToast] = useState<boolean>(false);
+  const [promoCodeCopied, setPromoCodeCopied] = useState<boolean>(false);
   const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
   const [timeClickTimestamps, setTimeClickTimestamps] = useState<number[]>([]);
 
@@ -166,16 +174,26 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, [bgmVolume, isMuted]);
 
-  // 최고점수 및 다운로드 해제 상태 로컬스토리지에서 불러오기
+  // 최고점수 및 프로모션 코드 해제 상태 로컬스토리지에서 불러오기
   useEffect(() => {
     const savedScore = localStorage.getItem(BEST_SCORE_KEY);
     if (savedScore) {
       setBestScore(parseInt(savedScore, 10));
     }
-    const unlocked = localStorage.getItem(DOWNLOAD_UNLOCKED_KEY);
+    const unlocked = localStorage.getItem(PROMO_UNLOCKED_KEY);
     if (unlocked === "true") {
-      setHasUnlockedDownload(true);
-      setShowDownloadToast(true);
+      setHasUnlockedPromo(true);
+      // 이미 슈퍼 프로모션을 획득했으면 일반 프로모션 토스트는 띄우지 않음 (슈퍼가 덮어씀)
+      const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
+      if (superUnlocked !== "true") {
+        setShowPromoToast(true);
+      }
+    }
+    const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
+    if (superUnlocked === "true") {
+      setHasUnlockedSuperPromo(true);
+      setShowSuperPromoToast(true);
+      setShowPromoToast(false); // 슈퍼가 우선
     }
   }, []);
 
@@ -213,29 +231,49 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
 
-  // 게임 종료 시 최고점수 업데이트 및 다운로드 해제 확인
+  // 게임 종료 시 최고점수 업데이트 및 프로모션 코드 해제 확인
   useEffect(() => {
     if (gameState === "ended") {
       if (score > bestScore) {
         setBestScore(score);
         localStorage.setItem(BEST_SCORE_KEY, String(score));
       }
-      // 65점 이상 달성 시 다운로드 해제 상태 저장 및 토스트 표시
-      if (score >= DOWNLOAD_THRESHOLD_SCORE && !hasUnlockedDownload) {
-        setHasUnlockedDownload(true);
-        localStorage.setItem(DOWNLOAD_UNLOCKED_KEY, "true");
-        // 점수 제출 모달이 닫힌 후 토스트 표시 (약간의 딜레이)
+
+      // 슈퍼 프로모션 (100점 이상) 체크
+      if (score >= SUPER_PROMO_THRESHOLD_SCORE && !hasUnlockedSuperPromo) {
+        setHasUnlockedSuperPromo(true);
+        localStorage.setItem(SUPER_PROMO_UNLOCKED_KEY, "true");
+        // 일반 프로모션도 같이 해제 처리 (없다면)
+        if (!hasUnlockedPromo) {
+          setHasUnlockedPromo(true);
+          localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
+        }
+
+        // 점수 제출 모달이 닫힌 후 토스트 표시
         setTimeout(() => {
-          setShowDownloadToast(true);
+          setShowPromoToast(false); // 일반 토스트 끄고
+          setShowSuperPromoToast(true); // 슈퍼 토스트 표시
         }, 500);
       }
-    }
-  }, [gameState, score, bestScore, hasUnlockedDownload]);
+      // 일반 프로모션 (60점 이상) 체크 (슈퍼가 아닐 때만 토스트 표시)
+      else if (score >= PROMO_THRESHOLD_SCORE && !hasUnlockedPromo) {
+        setHasUnlockedPromo(true);
+        localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
 
-  // DOWNLOAD_THRESHOLD_SCORE 이상일 때 confetti 발사
+        // 이미 슈퍼 프로모션 토스트가 떠있지 않은 경우에만 표시
+        if (!hasUnlockedSuperPromo && !showSuperPromoToast) {
+          setTimeout(() => {
+            setShowPromoToast(true);
+          }, 500);
+        }
+      }
+    }
+  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo, showSuperPromoToast]);
+
+  // PROMO_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
-    if (showScoreSubmit && score >= DOWNLOAD_THRESHOLD_SCORE) {
-      console.log("🎉 Confetti 발사! 점수:", score, "기준점수:", DOWNLOAD_THRESHOLD_SCORE);
+    if (showScoreSubmit && score >= PROMO_THRESHOLD_SCORE) {
+      console.log("🎉 Confetti 발사! 점수:", score, "기준점수:", PROMO_THRESHOLD_SCORE);
       // 모달이 열린 후 confetti 발사하도록 짧은 딜레이 추가
       const timer = setTimeout(async () => {
         const confetti = (await import("canvas-confetti")).default;
@@ -416,24 +454,84 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     handler();
   }, [timeClickTimestamps, createTripleClickHandler]);
 
+  // 프로모션 코드 복사 핸들러 (슈퍼 코드 지원 추가)
+  const handleCopyPromoCode = useCallback(async (isSuper: boolean = false) => {
+    try {
+      await navigator.clipboard.writeText(isSuper ? SUPER_PROMO_CODE : PROMO_CODE);
+      setPromoCodeCopied(true);
+      setTimeout(() => setPromoCodeCopied(false), 2000);
+    } catch {
+      // 클립보드 복사 실패 시 무시
+    }
+  }, []);
+
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
-      {/* 다운로드 토스트 */}
-      {showDownloadToast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] animate-slide-down-bounce">
-          <div className="relative bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex items-center gap-4">
-            <div className="flex-1">
-              <div className="text-lg font-bold flex items-center gap-2">
-                <span className="text-2xl animate-bounce">🎉</span>
-                <span>축하합니다!</span>
+      {/* 슈퍼 프로모션 코드 토스트 */}
+      {showSuperPromoToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-10000 animate-slide-down-bounce">
+          <div className="relative bg-linear-to-r from-purple-600 via-pink-600 to-purple-600 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex-1 text-center sm:text-left">
+              <div className="text-lg font-bold flex items-center justify-center sm:justify-start gap-2">
+                <span className="text-2xl animate-bounce">🏆</span>
+                <span>{dictionary.superPromoToastTitle}</span>
               </div>
+              <p className="text-sm text-white/90 mt-1">{dictionary.superPromoToastDescription}</p>
+              <p className="text-xs text-white/70 mt-1">{dictionary.promoUseGuide}</p>
             </div>
             <div className="flex items-center gap-2">
-              <DownloadButton
-                className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform"
-                size="sm"
-                location="game"
-              />
+              <div className="flex items-center bg-white/20 rounded-lg px-3 py-2 border border-white/30">
+                <span className="font-mono font-bold text-lg tracking-wider">{SUPER_PROMO_CODE}</span>
+                <button
+                  onClick={() => handleCopyPromoCode(true)}
+                  className="ml-2 p-1 hover:bg-white/20 rounded transition-colors"
+                  aria-label="Copy super promo code"
+                >
+                  {promoCodeCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
+                </button>
+              </div>
+              <Link
+                href="/pricing"
+                className="bg-white text-purple-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform px-4 py-2 rounded-lg text-sm"
+              >
+                {dictionary.goToPricing}
+              </Link>
+            </div>
+            {/* 반짝이는 효과 */}
+            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none animate-shimmer" />
+          </div>
+        </div>
+      )}
+
+      {/* 일반 프로모션 코드 토스트 (슈퍼 토스트가 없을 때만 표시) */}
+      {showPromoToast && !showSuperPromoToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-10000 animate-slide-down-bounce">
+          <div className="relative bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex-1 text-center sm:text-left">
+              <div className="text-lg font-bold flex items-center justify-center sm:justify-start gap-2">
+                <span className="text-2xl animate-bounce">🎉</span>
+                <span>{dictionary.promoToastTitle}</span>
+              </div>
+              <p className="text-sm text-white/90 mt-1">{dictionary.promoToastDescription}</p>
+              <p className="text-xs text-white/70 mt-1">{dictionary.promoUseGuide}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-white/20 rounded-lg px-3 py-2 border border-white/30">
+                <span className="font-mono font-bold text-lg tracking-wider">{PROMO_CODE}</span>
+                <button
+                  onClick={() => handleCopyPromoCode(false)}
+                  className="ml-2 p-1 hover:bg-white/20 rounded transition-colors"
+                  aria-label="Copy promo code"
+                >
+                  {promoCodeCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
+                </button>
+              </div>
+              <Link
+                href="/pricing"
+                className="bg-white text-emerald-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform px-4 py-2 rounded-lg text-sm"
+              >
+                {dictionary.goToPricing}
+              </Link>
             </div>
             {/* 반짝이는 효과 */}
             <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none animate-shimmer" />
@@ -444,7 +542,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
           <div className="font-semibold text-lg sm:text-xl text-white select-none" onClick={handleTitleClick}>
-            {dictionary.title.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
+            {dictionary.title}
           </div>
           <div className="flex items-center gap-2">
             <Button className="text-white bg-white/15" onClick={handleClose}>
@@ -596,8 +694,8 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                 {/* 시작 버튼 오버레이 */}
                 {gameState === "idle" && (
                   <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
-                    <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm">
-                      {dictionary.downloadRequirement.replace("{{threshold}}", String(DOWNLOAD_THRESHOLD_SCORE))}
+                    <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm whitespace-pre-wrap">
+                      {dictionary.promoRequirement}
                     </p>
                     <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
                       {dictionary.start}
@@ -627,18 +725,26 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   </button>
 
                   <div className="text-xl sm:text-2xl font-bold mb-2 text-center">
-                    {score >= DOWNLOAD_THRESHOLD_SCORE ? (
+                    {score >= PROMO_THRESHOLD_SCORE ? (
                       <>{dictionary.gameOverCongratulations}</>
                     ) : (
                       <>
-                        {dictionary.gameOverNeedMorePoints.replace(
-                          "{{points}}",
-                          String(DOWNLOAD_THRESHOLD_SCORE - score)
-                        )}
+                        {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(PROMO_THRESHOLD_SCORE - score))}
                       </>
                     )}
                   </div>
-                  {score < DOWNLOAD_THRESHOLD_SCORE && (
+                  {/* 프로모션 코드 획득 시 코드 대신 안내 문구 표시 */}
+                  {score >= PROMO_THRESHOLD_SCORE && (
+                    <div className="mb-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-center animate-pulse">
+                      <p className="font-bold text-emerald-800 text-lg mb-1">{dictionary.checkToast}</p>
+                      <p className="text-sm text-emerald-600">
+                        {score >= SUPER_PROMO_THRESHOLD_SCORE
+                          ? dictionary.superPromoToastDescription
+                          : dictionary.promoCodeDescription}
+                      </p>
+                    </div>
+                  )}
+                  {score < PROMO_THRESHOLD_SCORE && (
                     <div className="text-sm text-gray-600 mb-3 text-center">{dictionary.gameOverTip}</div>
                   )}
                   <GameScoreSubmit
