@@ -601,7 +601,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                           src="/apple_game_items/gemini_tomato_removebg.png"
                           alt="tomato"
                           fill
-                          className="object-cover select-none"
+                          className="object-contain select-none"
                           unoptimized
                           draggable={false}
                         />
