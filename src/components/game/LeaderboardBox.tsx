@@ -10,18 +10,27 @@ type LeaderboardBoxProps = {
   userEmail?: string;
   userOrganization?: string;
   refreshTrigger?: number;
+  fullScreen?: boolean;
 };
 
 type LeaderboardTabType = "personal" | "organization";
 
-export function LeaderboardBox({ dictionary, userEmail, userOrganization, refreshTrigger }: LeaderboardBoxProps) {
+export function LeaderboardBox({
+  dictionary,
+  userEmail,
+  userOrganization,
+  refreshTrigger,
+  fullScreen,
+}: LeaderboardBoxProps) {
   const [activeTab, setActiveTab] = useState<LeaderboardTabType>("organization");
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm flex flex-col h-full">
-      <div className="px-4 py-3 border-b">
-        <h3 className="font-semibold text-lg">{dictionary.leaderboardTitle}</h3>
-      </div>
+    <div className={cn("bg-white flex flex-col h-full", fullScreen ? "" : "rounded-lg border shadow-sm")}>
+      {!fullScreen && (
+        <div className="px-4 py-3 border-b">
+          <h3 className="font-semibold text-lg">{dictionary.leaderboardTitle}</h3>
+        </div>
+      )}
 
       {/* 리더보드 탭 */}
       <div className="flex border-b">

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Copy, Check, Gamepad2, Trophy, Volume2, VolumeX } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { X, Copy, Check, Trophy, Volume2, VolumeX, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,8 @@ import { GameScoreSubmit } from "../ScoreSubmit";
 import { LeaderboardBox } from "../LeaderboardBox";
 import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
 import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
-import { HEADER_HEIGHT, TAB_HEIGHT, INFO_BAR_HEIGHT, PADDING } from "./constants";
+import { TimeProgressBar } from "../shared/TimeProgressBar";
+import { INFO_BAR_HEIGHT, PADDING } from "./constants";
 import type { Cell } from "../shared/types";
 
 type MobileSquareTomatoGameProps = {
@@ -33,12 +35,13 @@ type MobileSquareTomatoGameProps = {
 };
 
 export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareTomatoGameProps) {
+  const pathname = usePathname();
   const boardRef = useRef<HTMLDivElement | null>(null);
   const bgmRef = useRef<HTMLAudioElement | null>(null);
   const clearSfxRef = useRef<HTMLAudioElement | null>(null);
 
-  // 모바일 전용: 탭 상태
-  const [activeTab, setActiveTab] = useState<"game" | "leaderboard">("game");
+  // 모바일 전용: 리더보드 오버레이 표시 여부
+  const [showLeaderboardOverlay, setShowLeaderboardOverlay] = useState<boolean>(false);
 
   // 모바일 전용: 그리드 크기 계산
   const [cellSize, setCellSize] = useState<number>(20);
@@ -127,7 +130,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
       const containerWidth = isCurrentlyPortrait ? height : width;
       const containerHeight = isCurrentlyPortrait ? width : height;
 
-      const fixedUIHeight = HEADER_HEIGHT + TAB_HEIGHT + INFO_BAR_HEIGHT + PADDING * 3;
+      const fixedUIHeight = INFO_BAR_HEIGHT + 8 + PADDING * 2; // INFO_BAR_HEIGHT + 시간바 높이(8px) + 패딩
       const availableHeight = containerHeight - fixedUIHeight;
       const availableWidth = containerWidth - PADDING * 2;
 
@@ -157,7 +160,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
       window.removeEventListener("resize", updateViewportAndSize);
       window.removeEventListener("orientationchange", updateViewportAndSize);
     };
-  }, [activeTab, deviceOrientation]);
+  }, [deviceOrientation]);
 
   // 게임 상태에 따라 BGM 재생/중지
   useEffect(() => {
@@ -421,7 +424,6 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     setSubmittedData({ nickname: data.nickname, organization: data.organization, rank: data.rank });
     setShowScoreSubmit(false);
     setLeaderboardRefreshTrigger((prev) => prev + 1);
-    setActiveTab("leaderboard");
   }, []);
 
   const handleClose = useCallback(() => {
@@ -531,109 +533,91 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     >
       {/* 기기 방향에 따라 조건부 회전되는 컨테이너 */}
       <div style={containerStyle}>
-        {/* 1. 헤더 - 고정 높이 */}
-        <div
-          className="bg-primary text-primary-foreground flex items-center justify-between shrink-0 shadow-md px-3"
-          style={{ height: HEADER_HEIGHT }}
-        >
-          <div className="font-bold text-base select-none" onClick={handleTitleClick}>
-            {dictionary.title}
-          </div>
-          <button onClick={handleClose} className="p-1.5 hover:bg-primary/90 rounded-full transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* 2. 탭 - 고정 높이 */}
-        <div className="flex bg-gray-100 shrink-0" style={{ height: TAB_HEIGHT, padding: "4px" }}>
-          <button
-            className={cn(
-              "flex-1 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-              activeTab === "game" ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700"
-            )}
-            onClick={() => setActiveTab("game")}
-          >
-            <Gamepad2 className="w-4 h-4" />
-            {dictionary.tabs.game}
-          </button>
-          <button
-            className={cn(
-              "flex-1 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-              activeTab === "leaderboard" ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700"
-            )}
-            onClick={() => setActiveTab("leaderboard")}
-          >
-            <Trophy className="w-4 h-4" />
-            {dictionary.tabs.personalLeaderboard}
-          </button>
-        </div>
-
-        {/* 3. 컨텐츠 영역 - 나머지 공간 전부 사용 */}
+        {/* 컨텐츠 영역 - 나머지 공간 전부 사용 */}
         <div
           className="flex-1 overflow-hidden"
           style={{ minHeight: 0 }} // flex item이 shrink할 수 있도록
         >
-          {/* 게임 탭 */}
-          {activeTab === "game" && (
+          {/* 게임 화면 */}
+          {
             <div className="h-full flex flex-col" style={{ padding: PADDING }}>
               {/* 상단 정보 바 - 고정 높이 */}
-              <div className="flex items-center justify-between shrink-0" style={{ height: INFO_BAR_HEIGHT }}>
-                <div className="flex items-center gap-2">
-                  <div className="px-2 py-1 rounded-md bg-gray-100 flex items-center gap-1.5">
-                    <span className="text-[10px] text-gray-500 font-medium">SCORE</span>
-                    <span className="text-sm font-bold text-gray-900">{gameState === "idle" ? bestScore : score}</span>
-                  </div>
-                  <div className="px-2 py-1 rounded-md bg-gray-100 flex items-center gap-1.5" onClick={handleTimeClick}>
-                    <span className="text-[10px] text-gray-500 font-medium">TIME</span>
-                    <span
-                      className={cn(
-                        "text-sm font-bold",
-                        timeLeft <= 10 ? "text-red-500 animate-pulse" : "text-gray-900"
-                      )}
+              <div className="flex flex-col shrink-0 gap-1">
+                <div className="flex items-center justify-between" style={{ height: INFO_BAR_HEIGHT }}>
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      href={`/${pathname.split("/").filter(Boolean)[0] || "ko"}`}
+                      className="px-1.5 py-0.5 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center"
+                      aria-label="Home"
                     >
-                      {formatTime(timeLeft)}
-                    </span>
+                      <Home className="w-3.5 h-3.5 text-gray-700" />
+                    </Link>
+                    <div className="px-1.5 py-0.5 rounded-md bg-gray-100 flex items-center gap-1">
+                      <span className="text-[9px] text-gray-500 font-medium">SCORE</span>
+                      <span className="text-xs font-bold text-gray-900">
+                        {gameState === "idle" ? bestScore : score}
+                      </span>
+                    </div>
+                    <div
+                      className="px-1.5 py-0.5 rounded-md bg-gray-100 flex items-center gap-1"
+                      onClick={handleTimeClick}
+                    >
+                      <span className="text-[9px] text-gray-500 font-medium">TIME</span>
+                      <span
+                        className={cn(
+                          "text-xs font-bold whitespace-nowrap",
+                          timeLeft <= 10 ? "text-red-500 animate-pulse" : "text-gray-900"
+                        )}
+                      >
+                        {formatTime(timeLeft)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-1 justify-end" onClick={handleTimeClick}>
+                      <div className="max-w-[200px] w-full">
+                        <TimeProgressBar timeLeft={timeLeft} totalTime={GAME_SECONDS} />
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={toggleMute}
-                    className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                    aria-label={isMuted ? "음소거 해제" : "음소거"}
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-4 h-4 text-gray-500" />
-                    ) : (
-                      <Volume2 className="w-4 h-4 text-gray-700" />
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={toggleMute}
+                      className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                      aria-label={isMuted ? "음소거 해제" : "음소거"}
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-3.5 h-3.5 text-gray-500" />
+                      ) : (
+                        <Volume2 className="w-3.5 h-3.5 text-gray-700" />
+                      )}
+                    </button>
+                    {gameState === "running" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 text-[10px] px-1.5"
+                        onClick={() => {
+                          trackGameRetry("mobile");
+                          resetGame();
+                        }}
+                      >
+                        {dictionary.retry}
+                      </Button>
                     )}
-                  </button>
-                  {gameState === "running" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 text-xs px-2"
-                      onClick={() => {
-                        trackGameRetry("mobile");
-                        resetGame();
-                      }}
-                    >
-                      {dictionary.retry}
-                    </Button>
-                  )}
-                  {gameState === "ended" && (
-                    <Button
-                      size="sm"
-                      variant="default"
-                      className="h-7 text-xs px-2"
-                      onClick={() => {
-                        trackGameRestart("mobile");
-                        resetGame();
-                      }}
-                    >
-                      {dictionary.restart}
-                    </Button>
-                  )}
+                    {gameState === "ended" && (
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="h-6 text-[10px] px-1.5"
+                        onClick={() => {
+                          trackGameRestart("mobile");
+                          resetGame();
+                        }}
+                      >
+                        {dictionary.restart}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -724,25 +708,22 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                       >
                         {dictionary.start}
                       </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="text-base py-4 px-8 shadow-lg mt-3 pointer-events-auto flex items-center gap-2"
+                        onClick={() => setShowLeaderboardOverlay(true)}
+                      >
+                        <Trophy className="w-5 h-5" />
+                        {dictionary.leaderboardTitle}
+                      </Button>
                       <p className="mt-4 text-xs text-gray-600 font-medium">{dictionary.guide}</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          )}
-
-          {/* 리더보드 탭 */}
-          {activeTab === "leaderboard" && (
-            <div className="h-full overflow-auto bg-white">
-              <LeaderboardBox
-                dictionary={dictionary}
-                userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
-                userOrganization={submittedData?.organization}
-                refreshTrigger={leaderboardRefreshTrigger}
-              />
-            </div>
-          )}
+          }
         </div>
 
         {/* 점수 제출 모달 */}
@@ -785,6 +766,30 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                   onSuccess={handleScoreSubmitSuccess}
                 />
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 리더보드 오버레이 */}
+        {showLeaderboardOverlay && (
+          <div className="absolute inset-0 bg-white z-60 flex flex-col">
+            <div className="relative px-4 py-3 text-center border-b shrink-0">
+              <button
+                onClick={() => setShowLeaderboardOverlay(false)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <h2 className="text-lg font-bold text-gray-900">{dictionary.leaderboardTitle}</h2>
+            </div>
+            <div className="flex-1 overflow-hidden min-h-0">
+              <LeaderboardBox
+                dictionary={dictionary}
+                userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
+                userOrganization={submittedData?.organization}
+                refreshTrigger={leaderboardRefreshTrigger}
+                fullScreen
+              />
             </div>
           </div>
         )}

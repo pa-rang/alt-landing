@@ -26,6 +26,7 @@ import { Copy, Check } from "lucide-react";
 import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
 import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
 import { ScoreDisplay } from "./ScoreDisplay";
+import { TimeProgressBar } from "../shared/TimeProgressBar";
 import type { Cell } from "../shared/types";
 
 type SquareTomatoGameProps = {
@@ -512,17 +513,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   >
                     {formatTime(timeLeft)}
                   </span>
-                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden relative min-w-[80px]">
-                    <div
-                      className={cn(
-                        "h-full transition-all duration-300 ease-linear",
-                        timeLeft > 30 ? "bg-emerald-500" : timeLeft > 10 ? "bg-yellow-500" : "bg-red-500"
-                      )}
-                      style={{
-                        width: `${(timeLeft / GAME_SECONDS) * 100}%`,
-                      }}
-                    />
-                  </div>
+                  <TimeProgressBar timeLeft={timeLeft} totalTime={GAME_SECONDS} />
                   <VolumeControl
                     volume={bgmVolume}
                     isMuted={isMuted}
