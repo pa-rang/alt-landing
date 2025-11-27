@@ -82,8 +82,8 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
           )}
 
           {/* 게임 화면 */}
-          {showGame && (
-            isMobile ? (
+          {showGame &&
+            (isMobile ? (
               <MobileSquareTomatoGame
                 onClose={() => {
                   router.push(`/${locale}`);
@@ -97,8 +97,7 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
                 }}
                 dictionary={dictionary}
               />
-            )
-          )}
+            ))}
         </div>
       )}
     </>

@@ -19,6 +19,7 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
+import { useOrientationLock } from "@/hooks/useOrientationLock";
 import { GameScoreSubmit } from "./ScoreSubmit";
 import { LeaderboardBox } from "./LeaderboardBox";
 
@@ -66,6 +67,9 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
   const [cellSize, setCellSize] = useState<number>(20);
   // 뷰포트 크기 상태 (초기값은 최소값으로 설정하여 깜빡임 방지)
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+
+  // 화면 방향 고정 및 감지 (세로 모드로 잠금)
+  const { deviceOrientation } = useOrientationLock({ lockTo: "portrait" });
 
   // BGM 초기화
   useEffect(() => {
@@ -132,14 +136,23 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
 
       setViewportSize({ width, height });
 
-      // 90도 회전 후 가용 공간 계산
-      // 회전되었으므로 너비가 높이가 되고, 높이가 너비가 됨
-      const rotatedWidth = height;
-      const rotatedHeight = width;
+      // 현재 기기 방향 감지
+      let isCurrentlyPortrait = true;
+      if (typeof window.orientation === "number") {
+        isCurrentlyPortrait = Math.abs(window.orientation) !== 90;
+      } else if (screen.orientation) {
+        isCurrentlyPortrait = !screen.orientation.type.includes("landscape");
+      } else {
+        isCurrentlyPortrait = height > width;
+      }
+
+      // 가용 공간 계산 (세로 모드일 때는 회전 후 크기, 가로 모드일 때는 그대로)
+      const containerWidth = isCurrentlyPortrait ? height : width;
+      const containerHeight = isCurrentlyPortrait ? width : height;
 
       const fixedUIHeight = HEADER_HEIGHT + TAB_HEIGHT + INFO_BAR_HEIGHT + PADDING * 3;
-      const availableHeight = rotatedHeight - fixedUIHeight;
-      const availableWidth = rotatedWidth - PADDING * 2;
+      const availableHeight = containerHeight - fixedUIHeight;
+      const availableWidth = containerWidth - PADDING * 2;
 
       // 그리드 셀 크기 계산
       const sizeByWidth = availableWidth / COLS;
@@ -167,7 +180,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
       window.removeEventListener("resize", updateViewportAndSize);
       window.removeEventListener("orientationchange", updateViewportAndSize);
     };
-  }, [activeTab]);
+  }, [activeTab, deviceOrientation]);
 
   // 게임 상태에 따라 BGM 재생/중지
   useEffect(() => {
@@ -470,6 +483,37 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     return null;
   }
 
+  // 기기 방향에 따른 컨테이너 스타일 계산
+  const isPortrait = deviceOrientation === "portrait";
+  const containerStyle = isPortrait
+    ? {
+        // 세로 모드: 90도 회전하여 가로로 표시
+        position: "absolute" as const,
+        width: viewportSize.height,
+        height: viewportSize.width,
+        transform: "rotate(90deg)",
+        transformOrigin: "top left",
+        top: 0,
+        left: viewportSize.width,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column" as const,
+        backgroundColor: "white",
+      }
+    : {
+        // 가로 모드: 회전 없이 그대로 표시
+        position: "absolute" as const,
+        width: viewportSize.width,
+        height: viewportSize.height,
+        transform: "none",
+        top: 0,
+        left: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column" as const,
+        backgroundColor: "white",
+      };
+
   return (
     <div
       className="fixed inset-0 bg-black z-50"
@@ -484,22 +528,8 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
         left: 0,
       }}
     >
-      {/* 90도 회전된 컨테이너 */}
-      <div
-        style={{
-          position: "absolute",
-          width: viewportSize.height, // 회전되었으므로 height가 width
-          height: viewportSize.width, // 회전되었으므로 width가 height
-          transform: "rotate(90deg)",
-          transformOrigin: "top left",
-          top: 0,
-          left: viewportSize.width, // 회전축 이동
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "white",
-        }}
-      >
+      {/* 기기 방향에 따라 조건부 회전되는 컨테이너 */}
+      <div style={containerStyle}>
         {/* 1. 헤더 - 고정 높이 */}
         <div
           className="bg-primary text-primary-foreground flex items-center justify-between shrink-0 shadow-md px-3"
