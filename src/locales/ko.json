@@ -159,6 +159,11 @@
     "checkToast": "상단 배너에서 쿠폰을 확인하세요!",
     "goToPricing": "구독하러 가기",
     "guide": "사각형으로 드래그하여 숫자 합이 정확히 10인 네모 토마토들을 제거하세요. 드래그 박스가 초록색으로 표시됩니다.",
+    "demoInstruction": "드래그하여 네모 토마토의 숫자 합을 10으로 만드세요",
+    "bestScoreLabel": "내 최고 점수",
+    "bestRankLabel": "내 최고 등수",
+    "organizationRankLabel": "내 소속 등수",
+    "rankSuffix": "위",
     "tabs": {
       "game": "네모 토마토 게임",
       "all": "전체",

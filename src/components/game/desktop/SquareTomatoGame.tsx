@@ -28,6 +28,7 @@ import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/trac
 import { BEST_SCORE_KEY, BEST_RANK_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
 import { ScoreDisplay } from "./ScoreDisplay";
 import { TimeProgressBar } from "../shared/TimeProgressBar";
+import { GameStartOverlay } from "./GameStartOverlay";
 import type { Cell } from "../shared/types";
 
 type SquareTomatoGameProps = {
@@ -704,46 +705,14 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
 
                 {/* 시작 버튼 오버레이 */}
                 {gameState === "idle" && (
-                  <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
-                    {/* Stats Display - Only show if user has played before (bestScore > 0) */}
-                    {bestScore > 0 && (
-                      <div className="flex gap-3 mb-2 animate-fade-in-up scale-90 sm:scale-100 origin-center">
-                        <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-emerald-100 min-w-[90px]">
-                          <div className="text-xs text-gray-500 font-medium mb-1">내 최고 점수</div>
-                          <Image src="/icons/🍅 tomato.svg" width={32} height={32} alt="Best Score" />
-                          <span className="font-bold text-lg text-emerald-600 mt-1">{bestScore}</span>
-                        </div>
-                        {bestRank > 0 && (
-                          <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-blue-100 min-w-[90px]">
-                            <div className="text-xs text-gray-500 font-medium mb-1">내 최고 등수</div>
-                            <Image src="/icons/🏅 sports_medal.svg" width={32} height={32} alt="Best Rank" />
-                            <span className="font-bold text-lg text-blue-600 mt-1">{bestRank}위</span>
-                          </div>
-                        )}
-                        {organizationRank > 0 && (
-                          <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-amber-100 min-w-[90px]">
-                            <div
-                              className="text-xs text-gray-500 font-medium mb-1 truncate max-w-[80px]"
-                              title={organizationName}
-                            >
-                              {organizationName || "내 소속 등수"}
-                            </div>
-                            <Image src="/icons/🏆️ trophy.svg" width={32} height={32} alt="Organization Rank" />
-                            <span className="font-bold text-lg text-amber-500 mt-1">{organizationRank}위</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm whitespace-pre-wrap">
-                      {dictionary.promoRequirement}
-                    </p>
-                    <Button size="lg" onClick={handleStart} className="text-lg px-8 py-6 shadow-lg">
-                      {dictionary.start}
-                    </Button>
-                    <p className="text-base text-gray-800 text-center px-4 max-w-md font-medium leading-relaxed">
-                      {dictionary.guide}
-                    </p>
-                  </div>
+                  <GameStartOverlay
+                    bestScore={bestScore}
+                    bestRank={bestRank}
+                    organizationRank={organizationRank}
+                    organizationName={organizationName}
+                    dictionary={dictionary}
+                    onStart={handleStart}
+                  />
                 )}
               </div>
 

@@ -13,8 +13,7 @@ export async function GET(request: Request) {
 
     // nickname과 organization을 받아서 email 형식으로 변환
     // 또는 기존 email 형식("닉네임 (학교/직장)")도 지원
-    const email =
-      nickname && organization ? `${nickname} (${organization})` : emailParam;
+    const email = nickname && organization ? `${nickname} (${organization})` : emailParam;
 
     if (!email && !organization) {
       return NextResponse.json(

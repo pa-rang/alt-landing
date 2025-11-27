@@ -170,6 +170,11 @@
     "checkToast": "Check the banner above for your code!",
     "goToPricing": "Go to Pricing",
     "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
+    "demoInstruction": "Drag to make the sum of square tomatoes equal to 10",
+    "bestScoreLabel": "My Best Score",
+    "bestRankLabel": "My Best Rank",
+    "organizationRankLabel": "My Organization Rank",
+    "rankSuffix": "",
     "tabs": {
       "game": "Game",
       "all": "All",
