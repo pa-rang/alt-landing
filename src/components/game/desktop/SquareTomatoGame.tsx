@@ -480,8 +480,11 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
       )}
 
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
-        <div className="flex items-center justify-between px-4 sm:px-4 py-3">
-          <div className="font-semibold text-lg sm:text-xl text-white select-none" onClick={handleTitleClick}>
+        <div className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-4 py-3 gap-4 lg:gap-0">
+          <div
+            className="font-semibold text-lg sm:text-xl text-white select-none text-center lg:text-left"
+            onClick={handleTitleClick}
+          >
             {dictionary.gameTitle}
             <br />
             {dictionary.gameSubtitle}
@@ -506,7 +509,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   height={20}
                 />
                 <span className="hidden sm:inline">
-                  {currentPromoType === "super" ? dictionary.superPromoCodeDescription : dictionary.promoCodeDescription}
+                  {currentPromoType === "super"
+                    ? dictionary.superPromoCodeDescription
+                    : dictionary.promoCodeDescription}
                 </span>
               </Button>
             )}
@@ -519,7 +524,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
         {/* 게임 박스와 리더보드 박스 */}
         <div className="flex flex-col lg:flex-row gap-4 p-4 overflow-auto flex-1">
           {/* 게임 박스 */}
-          <div className="flex-1 bg-white rounded-lg border shadow-sm flex flex-col">
+          <div className="flex-none lg:flex-1 bg-white rounded-lg border shadow-sm flex flex-col">
             <div className="px-4 py-3 border-b">
               <h3 className="font-semibold text-lg">{dictionary.tabs.game}</h3>
             </div>
@@ -715,7 +720,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
           </div>
 
           {/* 리더보드 박스 */}
-          <div className="flex-1">
+          <div className="flex-none h-[500px] lg:h-auto lg:flex-1">
             <LeaderboardBox
               dictionary={dictionary}
               userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
