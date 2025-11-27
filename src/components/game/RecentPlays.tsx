@@ -62,6 +62,15 @@ export function RecentPlays({ className, refreshTrigger }: RecentPlaysProps) {
     fetchRecentPlays();
   }, [fetchRecentPlays, refreshTrigger]);
 
+  // 10초마다 최근 플레이 데이터 풀링
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchRecentPlays();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [fetchRecentPlays]);
+
   // 롤업 애니메이션: 3초마다 다음 항목으로 전환
   useEffect(() => {
     if (plays.length <= 1) return;
@@ -136,6 +145,15 @@ export function RecentPlaysDesktop({ className, refreshTrigger }: RecentPlaysPro
   useEffect(() => {
     fetchRecentPlays();
   }, [fetchRecentPlays, refreshTrigger]);
+
+  // 10초마다 최근 플레이 데이터 풀링
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchRecentPlays();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [fetchRecentPlays]);
 
   // 롤업 애니메이션: 3초마다 다음 항목으로 전환
   useEffect(() => {

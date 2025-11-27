@@ -590,7 +590,6 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                   </div>
 
                   <div className="flex items-center gap-1">
-                    <RecentPlays refreshTrigger={leaderboardRefreshTrigger} />
                     <button
                       onClick={toggleMute}
                       className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -737,6 +736,9 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                         <Trophy className="w-5 h-5" />
                         {dictionary.leaderboardTitle}
                       </Button>
+                      <div className="mt-3">
+                        <RecentPlays refreshTrigger={leaderboardRefreshTrigger} />
+                      </div>
                       <p className="mt-4 text-xs text-gray-600 font-medium">{dictionary.guide}</p>
                     </div>
                   )}
