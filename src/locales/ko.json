@@ -161,8 +161,8 @@
     "guide": "사각형으로 드래그하여 숫자 합이 정확히 10인 네모 토마토들을 제거하세요. 드래그 박스가 초록색으로 표시됩니다.",
     "tabs": {
       "game": "네모 토마토 게임",
-      "personalLeaderboard": "개인 순위",
-      "organizationLeaderboard": "학교/직장 순위"
+      "personalLeaderboard": "개인",
+      "organizationLeaderboard": "학교/직장"
     },
     "leaderboardTitle": "리더보드",
     "leaderboard": {

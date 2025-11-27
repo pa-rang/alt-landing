@@ -72,7 +72,7 @@ export function GameLeaderboard({
   if (state.status === "loading") {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">{dictionary.loading}</div>
+        <div className="text-zinc-400">{dictionary.loading}</div>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export function GameLeaderboard({
   if (state.status === "error") {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-red-500">{state.message}</div>
+        <div className="text-red-400">{state.message}</div>
       </div>
     );
   }
@@ -88,7 +88,7 @@ export function GameLeaderboard({
   if (state.data.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">{dictionary.empty}</div>
+        <div className="text-zinc-400">{dictionary.empty}</div>
       </div>
     );
   }
@@ -96,19 +96,19 @@ export function GameLeaderboard({
   return (
     <div className="overflow-auto max-h-[460px]">
       <table className="w-full text-sm">
-        <thead className="sticky top-0 bg-gray-50 border-b">
+        <thead className="sticky top-0 bg-zinc-800 border-b border-zinc-700">
           <tr>
-            <th className="px-4 py-2 text-left font-semibold">{dictionary.rank}</th>
+            <th className="px-4 py-2 text-left font-semibold text-zinc-200">{dictionary.rank}</th>
             {type === "personal" ? (
               <>
-                <th className="px-4 py-2 text-left font-semibold">{dictionary.nickname}</th>
-                <th className="px-4 py-2 text-right font-semibold">{dictionary.score}</th>
+                <th className="px-4 py-2 text-left font-semibold text-zinc-200">{dictionary.nickname}</th>
+                <th className="px-4 py-2 text-right font-semibold text-zinc-200">{dictionary.score}</th>
               </>
             ) : (
               <>
-                <th className="px-4 py-2 text-left font-semibold">{dictionary.organization}</th>
-                <th className="px-4 py-2 text-right font-semibold">{dictionary.totalScore}</th>
-                <th className="px-4 py-2 text-right font-semibold">{dictionary.members}</th>
+                <th className="px-4 py-2 text-left font-semibold text-zinc-200">{dictionary.organization}</th>
+                <th className="px-4 py-2 text-right font-semibold text-zinc-200">{dictionary.totalScore}</th>
+                <th className="px-4 py-2 text-right font-semibold text-zinc-200">{dictionary.members}</th>
               </>
             )}
           </tr>
@@ -133,8 +133,8 @@ export function GameLeaderboard({
                     : `rank-${index}`
                 }
                 className={cn(
-                  "border-b hover:bg-gray-50 transition-colors",
-                  isCurrentUser && "bg-blue-50 hover:bg-blue-100 font-semibold"
+                  "border-b border-zinc-700 hover:bg-zinc-800 transition-colors text-zinc-200",
+                  isCurrentUser && "bg-blue-900/30 hover:bg-blue-900/40 font-semibold"
                 )}
               >
                 <td className="px-4 py-2">
@@ -143,7 +143,7 @@ export function GameLeaderboard({
                       {rank}
                     </span>
                   ) : rank === 2 ? (
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 text-white text-xs font-bold">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-zinc-300 to-zinc-500 text-white text-xs font-bold">
                       {rank}
                     </span>
                   ) : rank === 3 ? (
@@ -159,8 +159,8 @@ export function GameLeaderboard({
                     <td className="px-4 py-2">
                       <div className="flex items-center gap-2">
                         <span>{entry.nickname}</span>
-                        {entry.organization && <span className="text-xs text-gray-500">{entry.organization}</span>}
-                        {isCurrentUser && <span className="text-xs text-blue-600">({dictionary.you})</span>}
+                        {entry.organization && <span className="text-xs text-zinc-400">{entry.organization}</span>}
+                        {isCurrentUser && <span className="text-xs text-blue-400">({dictionary.you})</span>}
                       </div>
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.score}</td>
@@ -169,7 +169,7 @@ export function GameLeaderboard({
                   <>
                     <td className="px-4 py-2">
                       {entry.organization}
-                      {isCurrentUser && <span className="ml-2 text-xs text-blue-600">({dictionary.you})</span>}
+                      {isCurrentUser && <span className="ml-2 text-xs text-blue-400">({dictionary.you})</span>}
                     </td>
                     <td className="px-4 py-2 text-right font-mono">{entry.total_score}</td>
                     <td className="px-4 py-2 text-right">{entry.member_count}</td>

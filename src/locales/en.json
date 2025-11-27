@@ -172,8 +172,8 @@
     "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
     "tabs": {
       "game": "Game",
-      "personalLeaderboard": "Personal Rank",
-      "organizationLeaderboard": "Organization Rank"
+      "personalLeaderboard": "Personal",
+      "organizationLeaderboard": "Organization"
     },
     "leaderboardTitle": "Leaderboard",
     "leaderboard": {
