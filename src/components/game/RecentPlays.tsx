@@ -99,26 +99,26 @@ export function RecentPlays({ className, refreshTrigger }: RecentPlaysProps) {
   const currentPlay = plays[currentIndex];
 
   return (
-    <div className={`flex items-center gap-1.5 ${className || ""}`}>
-      <Image
-        src="/icons/🎮️ game_light.svg"
-        alt="game"
-        width={16}
-        height={16}
-        className="shrink-0"
-      />
+    <div className={`flex items-center gap-1.5 transition-all duration-300 ease-out ${className || ""}`}>
+      <Image src="/icons/🎮️ game_light.svg" alt="game" width={16} height={16} className="shrink-0" />
       <div
         className={`flex items-center gap-1 text-xs transition-all duration-300 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}
       >
-        <span className="font-medium text-gray-800 truncate max-w-[60px]">{currentPlay.nickname}</span>
+        <span className="font-medium text-gray-800 truncate max-w-[60px] transition-all duration-300">
+          {currentPlay.nickname}
+        </span>
         <span className="text-gray-400">·</span>
-        <span className="text-gray-600 truncate max-w-[50px]">{currentPlay.organization}</span>
+        <span className="text-gray-600 truncate max-w-[50px] transition-all duration-300">
+          {currentPlay.organization}
+        </span>
         <span className="text-gray-400">·</span>
-        <span className="font-semibold text-emerald-600">{currentPlay.score}점</span>
+        <span className="font-semibold text-emerald-600 transition-all duration-300">{currentPlay.score}점</span>
         <span className="text-gray-400">·</span>
-        <span className="text-gray-500 whitespace-nowrap">{formatTimeAgo(currentPlay.created_at)}</span>
+        <span className="text-gray-500 whitespace-nowrap transition-all duration-300">
+          {formatTimeAgo(currentPlay.created_at)}
+        </span>
       </div>
     </div>
   );
@@ -180,29 +180,28 @@ export function RecentPlaysDesktop({ className, refreshTrigger }: RecentPlaysPro
 
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-sm ${className || ""}`}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-300 ease-out ${
+        className || ""
+      }`}
     >
-      <Image
-        src="/icons/🎮️ game_light.svg"
-        alt="game"
-        width={20}
-        height={20}
-        className="shrink-0"
-      />
+      <Image src="/icons/🎮️ game_light.svg" alt="game" width={20} height={20} className="shrink-0" />
       <div
         className={`flex items-center gap-1.5 text-sm text-white transition-all duration-300 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}
       >
-        <span className="font-medium truncate max-w-[80px]">{currentPlay.nickname}</span>
+        <span className="font-medium truncate max-w-[80px] transition-all duration-300">{currentPlay.nickname}</span>
         <span className="text-white/60">·</span>
-        <span className="text-white/80 truncate max-w-[80px]">{currentPlay.organization}</span>
+        <span className="text-white/80 truncate max-w-[80px] transition-all duration-300">
+          {currentPlay.organization}
+        </span>
         <span className="text-white/60">·</span>
-        <span className="font-semibold text-emerald-400">{currentPlay.score}점</span>
+        <span className="font-semibold text-emerald-400 transition-all duration-300">{currentPlay.score}점</span>
         <span className="text-white/60">·</span>
-        <span className="text-white/70 whitespace-nowrap">{formatTimeAgo(currentPlay.created_at)}</span>
+        <span className="text-white/70 whitespace-nowrap transition-all duration-300">
+          {formatTimeAgo(currentPlay.created_at)}
+        </span>
       </div>
     </div>
   );
 }
-
