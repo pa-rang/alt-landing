@@ -593,7 +593,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                     <button
                       onClick={toggleMute}
                       className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                      aria-label={isMuted ? "음소거 해제" : "음소거"}
+                      aria-label={isMuted ? dictionary.unmute : dictionary.mute}
                     >
                       {isMuted ? (
                         <VolumeX className="w-3.5 h-3.5 text-gray-500" />
@@ -605,7 +605,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                       <button
                         onClick={() => setShowPromoCodeModal(true)}
                         className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                        aria-label="할인코드 보기"
+                        aria-label={dictionary.viewPromoCode}
                       >
                         <Ticket className="w-3.5 h-3.5 text-gray-700" />
                       </button>
@@ -737,7 +737,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                         {dictionary.leaderboardTitle}
                       </Button>
                       <div className="mt-3">
-                        <RecentPlays refreshTrigger={leaderboardRefreshTrigger} />
+                        <RecentPlays refreshTrigger={leaderboardRefreshTrigger} dictionary={dictionary} />
                       </div>
                       <p className="mt-4 text-xs text-gray-600 font-medium">{dictionary.guide}</p>
                     </div>

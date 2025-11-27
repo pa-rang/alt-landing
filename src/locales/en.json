@@ -190,8 +190,40 @@
       "error": "Failed to load leaderboard.",
       "empty": "No scores recorded yet.",
       "you": "You",
-      "viewAll": "View All"
+      "viewAll": "View All",
+      "refresh": "Refresh",
+      "top5": "Top 5",
+      "timeAgo": {
+        "secondsAgo": "{{seconds}}s ago",
+        "minutesAgo": "{{minutes}}m ago",
+        "hoursAgo": "{{hours}}h ago",
+        "daysAgo": "{{days}}d ago",
+        "weeksAgo": "{{weeks}}w ago"
+      },
+      "rankLabels": {
+        "first": "1st",
+        "second": "2nd",
+        "third": "3rd"
+      }
     },
+    "refresh": "Refresh",
+    "pointsUnit": " points",
+    "animationText": {
+      "getCoupon": "Get coupon",
+      "if": "if",
+      "you": "you",
+      "can": "can"
+    },
+    "homeButton": "Go Home",
+    "gameTitle": "Alt is an Al Lecture·Meeting Notetaker with no time limits.",
+    "gameSubtitle": "Score 60 points and get a Pro coupon",
+    "promoCodeTitle": "Promo Code",
+    "noPromoCode": "No promo codes unlocked yet.",
+    "promoCodeRequirement": "Score 60+ to unlock a promo code.",
+    "copyPromoCode": "Copy promo code",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "viewPromoCode": "View Promo Code",
     "scoreSubmit": {
       "title": "Submit to Leaderboard",
       "description": "Submit your score and compete with others!",

@@ -437,7 +437,11 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   height={28}
                   className="animate-bounce"
                 />
-                <span>{currentPromoType === "super" ? "Pro Plan 1개월 무료 이용권" : "Pro Plan $1 이용권"}</span>
+                <span>
+                  {currentPromoType === "super"
+                    ? dictionary.superPromoCodeDescription
+                    : dictionary.promoCodeDescription}
+                </span>
               </div>
               <p className="text-sm text-white/90 mt-1">
                 {currentPromoType === "super"
@@ -454,7 +458,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                 <button
                   onClick={() => handleCopyPromoCode(currentPromoType === "super")}
                   className="ml-2 p-1 hover:bg-white/20 rounded transition-colors"
-                  aria-label="Copy promo code"
+                  aria-label={dictionary.copyPromoCode}
                 >
                   {promoCodeCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
                 </button>
@@ -478,12 +482,12 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
           <div className="font-semibold text-lg sm:text-xl text-white select-none" onClick={handleTitleClick}>
-            Alt는 시간제한없는 AI 강의 필기·요약앱입니다.
+            {dictionary.gameTitle}
             <br />
-            60점을 달성하고 Pro 쿠폰을 획득하세요
+            {dictionary.gameSubtitle}
           </div>
           <div className="flex items-center gap-2">
-            <RecentPlaysDesktop refreshTrigger={leaderboardRefreshTrigger} />
+            <RecentPlaysDesktop refreshTrigger={leaderboardRefreshTrigger} dictionary={dictionary} />
             {currentPromoType && (
               <Button
                 ref={promoBannerButtonRef}
@@ -501,11 +505,13 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   width={20}
                   height={20}
                 />
-                <span className="hidden sm:inline">{currentPromoType === "super" ? "1개월 무료" : "$1 이용권"}</span>
+                <span className="hidden sm:inline">
+                  {currentPromoType === "super" ? dictionary.superPromoCodeDescription : dictionary.promoCodeDescription}
+                </span>
               </Button>
             )}
             <Button className="text-white bg-white/15" onClick={handleClose}>
-              홈 이동
+              {dictionary.homeButton}
             </Button>
           </div>
         </div>

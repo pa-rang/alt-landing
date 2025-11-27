@@ -12,7 +12,9 @@ type TabSwitcherProps<T extends string> = {
 
 export function TabSwitcher<T extends string>({ tabs, activeTab, onTabChange, className }: TabSwitcherProps<T>) {
   return (
-    <div className={cn("flex p-0.5 bg-zinc-800 rounded-lg relative", className)}>
+    <div
+      className={cn("flex p-0.5 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg relative", className)}
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
         return (
@@ -20,7 +22,7 @@ export function TabSwitcher<T extends string>({ tabs, activeTab, onTabChange, cl
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
             className={cn(
-              "relative flex-1 px-2 py-1 text-sm font-medium transition-colors z-10",
+              "relative flex-1 px-2 py-1 text-sm font-medium transition-colors z-10 whitespace-nowrap",
               isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200"
             )}
           >
@@ -32,7 +34,7 @@ export function TabSwitcher<T extends string>({ tabs, activeTab, onTabChange, cl
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
             )}
-            <span className="relative z-10">{tab.label}</span>
+            <span className="relative z-10 whitespace-nowrap">{tab.label}</span>
           </button>
         );
       })}

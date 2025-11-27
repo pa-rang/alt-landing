@@ -85,7 +85,7 @@ export function ScoreSubmitModal({
           <X className="w-5 h-5" />
         </button>
         <h2 className="text-lg font-bold text-gray-900">
-          {score >= PROMO_THRESHOLD_SCORE ? dictionary.gameOverCongratulations : "Game Over"}
+          {score >= PROMO_THRESHOLD_SCORE ? dictionary.gameOverCongratulations : dictionary.gameOver}
         </h2>
         {score < PROMO_THRESHOLD_SCORE && (
           <p className="text-xs text-gray-500 mt-1">

@@ -49,8 +49,8 @@ export function LeaderboardBox({
   };
 
   return (
-    <div className={cn("bg-white/10 flex flex-col h-full", fullScreen ? "" : "rounded-lg shadow-sm")}>
-      <div className="flex items-center justify-between px-3 py-3 shrink-0 min-h-[53px] bg-transparent">
+    <div className={cn("bg-zinc-900 flex flex-col h-full", fullScreen ? "" : "rounded-lg shadow-sm")}>
+      <div className="flex items-center justify-between px-3 py-3 shrink-0 min-h-[53px]">
         <TabSwitcher<LeaderboardTabType>
           tabs={[
             { key: "all", label: dictionary.tabs.all },
@@ -63,8 +63,8 @@ export function LeaderboardBox({
         <button
           onClick={handleRefresh}
           className="p-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded-full transition-colors"
-          aria-label="새로고침"
-          title="새로고침"
+          aria-label={dictionary.refresh}
+          title={dictionary.refresh}
         >
           <RotateCw className="w-4 h-4" />
         </button>
@@ -76,6 +76,7 @@ export function LeaderboardBox({
           <GameLeaderboard
             type="all"
             dictionary={dictionary.leaderboard}
+            gameDictionary={dictionary}
             userEmail={userEmail}
             userOrganization={userOrganization}
             refreshTrigger={allRefreshTrigger}
@@ -86,6 +87,7 @@ export function LeaderboardBox({
           <GameLeaderboard
             type="personal"
             dictionary={dictionary.leaderboard}
+            gameDictionary={dictionary}
             userEmail={userEmail}
             refreshTrigger={personalRefreshTrigger}
           />
@@ -94,6 +96,7 @@ export function LeaderboardBox({
           <GameLeaderboard
             type="organization"
             dictionary={dictionary.leaderboard}
+            gameDictionary={dictionary}
             userOrganization={userOrganization}
             refreshTrigger={organizationRefreshTrigger}
           />

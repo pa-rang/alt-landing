@@ -19,6 +19,7 @@ interface RecentPlay {
 type GameLeaderboardProps = {
   type: LeaderboardType;
   dictionary: Dictionary["game"]["leaderboard"];
+  gameDictionary: Dictionary["game"];
   userEmail?: string;
   userOrganization?: string;
   refreshTrigger?: number;
@@ -45,33 +46,34 @@ type LeaderboardState =
       type: "all";
     };
 
-function formatTimeAgo(dateString: string): string {
+function formatTimeAgo(dateString: string, timeAgoDict: Dictionary["game"]["leaderboard"]["timeAgo"]): string {
   const now = new Date();
   const date = new Date(dateString);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return `${diffInSeconds}초전`;
+    return timeAgoDict.secondsAgo.replace("{{seconds}}", String(diffInSeconds));
   }
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
-    return `${diffInMinutes}분전`;
+    return timeAgoDict.minutesAgo.replace("{{minutes}}", String(diffInMinutes));
   }
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
-    return `${diffInHours}시간전`;
+    return timeAgoDict.hoursAgo.replace("{{hours}}", String(diffInHours));
   }
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) {
-    return `${diffInDays}일전`;
+    return timeAgoDict.daysAgo.replace("{{days}}", String(diffInDays));
   }
   const diffInWeeks = Math.floor(diffInDays / 7);
-  return `${diffInWeeks}주전`;
+  return timeAgoDict.weeksAgo.replace("{{weeks}}", String(diffInWeeks));
 }
 
 export function GameLeaderboard({
   type,
   dictionary,
+  gameDictionary,
   userEmail,
   userOrganization,
   refreshTrigger,
@@ -141,7 +143,7 @@ export function GameLeaderboard({
     return () => {
       mounted = false;
     };
-  }, [type, dictionary.error, refreshTrigger]);
+  }, [type, dictionary.error, refreshTrigger, gameDictionary]);
 
   if (state.status === "loading") {
     return (
@@ -166,7 +168,7 @@ export function GameLeaderboard({
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
-              {dictionary.organization} Top 5
+              {dictionary.organization} {dictionary.top5}
             </h3>
             {onTabChange && (
               <Button
@@ -243,7 +245,7 @@ export function GameLeaderboard({
         <div className="space-y-3">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
-              {dictionary.personal} Top 5
+              {dictionary.personal} {dictionary.top5}
             </h3>
             {onTabChange && (
               <Button
@@ -272,11 +274,17 @@ export function GameLeaderboard({
                     >
                       <td className="px-3 py-2.5 w-12">
                         {rank === 1 ? (
-                          <Image src="/icons/🥇 gold_medal.svg" alt="1등" width={20} height={20} className="shrink-0" />
+                          <Image
+                            src="/icons/🥇 gold_medal.svg"
+                            alt={dictionary.rankLabels.first}
+                            width={20}
+                            height={20}
+                            className="shrink-0"
+                          />
                         ) : rank === 2 ? (
                           <Image
                             src="/icons/🥈 silver_medal.svg"
-                            alt="2등"
+                            alt={dictionary.rankLabels.second}
                             width={20}
                             height={20}
                             className="shrink-0"
@@ -284,7 +292,7 @@ export function GameLeaderboard({
                         ) : rank === 3 ? (
                           <Image
                             src="/icons/🥉 bronze_medal.svg"
-                            alt="3등"
+                            alt={dictionary.rankLabels.third}
                             width={20}
                             height={20}
                             className="shrink-0"
@@ -342,9 +350,11 @@ export function GameLeaderboard({
                       <span className="text-zinc-500 text-xs truncate">{play.organization}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0 ml-2">
+                  <div className="flex items-center gap-3 shrink-0 ml-2 flex-nowrap">
                     <span className="font-mono text-emerald-500 font-medium">{play.score}</span>
-                    <span className="text-xs text-zinc-600 w-12 text-right">{formatTimeAgo(play.created_at)}</span>
+                    <span className="text-xs text-zinc-600 shrink-0 whitespace-nowrap text-right">
+                      {formatTimeAgo(play.created_at, dictionary.timeAgo)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -369,7 +379,7 @@ export function GameLeaderboard({
 
   if (state.status === "success" && (state.type === "personal" || state.type === "organization")) {
     return (
-      <div className="overflow-auto max-h-[460px]">
+      <div className="h-full overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-zinc-800 border-b border-zinc-700 z-10">
             <tr>
@@ -408,17 +418,35 @@ export function GameLeaderboard({
                       : `rank-${index}`
                   }
                   className={cn(
-                    "border-b border-zinc-700 hover:bg-zinc-800 transition-colors text-zinc-200",
+                    "border-b border-zinc-700 last:border-0 hover:bg-zinc-800 transition-colors text-zinc-200",
                     isCurrentUser && "bg-blue-900/30 hover:bg-blue-900/40 font-semibold"
                   )}
                 >
                   <td className="px-4 py-2">
                     {rank === 1 ? (
-                      <Image src="/icons/🥇 gold_medal.svg" alt="1등" width={24} height={24} className="shrink-0" />
+                      <Image
+                        src="/icons/🥇 gold_medal.svg"
+                        alt={dictionary.rankLabels.first}
+                        width={24}
+                        height={24}
+                        className="shrink-0"
+                      />
                     ) : rank === 2 ? (
-                      <Image src="/icons/🥈 silver_medal.svg" alt="2등" width={24} height={24} className="shrink-0" />
+                      <Image
+                        src="/icons/🥈 silver_medal.svg"
+                        alt={dictionary.rankLabels.second}
+                        width={24}
+                        height={24}
+                        className="shrink-0"
+                      />
                     ) : rank === 3 ? (
-                      <Image src="/icons/🥉 bronze_medal.svg" alt="3등" width={24} height={24} className="shrink-0" />
+                      <Image
+                        src="/icons/🥉 bronze_medal.svg"
+                        alt={dictionary.rankLabels.third}
+                        width={24}
+                        height={24}
+                        className="shrink-0"
+                      />
                     ) : (
                       <span>{rank}</span>
                     )}
