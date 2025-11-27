@@ -3,7 +3,7 @@ export const TOMATO_COLS = 17;
 export const TOMATO_TOTAL_CELLS = TOMATO_ROWS * TOMATO_COLS;
 export const GAME_SECONDS = 120;
 export const PROMO_THRESHOLD_SCORE = 60; // 이 점수 이상이면 TOMATOPASS 프로모션 코드 획득 가능
-export const PROMO_CODE = "TOMATOPASS"; // Pro Plan 3개월 $2 프로모션 코드
+export const PROMO_CODE = "TOMATOPASS"; // Pro Plan $1 프로모션 코드
 
 export const SUPER_PROMO_THRESHOLD_SCORE = 100; // 이 점수 이상이면 SUPERTOMATO 프로모션 코드 획득 가능
 export const SUPER_PROMO_CODE = "SUPERTOMATO"; // Pro Plan 1개월 무료 (10장 한정)
