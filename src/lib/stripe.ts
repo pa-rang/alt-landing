@@ -4,6 +4,8 @@ type StripeMode = "test" | "live";
 
 const STRIPE_MODE = (process.env.STRIPE_MODE === "live" ? "live" : "test") satisfies StripeMode;
 
+console.log(`🔌 [STRIPE] Initialized in ${STRIPE_MODE.toUpperCase()} mode`);
+
 type StripeConfig = {
   secretKey: string | undefined;
   webhookSecret: string | undefined;
