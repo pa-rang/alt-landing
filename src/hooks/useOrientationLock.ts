@@ -97,4 +97,3 @@ export function useOrientationLock(options: UseOrientationLockOptions = {}): Use
     isLandscape: deviceOrientation === "landscape",
   };
 }
-

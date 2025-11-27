@@ -20,39 +20,16 @@ import {
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { useOrientationLock } from "@/hooks/useOrientationLock";
-import { GameScoreSubmit } from "./ScoreSubmit";
-import { LeaderboardBox } from "./LeaderboardBox";
-
-// GA4 이벤트 추적 함수들 (SquareTomatoGame과 동일)
-function trackGameStart() {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "game_start", {
-      event_category: "game",
-      event_label: "game_play_start",
-      timestamp: new Date().toISOString(),
-    });
-  }
-}
-
-const BEST_SCORE_KEY = "squareTomatoGameBestScore";
-const PROMO_UNLOCKED_KEY = "squareTomatoGamePromoUnlocked";
-const SUPER_PROMO_UNLOCKED_KEY = "squareTomatoGameSuperPromoUnlocked";
-
-// 고정 UI 높이 상수 (px)
-const HEADER_HEIGHT = 48;
-const TAB_HEIGHT = 44;
-const INFO_BAR_HEIGHT = 48;
-const PADDING = 8;
+import { GameScoreSubmit } from "../ScoreSubmit";
+import { LeaderboardBox } from "../LeaderboardBox";
+import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
+import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
+import { HEADER_HEIGHT, TAB_HEIGHT, INFO_BAR_HEIGHT, PADDING } from "./constants";
+import type { Cell } from "../shared/types";
 
 type MobileSquareTomatoGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
-};
-
-type Cell = {
-  id: number;
-  value: number;
-  removed: boolean;
 };
 
 export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareTomatoGameProps) {
@@ -258,7 +235,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     return () => clearInterval(timer);
   }, [gameState, timeLeft]);
 
-  // 게임 종료 로직 (SquareTomatoGame과 동일)
+  // 게임 종료 로직
   useEffect(() => {
     if (gameState === "ended") {
       if (score > bestScore) {
@@ -410,7 +387,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
 
   const handleStart = useCallback(() => {
     if (gameState === "idle") {
-      trackGameStart();
+      trackGameStart("mobile");
       resetGame();
       setGameState("running");
     }
@@ -607,12 +584,28 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                     )}
                   </button>
                   {gameState === "running" && (
-                    <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={resetGame}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs px-2"
+                      onClick={() => {
+                        trackGameRetry("mobile");
+                        resetGame();
+                      }}
+                    >
                       {dictionary.retry}
                     </Button>
                   )}
                   {gameState === "ended" && (
-                    <Button size="sm" variant="default" className="h-7 text-xs px-2" onClick={resetGame}>
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="h-7 text-xs px-2"
+                      onClick={() => {
+                        trackGameRestart("mobile");
+                        resetGame();
+                      }}
+                    >
                       {dictionary.restart}
                     </Button>
                   )}

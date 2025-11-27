@@ -19,80 +19,18 @@ import {
   generateValues,
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
-import { GameScoreSubmit } from "./ScoreSubmit";
-import { LeaderboardBox } from "./LeaderboardBox";
-import { VolumeControl } from "./VolumeControl";
+import { GameScoreSubmit } from "../ScoreSubmit";
+import { LeaderboardBox } from "../LeaderboardBox";
+import { VolumeControl } from "../VolumeControl";
 import { Copy, Check } from "lucide-react";
-
-// GA4 이벤트 추적 함수들
-function trackGameStart() {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "game_start", {
-      event_category: "game",
-      event_label: "game_play_start",
-      timestamp: new Date().toISOString(),
-    });
-  }
-}
-
-function trackGameRetry() {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "game_retry", {
-      event_category: "game",
-      event_label: "game_retry_during_play",
-      timestamp: new Date().toISOString(),
-    });
-  }
-}
-
-function trackGameRestart() {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "game_restart", {
-      event_category: "game",
-      event_label: "game_restart_after_end",
-      timestamp: new Date().toISOString(),
-    });
-  }
-}
-
-const BEST_SCORE_KEY = "squareTomatoGameBestScore";
-const PROMO_UNLOCKED_KEY = "squareTomatoGamePromoUnlocked";
-const SUPER_PROMO_UNLOCKED_KEY = "squareTomatoGameSuperPromoUnlocked";
-
-type ScoreDisplayProps = {
-  gameState: "idle" | "running" | "ended";
-  currentScore: number;
-  bestScore: number;
-  scoreLabel: string;
-};
-
-function ScoreDisplay({ gameState, currentScore, bestScore, scoreLabel }: ScoreDisplayProps) {
-  if (gameState === "idle") {
-    // 게임 시작 전: BEST 점수만 표시
-    return (
-      <span className="px-3 py-1 rounded-md bg-blue-100 text-blue-800">
-        BEST <b>{bestScore > 0 ? bestScore : 0}</b>
-      </span>
-    );
-  }
-
-  // 게임 진행 중: 현재 점수만 표시
-  return (
-    <span className="px-3 py-1 rounded-md bg-gray-100">
-      {scoreLabel} <b>{currentScore}</b>
-    </span>
-  );
-}
+import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
+import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
+import { ScoreDisplay } from "./ScoreDisplay";
+import type { Cell } from "../shared/types";
 
 type SquareTomatoGameProps = {
   onClose: () => void;
   dictionary: Dictionary["game"];
-};
-
-type Cell = {
-  id: number;
-  value: number;
-  removed: boolean;
 };
 
 export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps) {
@@ -391,7 +329,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
   const handleStart = useCallback(() => {
     if (gameState === "idle") {
       // GA4 이벤트 추적
-      trackGameStart();
+      trackGameStart("desktop");
       resetGame();
       setGameState("running");
     }
@@ -604,7 +542,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   <Button
                     variant="default"
                     onClick={() => {
-                      trackGameRetry();
+                      trackGameRetry("desktop");
                       resetGame();
                     }}
                   >
@@ -615,7 +553,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                   <Button
                     variant="default"
                     onClick={() => {
-                      trackGameRestart();
+                      trackGameRestart("desktop");
                       resetGame();
                     }}
                   >
