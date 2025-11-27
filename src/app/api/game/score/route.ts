@@ -155,6 +155,13 @@ export async function POST(request: Request) {
 
     const rank = rankResult.rows[0]?.rank || 1;
 
+    // 모든 플레이 기록을 로그 테이블에 저장 (슬랙 노티와 동일하게)
+    await query(
+      `INSERT INTO public.game_play_logs (nickname, organization, score, created_at)
+       VALUES ($1, $2, $3, NOW())`,
+      [nickname, organization, score]
+    );
+
     // Slack 알림 전송 (비동기, fire-and-forget)
     setImmediate(() => {
       sendGameScoreNotification(savedScore)

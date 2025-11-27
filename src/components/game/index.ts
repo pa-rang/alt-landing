@@ -3,3 +3,4 @@ export { MobileSquareTomatoGame } from "./mobile/MobileSquareTomatoGame";
 export { GameScoreSubmit } from "./ScoreSubmit";
 export { GameLeaderboard } from "./Leaderboard";
 export { DownloadButton } from "./DownloadButton";
+export { RecentPlays, RecentPlaysDesktop } from "./RecentPlays";

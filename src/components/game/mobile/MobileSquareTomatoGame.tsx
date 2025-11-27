@@ -28,6 +28,7 @@ import { INFO_BAR_HEIGHT, PADDING } from "./constants";
 import { ScoreSubmitModal } from "./ScoreSubmitModal";
 import { PromoCodeModal } from "./PromoCodeModal";
 import { LeaderboardOverlay } from "./LeaderboardOverlay";
+import { RecentPlays } from "../RecentPlays";
 import type { Cell } from "../shared/types";
 
 type MobileSquareTomatoGameProps = {
@@ -589,6 +590,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                   </div>
 
                   <div className="flex items-center gap-1">
+                    <RecentPlays refreshTrigger={leaderboardRefreshTrigger} />
                     <button
                       onClick={toggleMute}
                       className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"

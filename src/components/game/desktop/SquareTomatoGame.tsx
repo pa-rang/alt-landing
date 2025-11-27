@@ -22,6 +22,7 @@ import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "../ScoreSubmit";
 import { LeaderboardBox } from "../LeaderboardBox";
 import { VolumeControl } from "../VolumeControl";
+import { RecentPlaysDesktop } from "../RecentPlays";
 import { Copy, Check } from "lucide-react";
 import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
 import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
@@ -482,6 +483,7 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
             60점을 달성하고 Pro 쿠폰을 획득하세요
           </div>
           <div className="flex items-center gap-2">
+            <RecentPlaysDesktop refreshTrigger={leaderboardRefreshTrigger} />
             {currentPromoType && (
               <Button
                 ref={promoBannerButtonRef}
