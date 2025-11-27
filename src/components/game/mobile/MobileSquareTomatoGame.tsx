@@ -164,6 +164,7 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     if (!bgmRef.current) return;
 
     if (gameState === "running") {
+      // muted 상태여도 play는 호출되어야 함 (iOS 정책)
       bgmRef.current.play().catch(() => {
         // 자동 재생 차단 시 무시
       });
@@ -173,12 +174,35 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     }
   }, [gameState]);
 
-  // 볼륨 및 음소거 상태 동기화
+  // 볼륨 및 음소거 상태 동기화 (초기화 및 외부 요인 대응)
   useEffect(() => {
     if (bgmRef.current) {
-      bgmRef.current.volume = isMuted ? 0 : bgmVolume;
+      bgmRef.current.muted = isMuted;
+      bgmRef.current.volume = bgmVolume;
+    }
+    if (clearSfxRef.current) {
+      clearSfxRef.current.muted = isMuted;
+      clearSfxRef.current.volume = bgmVolume;
     }
   }, [bgmVolume, isMuted]);
+
+  // 음소거 토글 핸들러 (사용자 제스처 내에서 직접 오디오 제어)
+  const toggleMute = useCallback(() => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+
+    // 오디오 객체 직접 제어
+    if (bgmRef.current) {
+      bgmRef.current.muted = newMutedState;
+      // 음소거 해제 시 재생 중이 아니면 재생 시도 (iOS 대응)
+      if (!newMutedState && bgmRef.current.paused && gameState === "running") {
+        bgmRef.current.play().catch(() => {});
+      }
+    }
+    if (clearSfxRef.current) {
+      clearSfxRef.current.muted = newMutedState;
+    }
+  }, [isMuted, gameState]);
 
   // 최고점수 및 프로모션 코드 해제 상태 로컬스토리지에서 불러오기
   useEffect(() => {
@@ -574,8 +598,9 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
 
                 <div className="flex items-center gap-1.5">
                   <button
-                    onClick={() => setIsMuted(!isMuted)}
+                    onClick={toggleMute}
                     className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    aria-label={isMuted ? "음소거 해제" : "음소거"}
                   >
                     {isMuted ? (
                       <VolumeX className="w-4 h-4 text-gray-500" />
