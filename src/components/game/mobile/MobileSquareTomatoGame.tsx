@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Copy, Check, Trophy, Volume2, VolumeX, Home } from "lucide-react";
+import { Trophy, Volume2, VolumeX, Home, Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,12 +21,13 @@ import {
 } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { useOrientationLock } from "@/hooks/useOrientationLock";
-import { GameScoreSubmit } from "../ScoreSubmit";
-import { LeaderboardBox } from "../LeaderboardBox";
 import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
 import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
 import { TimeProgressBar } from "../shared/TimeProgressBar";
 import { INFO_BAR_HEIGHT, PADDING } from "./constants";
+import { ScoreSubmitModal } from "./ScoreSubmitModal";
+import { PromoCodeModal } from "./PromoCodeModal";
+import { LeaderboardOverlay } from "./LeaderboardOverlay";
 import type { Cell } from "../shared/types";
 
 type MobileSquareTomatoGameProps = {
@@ -50,6 +51,30 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
 
   // 화면 방향 고정 및 감지 (세로 모드로 잠금)
   const { deviceOrientation } = useOrientationLock({ lockTo: "portrait" });
+
+  // 모바일에서 input focus 시 화면 확대 방지
+  useEffect(() => {
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta) {
+      viewportMeta.setAttribute(
+        "content",
+        "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      );
+    } else {
+      const meta = document.createElement("meta");
+      meta.name = "viewport";
+      meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+    }
+
+    return () => {
+      // 컴포넌트 언마운트 시 원래대로 복원 (필요한 경우)
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1");
+      }
+    };
+  }, []);
 
   // BGM 초기화
   useEffect(() => {
@@ -94,9 +119,8 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
   const [hasUnlockedPromo, setHasUnlockedPromo] = useState<boolean>(false);
   const [hasUnlockedSuperPromo, setHasUnlockedSuperPromo] = useState<boolean>(false);
-  const [showPromoToast, setShowPromoToast] = useState<boolean>(false);
-  const [showSuperPromoToast, setShowSuperPromoToast] = useState<boolean>(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState<boolean>(false);
+  const [showPromoCodeModal, setShowPromoCodeModal] = useState<boolean>(false);
 
   // 치트키용 타임스탬프
   const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
@@ -216,16 +240,10 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
     const unlocked = localStorage.getItem(PROMO_UNLOCKED_KEY);
     if (unlocked === "true") {
       setHasUnlockedPromo(true);
-      const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
-      if (superUnlocked !== "true") {
-        setShowPromoToast(true);
-      }
     }
     const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
     if (superUnlocked === "true") {
       setHasUnlockedSuperPromo(true);
-      setShowSuperPromoToast(true);
-      setShowPromoToast(false);
     }
   }, []);
 
@@ -277,21 +295,12 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
           setHasUnlockedPromo(true);
           localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
         }
-        setTimeout(() => {
-          setShowPromoToast(false);
-          setShowSuperPromoToast(true);
-        }, 500);
       } else if (score >= PROMO_THRESHOLD_SCORE && !hasUnlockedPromo) {
         setHasUnlockedPromo(true);
         localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
-        if (!hasUnlockedSuperPromo && !showSuperPromoToast) {
-          setTimeout(() => {
-            setShowPromoToast(true);
-          }, 500);
-        }
       }
     }
-  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo, showSuperPromoToast]);
+  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo]);
 
   // Confetti
   useEffect(() => {
@@ -591,6 +600,15 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
                         <Volume2 className="w-3.5 h-3.5 text-gray-700" />
                       )}
                     </button>
+                    {(hasUnlockedPromo || hasUnlockedSuperPromo) && (
+                      <button
+                        onClick={() => setShowPromoCodeModal(true)}
+                        className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                        aria-label="할인코드 보기"
+                      >
+                        <Ticket className="w-3.5 h-3.5 text-gray-700" />
+                      </button>
+                    )}
                     {gameState === "running" && (
                       <Button
                         size="sm"
@@ -728,111 +746,37 @@ export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareToma
 
         {/* 점수 제출 모달 */}
         {gameState === "ended" && showScoreSubmit && (
-          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-60 p-4">
-            <div className="bg-white rounded-xl w-full max-w-xs overflow-hidden shadow-2xl max-h-[90%] overflow-y-auto">
-              <div className="relative p-4 text-center border-b">
-                <button
-                  onClick={() => setShowScoreSubmit(false)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                <h2 className="text-lg font-bold text-gray-900">
-                  {score >= PROMO_THRESHOLD_SCORE ? dictionary.gameOverCongratulations : "Game Over"}
-                </h2>
-                {score < PROMO_THRESHOLD_SCORE && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(PROMO_THRESHOLD_SCORE - score))}
-                  </p>
-                )}
-              </div>
+          <ScoreSubmitModal
+            score={score}
+            bestScore={bestScore}
+            dictionary={dictionary}
+            promoCodeCopied={promoCodeCopied}
+            onCopyPromoCode={handleCopyPromoCode}
+            onClose={() => setShowScoreSubmit(false)}
+            onSuccess={handleScoreSubmitSuccess}
+          />
+        )}
 
-              <div className="p-4">
-                {score >= PROMO_THRESHOLD_SCORE && (
-                  <div className="mb-4 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-center">
-                    <p className="font-bold text-emerald-700 text-sm mb-1">{dictionary.checkToast}</p>
-                    <p className="text-[10px] text-emerald-600 leading-relaxed">
-                      {score >= SUPER_PROMO_THRESHOLD_SCORE
-                        ? dictionary.superPromoToastDescription
-                        : dictionary.promoCodeDescription}
-                    </p>
-                  </div>
-                )}
-
-                <GameScoreSubmit
-                  score={score}
-                  bestScore={bestScore}
-                  dictionary={dictionary.scoreSubmit}
-                  onSuccess={handleScoreSubmitSuccess}
-                />
-              </div>
-            </div>
-          </div>
+        {/* 할인코드 보기 모달 */}
+        {showPromoCodeModal && (
+          <PromoCodeModal
+            dictionary={dictionary}
+            hasUnlockedPromo={hasUnlockedPromo}
+            hasUnlockedSuperPromo={hasUnlockedSuperPromo}
+            promoCodeCopied={promoCodeCopied}
+            onCopyPromoCode={handleCopyPromoCode}
+            onClose={() => setShowPromoCodeModal(false)}
+          />
         )}
 
         {/* 리더보드 오버레이 */}
         {showLeaderboardOverlay && (
-          <div className="absolute inset-0 bg-white z-60 flex flex-col">
-            <div className="relative px-4 py-3 text-center border-b shrink-0">
-              <button
-                onClick={() => setShowLeaderboardOverlay(false)}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <h2 className="text-lg font-bold text-gray-900">{dictionary.leaderboardTitle}</h2>
-            </div>
-            <div className="flex-1 overflow-hidden min-h-0">
-              <LeaderboardBox
-                dictionary={dictionary}
-                userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
-                userOrganization={submittedData?.organization}
-                refreshTrigger={leaderboardRefreshTrigger}
-                fullScreen
-              />
-            </div>
-          </div>
-        )}
-
-        {/* 프로모션 토스트 */}
-        {(showPromoToast || showSuperPromoToast) && (
-          <div className="absolute bottom-2 left-2 right-2 z-70">
-            <div
-              className={cn(
-                "rounded-lg shadow-lg p-3 flex items-center justify-between gap-2 text-white",
-                showSuperPromoToast
-                  ? "bg-linear-to-r from-purple-600 to-pink-600"
-                  : "bg-linear-to-r from-emerald-500 to-teal-600"
-              )}
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="text-sm">{showSuperPromoToast ? "🏆" : "🎉"}</span>
-                  <span className="font-bold text-xs truncate">
-                    {showSuperPromoToast ? dictionary.superPromoToastTitle : dictionary.promoToastTitle}
-                  </span>
-                </div>
-                <div className="flex items-center bg-white/20 rounded px-1.5 py-0.5 w-fit">
-                  <span className="font-mono font-bold text-xs tracking-wide">
-                    {showSuperPromoToast ? SUPER_PROMO_CODE : PROMO_CODE}
-                  </span>
-                  <button
-                    onClick={() => handleCopyPromoCode(showSuperPromoToast)}
-                    className="ml-1.5 p-0.5 hover:bg-white/20 rounded"
-                  >
-                    {promoCodeCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  </button>
-                </div>
-              </div>
-              <Link
-                href="/pricing"
-                className="bg-white text-xs font-bold py-1.5 px-2 rounded-md shadow-sm hover:scale-105 transition-transform text-center whitespace-nowrap"
-                style={{ color: showSuperPromoToast ? "#9333ea" : "#10b981" }}
-              >
-                {dictionary.goToPricing}
-              </Link>
-            </div>
-          </div>
+          <LeaderboardOverlay
+            dictionary={dictionary}
+            submittedData={submittedData}
+            refreshTrigger={leaderboardRefreshTrigger}
+            onClose={() => setShowLeaderboardOverlay(false)}
+          />
         )}
       </div>
     </div>

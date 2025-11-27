@@ -10,14 +10,14 @@ import { encryptScore } from "@/lib/encryption";
 
 // GA4 이벤트 추적 함수
 function trackScoreSubmit(score: number, isNewHighScore: boolean, rank: number) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'score_submit', {
-      event_category: 'game',
-      event_label: 'leaderboard_submission',
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "score_submit", {
+      event_category: "game",
+      event_label: "leaderboard_submission",
       score_value: score,
       is_new_high_score: isNewHighScore,
       player_rank: rank,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }
@@ -81,43 +81,40 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
   }, [nickname, organization]);
 
   // organization 검색 (debounce)
-  const fetchOrganizationSuggestions = useCallback(
-    async (search: string) => {
-      if (search.length < 1) {
-        setOrganizationSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
+  const fetchOrganizationSuggestions = useCallback(async (search: string) => {
+    if (search.length < 1) {
+      setOrganizationSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
 
-      setIsLoadingSuggestions(true);
-      try {
-        const response = await fetch(`/api/game/organizations?search=${encodeURIComponent(search)}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.ok) {
-            setOrganizationSuggestions(data.organizations);
-            setShowSuggestions(true);
-          }
+    setIsLoadingSuggestions(true);
+    try {
+      const response = await fetch(`/api/game/organizations?search=${encodeURIComponent(search)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.ok) {
+          setOrganizationSuggestions(data.organizations);
+          setShowSuggestions(true);
         }
-      } catch (error) {
-        console.error("Failed to fetch organization suggestions:", error);
-      } finally {
-        setIsLoadingSuggestions(false);
       }
-    },
-    []
-  );
+    } catch (error) {
+      console.error("Failed to fetch organization suggestions:", error);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  }, []);
 
   // organization 입력 변경 핸들러 (debounce)
   const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setOrganization(value);
-    
+
     // 이전 timeout 취소
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     // debounce: 300ms 후에 검색
     searchTimeoutRef.current = setTimeout(() => {
       fetchOrganizationSuggestions(value);
@@ -262,7 +259,7 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
             onChange={(e) => setNickname(e.target.value)}
             disabled={isSubmitting}
             required
-            className="h-8 text-sm"
+            className="h-8 text-base"
           />
         </div>
         {fieldErrors.nickname && <p className="text-xs text-red-500 mt-1 ml-28">{fieldErrors.nickname}</p>}
@@ -291,7 +288,7 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
               }}
               disabled={isSubmitting}
               required
-              className="h-8 text-sm"
+              className="h-8 text-base"
             />
             {showSuggestions && organizationSuggestions.length > 0 && (
               <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-auto">
@@ -314,9 +311,7 @@ export function GameScoreSubmit({ score, bestScore, dictionary, onSuccess }: Gam
               </div>
             )}
             {isLoadingSuggestions && (
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                검색 중...
-              </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">검색 중...</div>
             )}
           </div>
         </div>
