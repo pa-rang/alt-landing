@@ -159,7 +159,7 @@
     "promoRequirement": "Get Coupon if you can!\n\nScore 60+: $1 discount\nScore 100+: 1 month FREE (Limited to 10)",
     "promoCodeLabel": "Promo Code",
     "promoCodeDescription": "Pro Plan $1",
-    "superPromoCodeDescription": "Pro Plan 1 month FREE (Limited to 10)",
+    "superPromoCodeDescription": "1 month FREE Coupon",
     "promoCodeCopied": "Copied!",
     "promoCodeCopy": "Copy",
     "promoToastTitle": "Promo Code Unlocked!",

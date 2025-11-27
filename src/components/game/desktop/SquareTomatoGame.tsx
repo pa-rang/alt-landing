@@ -25,7 +25,7 @@ import { VolumeControl } from "../VolumeControl";
 import { RecentPlaysDesktop } from "../RecentPlays";
 import { Copy, Check } from "lucide-react";
 import { trackGameStart, trackGameRetry, trackGameRestart } from "../shared/tracking";
-import { BEST_SCORE_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
+import { BEST_SCORE_KEY, BEST_RANK_KEY, PROMO_UNLOCKED_KEY, SUPER_PROMO_UNLOCKED_KEY } from "../shared/constants";
 import { ScoreDisplay } from "./ScoreDisplay";
 import { TimeProgressBar } from "../shared/TimeProgressBar";
 import type { Cell } from "../shared/types";
@@ -80,6 +80,9 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
   } | null>(null);
 
   const [bestScore, setBestScore] = useState<number>(0);
+  const [bestRank, setBestRank] = useState<number>(0);
+  const [organizationRank, setOrganizationRank] = useState<number>(0);
+  const [organizationName, setOrganizationName] = useState<string>("");
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
   const [hasUnlockedPromo, setHasUnlockedPromo] = useState<boolean>(false);
   const [hasUnlockedSuperPromo, setHasUnlockedSuperPromo] = useState<boolean>(false);
@@ -115,12 +118,34 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, [bgmVolume, isMuted]);
 
-  // 최고점수 및 프로모션 코드 해제 상태 로컬스토리지에서 불러오기
+  // 소속 랭킹 정보 불러오기
+  const fetchOrganizationRank = useCallback((organization: string) => {
+    fetch(`/api/game/best-score?organization=${encodeURIComponent(organization)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setOrganizationRank(data.organizationRank);
+          setOrganizationName(organization);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  // 최고점수, 최고랭크 및 프로모션 코드 해제 상태 로컬스토리지에서 불러오기
   useEffect(() => {
+    // 최고 점수
     const savedScore = localStorage.getItem(BEST_SCORE_KEY);
     if (savedScore) {
       setBestScore(parseInt(savedScore, 10));
     }
+
+    // 최고 랭크
+    const savedRank = localStorage.getItem(BEST_RANK_KEY);
+    if (savedRank) {
+      setBestRank(parseInt(savedRank, 10));
+    }
+
+    // 프로모션 코드
     const unlocked = localStorage.getItem(PROMO_UNLOCKED_KEY);
     if (unlocked === "true") {
       setHasUnlockedPromo(true);
@@ -129,7 +154,15 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     if (superUnlocked === "true") {
       setHasUnlockedSuperPromo(true);
     }
-  }, []);
+
+    // 소속 정보가 있으면 랭킹 정보 불러오기
+    const organization = localStorage.getItem("squareTomatoGameOrganization");
+
+    if (organization) {
+      setOrganizationName(organization);
+      fetchOrganizationRank(organization);
+    }
+  }, [fetchOrganizationRank]);
 
   // 배너 외부 클릭 감지
   useEffect(() => {
@@ -338,12 +371,30 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, [gameState, resetGame]);
 
-  const handleScoreSubmitSuccess = useCallback((data: { nickname: string; organization: string; rank: number }) => {
-    setSubmittedData({ nickname: data.nickname, organization: data.organization, rank: data.rank });
-    setShowScoreSubmit(false);
-    // 리더보드 새로고침
-    setLeaderboardRefreshTrigger((prev) => prev + 1);
-  }, []);
+  const handleScoreSubmitSuccess = useCallback(
+    (data: { nickname: string; organization: string; rank: number }) => {
+      setSubmittedData({ nickname: data.nickname, organization: data.organization, rank: data.rank });
+      setShowScoreSubmit(false);
+      // 리더보드 새로고침
+      setLeaderboardRefreshTrigger((prev) => prev + 1);
+
+      // 소속 랭킹 업데이트
+      fetchOrganizationRank(data.organization);
+
+      // 최고 점수 업데이트 (현재 점수가 더 높으면)
+      if (score > bestScore) {
+        setBestScore(score);
+        localStorage.setItem(BEST_SCORE_KEY, String(score));
+      }
+
+      // 최고 등수 업데이트 (현재 등수가 더 좋으면, 1이 더 좋은 것)
+      if (bestRank === 0 || data.rank < bestRank) {
+        setBestRank(data.rank);
+        localStorage.setItem(BEST_RANK_KEY, String(data.rank));
+      }
+    },
+    [fetchOrganizationRank, score, bestScore, bestRank]
+  );
 
   // 게임 닫기 핸들러 (BGM 중지 후 닫기)
   const handleClose = useCallback(() => {
@@ -654,6 +705,35 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
                 {/* 시작 버튼 오버레이 */}
                 {gameState === "idle" && (
                   <div className="absolute inset-0 backdrop-blur-xs bg-white/60 flex flex-col items-center justify-center gap-6">
+                    {/* Stats Display - Only show if user has played before (bestScore > 0) */}
+                    {bestScore > 0 && (
+                      <div className="flex gap-3 mb-2 animate-fade-in-up scale-90 sm:scale-100 origin-center">
+                        <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-emerald-100 min-w-[90px]">
+                          <div className="text-xs text-gray-500 font-medium mb-1">내 최고 점수</div>
+                          <Image src="/icons/🍅 tomato.svg" width={32} height={32} alt="Best Score" />
+                          <span className="font-bold text-lg text-emerald-600 mt-1">{bestScore}</span>
+                        </div>
+                        {bestRank > 0 && (
+                          <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-blue-100 min-w-[90px]">
+                            <div className="text-xs text-gray-500 font-medium mb-1">내 최고 등수</div>
+                            <Image src="/icons/🏅 sports_medal.svg" width={32} height={32} alt="Best Rank" />
+                            <span className="font-bold text-lg text-blue-600 mt-1">{bestRank}위</span>
+                          </div>
+                        )}
+                        {organizationRank > 0 && (
+                          <div className="flex flex-col items-center bg-white/90 p-3 rounded-xl shadow-sm border border-amber-100 min-w-[90px]">
+                            <div
+                              className="text-xs text-gray-500 font-medium mb-1 truncate max-w-[80px]"
+                              title={organizationName}
+                            >
+                              {organizationName || "내 소속 등수"}
+                            </div>
+                            <Image src="/icons/🏆️ trophy.svg" width={32} height={32} alt="Organization Rank" />
+                            <span className="font-bold text-lg text-amber-500 mt-1">{organizationRank}위</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <p className="text-xl font-bold text-gray-900 text-center px-4 drop-shadow-sm whitespace-pre-wrap">
                       {dictionary.promoRequirement}
                     </p>
