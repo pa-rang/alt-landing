@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Sixtyfour } from "next/font/google";
-import { SquareTomatoGame } from "@/components/game";
+import { SquareTomatoGame, MobileSquareTomatoGame } from "@/components/game";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionary";
+import { isMobileDevice } from "@/lib/device";
 
 const sixtyfour = Sixtyfour({
   subsets: ["latin"],
@@ -21,9 +22,13 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
   const router = useRouter();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showGame, setShowGame] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const animationStartPosRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
 
   useEffect(() => {
+    // 모바일 감지
+    setIsMobile(isMobileDevice());
+
     // 페이지 진입 시 애니메이션 시작
     // 화면 중앙에서 시작
     animationStartPosRef.current = {
@@ -78,12 +83,21 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
 
           {/* 게임 화면 */}
           {showGame && (
-            <SquareTomatoGame
-              onClose={() => {
-                router.push(`/${locale}`);
-              }}
-              dictionary={dictionary}
-            />
+            isMobile ? (
+              <MobileSquareTomatoGame
+                onClose={() => {
+                  router.push(`/${locale}`);
+                }}
+                dictionary={dictionary}
+              />
+            ) : (
+              <SquareTomatoGame
+                onClose={() => {
+                  router.push(`/${locale}`);
+                }}
+                dictionary={dictionary}
+              />
+            )
           )}
         </div>
       )}

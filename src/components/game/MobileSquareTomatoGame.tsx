@@ -1,0 +1,787 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { X, Copy, Check, Gamepad2, Trophy, Volume2, VolumeX } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  TOMATO_COLS as COLS,
+  TOMATO_ROWS as ROWS,
+  GAME_SECONDS,
+  PROMO_THRESHOLD_SCORE,
+  PROMO_CODE,
+  SUPER_PROMO_THRESHOLD_SCORE,
+  SUPER_PROMO_CODE,
+  computeSelectedIndicesFromRect,
+  formatTime,
+  generateValues,
+} from "@/lib/apple-game";
+import type { Dictionary } from "@/lib/i18n/dictionary";
+import { GameScoreSubmit } from "./ScoreSubmit";
+import { LeaderboardBox } from "./LeaderboardBox";
+
+// GA4 이벤트 추적 함수들 (SquareTomatoGame과 동일)
+function trackGameStart() {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "game_start", {
+      event_category: "game",
+      event_label: "game_play_start",
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+const BEST_SCORE_KEY = "squareTomatoGameBestScore";
+const PROMO_UNLOCKED_KEY = "squareTomatoGamePromoUnlocked";
+const SUPER_PROMO_UNLOCKED_KEY = "squareTomatoGameSuperPromoUnlocked";
+
+// 고정 UI 높이 상수 (px)
+const HEADER_HEIGHT = 48;
+const TAB_HEIGHT = 44;
+const INFO_BAR_HEIGHT = 48;
+const PADDING = 8;
+
+type MobileSquareTomatoGameProps = {
+  onClose: () => void;
+  dictionary: Dictionary["game"];
+};
+
+type Cell = {
+  id: number;
+  value: number;
+  removed: boolean;
+};
+
+export function MobileSquareTomatoGame({ onClose, dictionary }: MobileSquareTomatoGameProps) {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const clearSfxRef = useRef<HTMLAudioElement | null>(null);
+
+  // 모바일 전용: 탭 상태
+  const [activeTab, setActiveTab] = useState<"game" | "leaderboard">("game");
+
+  // 모바일 전용: 그리드 크기 계산
+  const [cellSize, setCellSize] = useState<number>(20);
+  // 뷰포트 크기 상태 (초기값은 최소값으로 설정하여 깜빡임 방지)
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+
+  // BGM 초기화
+  useEffect(() => {
+    bgmRef.current = new Audio("/tomato-game-bgm.wav");
+    bgmRef.current.loop = true;
+    bgmRef.current.volume = 0.3;
+
+    // 클리어 효과음 초기화
+    clearSfxRef.current = new Audio("/tomato-clear-bgm.wav");
+    clearSfxRef.current.volume = 0.5;
+
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current = null;
+      }
+      clearSfxRef.current = null;
+    };
+  }, []);
+
+  const [cells, setCells] = useState<Cell[]>(() => {
+    const values = generateValues(ROWS, COLS);
+    return values.map((v, i) => ({ id: i, value: v, removed: false }));
+  });
+  const [score, setScore] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(GAME_SECONDS);
+  const [gameState, setGameState] = useState<"idle" | "running" | "ended">("idle");
+
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+
+  const [showScoreSubmit, setShowScoreSubmit] = useState(false);
+  const [submittedData, setSubmittedData] = useState<{
+    nickname: string;
+    organization: string;
+    rank: number;
+  } | null>(null);
+
+  const [bestScore, setBestScore] = useState<number>(0);
+  const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
+  const [hasUnlockedPromo, setHasUnlockedPromo] = useState<boolean>(false);
+  const [hasUnlockedSuperPromo, setHasUnlockedSuperPromo] = useState<boolean>(false);
+  const [showPromoToast, setShowPromoToast] = useState<boolean>(false);
+  const [showSuperPromoToast, setShowSuperPromoToast] = useState<boolean>(false);
+  const [promoCodeCopied, setPromoCodeCopied] = useState<boolean>(false);
+
+  // 치트키용 타임스탬프
+  const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
+  const [timeClickTimestamps, setTimeClickTimestamps] = useState<number[]>([]);
+
+  // BGM 볼륨 상태
+  const [bgmVolume] = useState<number>(0.3);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  // 모바일 뷰포트 크기 및 셀 크기 계산
+  useEffect(() => {
+    const updateViewportAndSize = () => {
+      // visualViewport를 우선 사용하여 실제 보이는 영역 크기를 가져옴
+      // iOS Safari 등에서 주소창이 보여지거나 숨겨질 때 window.innerHeight가 즉시 반영되지 않을 수 있음
+      const width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      setViewportSize({ width, height });
+
+      // 90도 회전 후 가용 공간 계산
+      // 회전되었으므로 너비가 높이가 되고, 높이가 너비가 됨
+      const rotatedWidth = height;
+      const rotatedHeight = width;
+
+      const fixedUIHeight = HEADER_HEIGHT + TAB_HEIGHT + INFO_BAR_HEIGHT + PADDING * 3;
+      const availableHeight = rotatedHeight - fixedUIHeight;
+      const availableWidth = rotatedWidth - PADDING * 2;
+
+      // 그리드 셀 크기 계산
+      const sizeByWidth = availableWidth / COLS;
+      const sizeByHeight = availableHeight / ROWS;
+
+      const newCellSize = Math.floor(Math.min(sizeByWidth, sizeByHeight));
+      setCellSize(Math.max(newCellSize, 16));
+    };
+
+    updateViewportAndSize();
+
+    // visualViewport 이벤트 리스너 추가
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateViewportAndSize);
+      window.visualViewport.addEventListener("scroll", updateViewportAndSize);
+    }
+    window.addEventListener("resize", updateViewportAndSize);
+    window.addEventListener("orientationchange", updateViewportAndSize);
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", updateViewportAndSize);
+        window.visualViewport.removeEventListener("scroll", updateViewportAndSize);
+      }
+      window.removeEventListener("resize", updateViewportAndSize);
+      window.removeEventListener("orientationchange", updateViewportAndSize);
+    };
+  }, [activeTab]);
+
+  // 게임 상태에 따라 BGM 재생/중지
+  useEffect(() => {
+    if (!bgmRef.current) return;
+
+    if (gameState === "running") {
+      bgmRef.current.play().catch(() => {
+        // 자동 재생 차단 시 무시
+      });
+    } else {
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
+  }, [gameState]);
+
+  // 볼륨 및 음소거 상태 동기화
+  useEffect(() => {
+    if (bgmRef.current) {
+      bgmRef.current.volume = isMuted ? 0 : bgmVolume;
+    }
+  }, [bgmVolume, isMuted]);
+
+  // 최고점수 및 프로모션 코드 해제 상태 로컬스토리지에서 불러오기
+  useEffect(() => {
+    const savedScore = localStorage.getItem(BEST_SCORE_KEY);
+    if (savedScore) {
+      setBestScore(parseInt(savedScore, 10));
+    }
+    const unlocked = localStorage.getItem(PROMO_UNLOCKED_KEY);
+    if (unlocked === "true") {
+      setHasUnlockedPromo(true);
+      const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
+      if (superUnlocked !== "true") {
+        setShowPromoToast(true);
+      }
+    }
+    const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
+    if (superUnlocked === "true") {
+      setHasUnlockedSuperPromo(true);
+      setShowSuperPromoToast(true);
+      setShowPromoToast(false);
+    }
+  }, []);
+
+  const resetGame = useCallback(() => {
+    const values = generateValues(ROWS, COLS);
+    setCells(values.map((v, i) => ({ id: i, value: v, removed: false })));
+    setScore(0);
+    setTimeLeft(GAME_SECONDS);
+    setGameState("idle");
+    setIsDragging(false);
+    setStartPos(null);
+    setCurrentPos(null);
+    setSelectedIndices([]);
+    setShowScoreSubmit(false);
+    setTitleClickTimestamps([]);
+    setTimeClickTimestamps([]);
+  }, []);
+
+  // 타이머
+  useEffect(() => {
+    if (gameState !== "running") return;
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          clearInterval(timer);
+          setGameState("ended");
+          setShowScoreSubmit(true);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [gameState, timeLeft]);
+
+  // 게임 종료 로직 (SquareTomatoGame과 동일)
+  useEffect(() => {
+    if (gameState === "ended") {
+      if (score > bestScore) {
+        setBestScore(score);
+        localStorage.setItem(BEST_SCORE_KEY, String(score));
+      }
+
+      if (score >= SUPER_PROMO_THRESHOLD_SCORE && !hasUnlockedSuperPromo) {
+        setHasUnlockedSuperPromo(true);
+        localStorage.setItem(SUPER_PROMO_UNLOCKED_KEY, "true");
+        if (!hasUnlockedPromo) {
+          setHasUnlockedPromo(true);
+          localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
+        }
+        setTimeout(() => {
+          setShowPromoToast(false);
+          setShowSuperPromoToast(true);
+        }, 500);
+      } else if (score >= PROMO_THRESHOLD_SCORE && !hasUnlockedPromo) {
+        setHasUnlockedPromo(true);
+        localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
+        if (!hasUnlockedSuperPromo && !showSuperPromoToast) {
+          setTimeout(() => {
+            setShowPromoToast(true);
+          }, 500);
+        }
+      }
+    }
+  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo, showSuperPromoToast]);
+
+  // Confetti
+  useEffect(() => {
+    if (showScoreSubmit && score >= PROMO_THRESHOLD_SCORE) {
+      const timer = setTimeout(async () => {
+        const confetti = (await import("canvas-confetti")).default;
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          zIndex: 9999,
+        });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showScoreSubmit, score]);
+
+  const selectionSum = useMemo(() => {
+    return selectedIndices.reduce((acc, idx) => {
+      const cell = cells[idx];
+      if (!cell || cell.removed) return acc;
+      return acc + cell.value;
+    }, 0);
+  }, [selectedIndices, cells]);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (gameState !== "running") return;
+      if (!boardRef.current) return;
+
+      const x = e.nativeEvent.offsetX;
+      const y = e.nativeEvent.offsetY;
+
+      setIsDragging(true);
+      setStartPos({ x, y });
+      setCurrentPos({ x, y });
+      setSelectedIndices([]);
+      try {
+        (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+      } catch {}
+    },
+    [gameState]
+  );
+
+  const computeSelectedIndices = useCallback(
+    (x1: number, y1: number, x2: number, y2: number) => {
+      if (!boardRef.current) return [] as number[];
+      const width = boardRef.current.offsetWidth;
+      const height = boardRef.current.offsetHeight;
+
+      const removedMask = cells.map((c) => c.removed);
+      return computeSelectedIndicesFromRect(width, height, x1, y1, x2, y2, ROWS, COLS, removedMask);
+    },
+    [cells]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging || !boardRef.current || !startPos) return;
+
+      const x = e.nativeEvent.offsetX;
+      const y = e.nativeEvent.offsetY;
+
+      setCurrentPos({ x, y });
+      const inds = computeSelectedIndices(startPos.x, startPos.y, x, y);
+      setSelectedIndices(inds);
+    },
+    [isDragging, startPos, computeSelectedIndices]
+  );
+
+  const clearSelection = useCallback(() => {
+    setIsDragging(false);
+    setStartPos(null);
+    setCurrentPos(null);
+    setSelectedIndices([]);
+  }, []);
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging) return;
+      if (selectionSum === 10 && selectedIndices.length > 0) {
+        setCells((prev) => {
+          const next = prev.slice();
+          selectedIndices.forEach((idx) => {
+            if (next[idx]) next[idx] = { ...next[idx], removed: true };
+          });
+          return next;
+        });
+        setScore((s) => s + selectedIndices.length);
+        if (clearSfxRef.current && !isMuted) {
+          clearSfxRef.current.currentTime = 0;
+          clearSfxRef.current.volume = bgmVolume;
+          clearSfxRef.current.play().catch(() => {});
+        }
+      }
+      clearSelection();
+      try {
+        (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+      } catch {}
+    },
+    [isDragging, selectionSum, selectedIndices, clearSelection, isMuted, bgmVolume]
+  );
+
+  const selectionRect = useMemo(() => {
+    if (!isDragging || !startPos || !currentPos)
+      return null as null | {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      };
+    const left = Math.min(startPos.x, currentPos.x);
+    const top = Math.min(startPos.y, currentPos.y);
+    const width = Math.abs(startPos.x - currentPos.x);
+    const height = Math.abs(startPos.y - currentPos.y);
+    return { left, top, width, height };
+  }, [isDragging, startPos, currentPos]);
+
+  const sumIsTen = selectionSum === 10 && selectedIndices.length > 0;
+
+  const handleStart = useCallback(() => {
+    if (gameState === "idle") {
+      trackGameStart();
+      resetGame();
+      setGameState("running");
+    }
+  }, [gameState, resetGame]);
+
+  const handleScoreSubmitSuccess = useCallback((data: { nickname: string; organization: string; rank: number }) => {
+    setSubmittedData({ nickname: data.nickname, organization: data.organization, rank: data.rank });
+    setShowScoreSubmit(false);
+    setLeaderboardRefreshTrigger((prev) => prev + 1);
+    setActiveTab("leaderboard");
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (bgmRef.current) {
+      bgmRef.current.pause();
+    }
+    onClose();
+  }, [onClose]);
+
+  // 치트키
+  const createTripleClickHandler = useCallback(
+    (
+      timestamps: number[],
+      setTimestamps: React.Dispatch<React.SetStateAction<number[]>>,
+      onTripleClick: () => void
+    ) => {
+      return () => {
+        if (gameState !== "running") return;
+        const now = Date.now();
+        const recentClicks = timestamps.filter((ts) => now - ts < 2000);
+        if (recentClicks.length >= 2) {
+          onTripleClick();
+          setTimestamps([]);
+        } else {
+          setTimestamps([...recentClicks, now]);
+        }
+      };
+    },
+    [gameState]
+  );
+
+  const handleTitleClick = useCallback(() => {
+    const handler = createTripleClickHandler(titleClickTimestamps, setTitleClickTimestamps, () => {
+      setScore(60);
+    });
+    handler();
+  }, [titleClickTimestamps, createTripleClickHandler]);
+
+  const handleTimeClick = useCallback(() => {
+    const handler = createTripleClickHandler(timeClickTimestamps, setTimeClickTimestamps, () => {
+      setTimeLeft(5);
+    });
+    handler();
+  }, [timeClickTimestamps, createTripleClickHandler]);
+
+  const handleCopyPromoCode = useCallback(async (isSuper: boolean = false) => {
+    try {
+      await navigator.clipboard.writeText(isSuper ? SUPER_PROMO_CODE : PROMO_CODE);
+      setPromoCodeCopied(true);
+      setTimeout(() => setPromoCodeCopied(false), 2000);
+    } catch {}
+  }, []);
+
+  // 그리드 실제 크기 계산
+  const gridWidth = cellSize * COLS;
+  const gridHeight = cellSize * ROWS;
+
+  // 뷰포트 크기가 없으면 렌더링하지 않음 (초기 로딩 시 깜빡임 방지)
+  if (viewportSize.width === 0 || viewportSize.height === 0) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 bg-black z-50"
+      style={{
+        overflow: "hidden",
+        touchAction: "none",
+        // 모바일 브라우저의 실제 뷰포트 크기에 맞춰 고정
+        width: viewportSize.width,
+        height: viewportSize.height,
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
+    >
+      {/* 90도 회전된 컨테이너 */}
+      <div
+        style={{
+          position: "absolute",
+          width: viewportSize.height, // 회전되었으므로 height가 width
+          height: viewportSize.width, // 회전되었으므로 width가 height
+          transform: "rotate(90deg)",
+          transformOrigin: "top left",
+          top: 0,
+          left: viewportSize.width, // 회전축 이동
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: "white",
+        }}
+      >
+        {/* 1. 헤더 - 고정 높이 */}
+        <div
+          className="bg-primary text-primary-foreground flex items-center justify-between shrink-0 shadow-md px-3"
+          style={{ height: HEADER_HEIGHT }}
+        >
+          <div className="font-bold text-base select-none" onClick={handleTitleClick}>
+            {dictionary.title}
+          </div>
+          <button onClick={handleClose} className="p-1.5 hover:bg-primary/90 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* 2. 탭 - 고정 높이 */}
+        <div className="flex bg-gray-100 shrink-0" style={{ height: TAB_HEIGHT, padding: "4px" }}>
+          <button
+            className={cn(
+              "flex-1 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+              activeTab === "game" ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700"
+            )}
+            onClick={() => setActiveTab("game")}
+          >
+            <Gamepad2 className="w-4 h-4" />
+            {dictionary.tabs.game}
+          </button>
+          <button
+            className={cn(
+              "flex-1 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+              activeTab === "leaderboard" ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700"
+            )}
+            onClick={() => setActiveTab("leaderboard")}
+          >
+            <Trophy className="w-4 h-4" />
+            {dictionary.tabs.personalLeaderboard}
+          </button>
+        </div>
+
+        {/* 3. 컨텐츠 영역 - 나머지 공간 전부 사용 */}
+        <div
+          className="flex-1 overflow-hidden"
+          style={{ minHeight: 0 }} // flex item이 shrink할 수 있도록
+        >
+          {/* 게임 탭 */}
+          {activeTab === "game" && (
+            <div className="h-full flex flex-col" style={{ padding: PADDING }}>
+              {/* 상단 정보 바 - 고정 높이 */}
+              <div className="flex items-center justify-between shrink-0" style={{ height: INFO_BAR_HEIGHT }}>
+                <div className="flex items-center gap-2">
+                  <div className="px-2 py-1 rounded-md bg-gray-100 flex items-center gap-1.5">
+                    <span className="text-[10px] text-gray-500 font-medium">SCORE</span>
+                    <span className="text-sm font-bold text-gray-900">{gameState === "idle" ? bestScore : score}</span>
+                  </div>
+                  <div className="px-2 py-1 rounded-md bg-gray-100 flex items-center gap-1.5" onClick={handleTimeClick}>
+                    <span className="text-[10px] text-gray-500 font-medium">TIME</span>
+                    <span
+                      className={cn(
+                        "text-sm font-bold",
+                        timeLeft <= 10 ? "text-red-500 animate-pulse" : "text-gray-900"
+                      )}
+                    >
+                      {formatTime(timeLeft)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <Volume2 className="w-4 h-4 text-gray-700" />
+                    )}
+                  </button>
+                  {gameState === "running" && (
+                    <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={resetGame}>
+                      {dictionary.retry}
+                    </Button>
+                  )}
+                  {gameState === "ended" && (
+                    <Button size="sm" variant="default" className="h-7 text-xs px-2" onClick={resetGame}>
+                      {dictionary.restart}
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* 그리드 영역 - 남은 공간 전부 사용, 중앙 정렬 */}
+              <div
+                className="flex-1 flex items-center justify-center bg-green-50 rounded-lg border border-green-100 overflow-hidden"
+                style={{ minHeight: 0, marginTop: PADDING }}
+              >
+                <div
+                  ref={boardRef}
+                  className="relative select-none"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${COLS}, ${cellSize}px)`,
+                    gridTemplateRows: `repeat(${ROWS}, ${cellSize}px)`,
+                    width: gridWidth,
+                    height: gridHeight,
+                    touchAction: "none",
+                  }}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerLeave={handlePointerUp}
+                >
+                  {cells.map((cell) => (
+                    <div
+                      key={cell.id}
+                      className={cn(
+                        "relative flex items-center justify-center border-[0.5px] border-emerald-200/50 pointer-events-none",
+                        cell.removed ? "bg-transparent" : "bg-white"
+                      )}
+                      style={{ width: cellSize, height: cellSize }}
+                    >
+                      {!cell.removed ? (
+                        <div
+                          className={cn(
+                            "flex items-center justify-center font-semibold transition-transform will-change-transform relative overflow-hidden rounded-sm",
+                            sumIsTen && isDragging && selectedIndices.includes(cell.id) ? "scale-105" : ""
+                          )}
+                          style={{
+                            width: cellSize - 2,
+                            height: cellSize - 2,
+                            fontSize: `${Math.max(cellSize * 0.4, 10)}px`,
+                          }}
+                        >
+                          <Image
+                            src="/apple_game_items/gemini_tomato_removebg.png"
+                            alt="tomato"
+                            fill
+                            className="object-cover select-none"
+                            unoptimized
+                            draggable={false}
+                          />
+                          <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                            {cell.value}
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+
+                  {/* 드래그 박스 */}
+                  {selectionRect ? (
+                    <div
+                      className={cn(
+                        "absolute border-2 pointer-events-none z-20",
+                        sumIsTen ? "border-emerald-500 bg-emerald-500/20" : "border-yellow-500 bg-yellow-500/20"
+                      )}
+                      style={{
+                        left: selectionRect.left,
+                        top: selectionRect.top,
+                        width: selectionRect.width,
+                        height: selectionRect.height,
+                      }}
+                    />
+                  ) : null}
+
+                  {/* 시작 오버레이 */}
+                  {gameState === "idle" && (
+                    <div className="absolute inset-0 bg-white/85 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 text-center">
+                      <p className="text-sm font-bold text-gray-800 mb-4 whitespace-pre-wrap leading-relaxed">
+                        {dictionary.promoRequirement}
+                      </p>
+                      <Button
+                        size="lg"
+                        className="text-base py-4 px-8 shadow-lg animate-pulse pointer-events-auto"
+                        onClick={handleStart}
+                      >
+                        {dictionary.start}
+                      </Button>
+                      <p className="mt-4 text-xs text-gray-600 font-medium">{dictionary.guide}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 리더보드 탭 */}
+          {activeTab === "leaderboard" && (
+            <div className="h-full overflow-auto bg-white">
+              <LeaderboardBox
+                dictionary={dictionary}
+                userEmail={submittedData ? `${submittedData.nickname} (${submittedData.organization})` : undefined}
+                userOrganization={submittedData?.organization}
+                refreshTrigger={leaderboardRefreshTrigger}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* 점수 제출 모달 */}
+        {gameState === "ended" && showScoreSubmit && (
+          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-60 p-4">
+            <div className="bg-white rounded-xl w-full max-w-xs overflow-hidden shadow-2xl max-h-[90%] overflow-y-auto">
+              <div className="relative p-4 text-center border-b">
+                <button
+                  onClick={() => setShowScoreSubmit(false)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {score >= PROMO_THRESHOLD_SCORE ? dictionary.gameOverCongratulations : "Game Over"}
+                </h2>
+                {score < PROMO_THRESHOLD_SCORE && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {dictionary.gameOverNeedMorePoints.replace("{{points}}", String(PROMO_THRESHOLD_SCORE - score))}
+                  </p>
+                )}
+              </div>
+
+              <div className="p-4">
+                {score >= PROMO_THRESHOLD_SCORE && (
+                  <div className="mb-4 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-center">
+                    <p className="font-bold text-emerald-700 text-sm mb-1">{dictionary.checkToast}</p>
+                    <p className="text-[10px] text-emerald-600 leading-relaxed">
+                      {score >= SUPER_PROMO_THRESHOLD_SCORE
+                        ? dictionary.superPromoToastDescription
+                        : dictionary.promoCodeDescription}
+                    </p>
+                  </div>
+                )}
+
+                <GameScoreSubmit
+                  score={score}
+                  bestScore={bestScore}
+                  dictionary={dictionary.scoreSubmit}
+                  onSuccess={handleScoreSubmitSuccess}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 프로모션 토스트 */}
+        {(showPromoToast || showSuperPromoToast) && (
+          <div className="absolute bottom-2 left-2 right-2 z-70">
+            <div
+              className={cn(
+                "rounded-lg shadow-lg p-3 flex items-center justify-between gap-2 text-white",
+                showSuperPromoToast
+                  ? "bg-linear-to-r from-purple-600 to-pink-600"
+                  : "bg-linear-to-r from-emerald-500 to-teal-600"
+              )}
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-sm">{showSuperPromoToast ? "🏆" : "🎉"}</span>
+                  <span className="font-bold text-xs truncate">
+                    {showSuperPromoToast ? dictionary.superPromoToastTitle : dictionary.promoToastTitle}
+                  </span>
+                </div>
+                <div className="flex items-center bg-white/20 rounded px-1.5 py-0.5 w-fit">
+                  <span className="font-mono font-bold text-xs tracking-wide">
+                    {showSuperPromoToast ? SUPER_PROMO_CODE : PROMO_CODE}
+                  </span>
+                  <button
+                    onClick={() => handleCopyPromoCode(showSuperPromoToast)}
+                    className="ml-1.5 p-0.5 hover:bg-white/20 rounded"
+                  >
+                    {promoCodeCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  </button>
+                </div>
+              </div>
+              <Link
+                href="/pricing"
+                className="bg-white text-xs font-bold py-1.5 px-2 rounded-md shadow-sm hover:scale-105 transition-transform text-center whitespace-nowrap"
+                style={{ color: showSuperPromoToast ? "#9333ea" : "#10b981" }}
+              >
+                {dictionary.goToPricing}
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
