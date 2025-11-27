@@ -67,7 +67,7 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
                 <div
                   className={`flex flex-col items-center gap-6 text-6xl font-bold text-primary-foreground tracking-tight scale-x-90 ${sixtyfour.className}`}
                 >
-                  <span className="animate-word-appear animation-delay-800">Download</span>
+                  <span className="animate-word-appear animation-delay-800">Get coupon</span>
                   <span className="animate-word-appear animation-delay-1200">if</span>
                   <span className="animate-word-appear animation-delay-1600">you</span>
                   <span className="animate-word-appear animation-delay-2000">can</span>
