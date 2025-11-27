@@ -285,7 +285,10 @@
         "ctaSubscribed": "Subscribed",
         "ctaLogin": "Get Pro",
         "ctaManage": "Manage subscription",
-        "coreFeatures": ["Includes all Free plan features", "Latest frontier models applied to AI features such as summarization, translation, AI chat (coming soon)"],
+        "coreFeatures": [
+          "Includes all Free plan features",
+          "Latest frontier models applied to AI features such as summarization, translation, AI chat (coming soon)"
+        ],
         "otherFeatures": [
           "Instant access to Gemini 3 Pro, GPT 5.1",
           "No need to install heavy models",
@@ -308,6 +311,7 @@
   "auth": {
     "title": "Welcome to Alt",
     "subtitle": "Students who sign up with their student email can easily get Edu benefits that will be applied later.",
+    "otpSubtitle": "Please enter the verification code",
     "emailLabel": "Email",
     "emailPlaceholder": "Email address",
     "otpLabel": "Verification Code",
