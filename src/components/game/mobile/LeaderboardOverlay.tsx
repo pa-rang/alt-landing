@@ -16,19 +16,11 @@ type LeaderboardOverlayProps = {
   onClose: () => void;
 };
 
-export function LeaderboardOverlay({
-  dictionary,
-  submittedData,
-  refreshTrigger,
-  onClose,
-}: LeaderboardOverlayProps) {
+export function LeaderboardOverlay({ dictionary, submittedData, refreshTrigger, onClose }: LeaderboardOverlayProps) {
   return createPortal(
     <div className="fixed inset-0 bg-zinc-900 z-9999 flex flex-col">
       <div className="relative px-4 py-3 text-center border-b border-zinc-700 shrink-0">
-        <button
-          onClick={onClose}
-          className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-200"
-        >
+        <button onClick={onClose} className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-200">
           <X className="w-5 h-5" />
         </button>
         <h2 className="text-lg font-bold text-zinc-200">{dictionary.leaderboardTitle}</h2>
@@ -46,4 +38,3 @@ export function LeaderboardOverlay({
     document.body
   );
 }
-

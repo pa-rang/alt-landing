@@ -4,12 +4,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { X, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  PROMO_THRESHOLD_SCORE,
-  PROMO_CODE,
-  SUPER_PROMO_THRESHOLD_SCORE,
-  SUPER_PROMO_CODE,
-} from "@/lib/apple-game";
+import { PROMO_THRESHOLD_SCORE, PROMO_CODE, SUPER_PROMO_THRESHOLD_SCORE, SUPER_PROMO_CODE } from "@/lib/apple-game";
 import type { Dictionary } from "@/lib/i18n/dictionary";
 import { GameScoreSubmit } from "../ScoreSubmit";
 
@@ -47,9 +42,7 @@ export function ScoreSubmitModal({
           <div className="flex items-center justify-center gap-2 mb-2">
             <span className="text-lg">{score >= SUPER_PROMO_THRESHOLD_SCORE ? "🏆" : "🎉"}</span>
             <span className="font-bold text-sm">
-              {score >= SUPER_PROMO_THRESHOLD_SCORE
-                ? dictionary.superPromoToastTitle
-                : dictionary.promoToastTitle}
+              {score >= SUPER_PROMO_THRESHOLD_SCORE ? dictionary.superPromoToastTitle : dictionary.promoToastTitle}
             </span>
           </div>
           <div className="flex items-center justify-center gap-2 bg-white/20 rounded-lg px-3 py-2 mx-auto w-fit">
@@ -60,11 +53,7 @@ export function ScoreSubmitModal({
               onClick={() => onCopyPromoCode(score >= SUPER_PROMO_THRESHOLD_SCORE)}
               className="p-1 hover:bg-white/20 rounded transition-colors"
             >
-              {promoCodeCopied ? (
-                <Check className="w-4 h-4 text-white" />
-              ) : (
-                <Copy className="w-4 h-4 text-white" />
-              )}
+              {promoCodeCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
             </button>
           </div>
           <Link
@@ -78,10 +67,7 @@ export function ScoreSubmitModal({
       )}
 
       <div className="relative p-4 text-center border-b shrink-0">
-        <button
-          onClick={onClose}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-        >
+        <button onClick={onClose} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
           <X className="w-5 h-5" />
         </button>
         <h2 className="text-lg font-bold text-gray-900">
@@ -106,4 +92,3 @@ export function ScoreSubmitModal({
     document.body
   );
 }
-

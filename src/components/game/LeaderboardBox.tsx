@@ -49,7 +49,7 @@ export function LeaderboardBox({
   };
 
   return (
-    <div className={cn("bg-zinc-900 flex flex-col h-full", fullScreen ? "" : "rounded-lg shadow-sm")}>
+    <div className={cn("bg-zinc-900 overflow-hidden flex flex-col h-full", fullScreen ? "" : "rounded-lg shadow-sm")}>
       <div className="flex items-center justify-between px-3 py-3 shrink-0 min-h-[53px]">
         <TabSwitcher<LeaderboardTabType>
           tabs={[

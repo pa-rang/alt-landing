@@ -26,10 +26,7 @@ export function PromoCodeModal({
   return createPortal(
     <div className="fixed inset-0 bg-white z-9999 flex flex-col">
       <div className="relative p-4 text-center border-b shrink-0">
-        <button
-          onClick={onClose}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-        >
+        <button onClick={onClose} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
           <X className="w-5 h-5" />
         </button>
         <h2 className="text-lg font-bold text-gray-900">{dictionary.promoCodeTitle}</h2>
@@ -49,11 +46,7 @@ export function PromoCodeModal({
                 onClick={() => onCopyPromoCode(true)}
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
               >
-                {promoCodeCopied ? (
-                  <Check className="w-5 h-5 text-white" />
-                ) : (
-                  <Copy className="w-5 h-5 text-white" />
-                )}
+                {promoCodeCopied ? <Check className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5 text-white" />}
               </button>
             </div>
             <Link
@@ -78,11 +71,7 @@ export function PromoCodeModal({
                 onClick={() => onCopyPromoCode(false)}
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
               >
-                {promoCodeCopied ? (
-                  <Check className="w-5 h-5 text-white" />
-                ) : (
-                  <Copy className="w-5 h-5 text-white" />
-                )}
+                {promoCodeCopied ? <Check className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5 text-white" />}
               </button>
             </div>
             <Link
@@ -97,9 +86,7 @@ export function PromoCodeModal({
         {!hasUnlockedPromo && !hasUnlockedSuperPromo && (
           <div className="text-center py-8">
             <p className="text-gray-600 mb-2">{dictionary.noPromoCode}</p>
-            <p className="text-sm text-gray-500">
-              {dictionary.promoCodeRequirement}
-            </p>
+            <p className="text-sm text-gray-500">{dictionary.promoCodeRequirement}</p>
           </div>
         )}
       </div>
@@ -107,4 +94,3 @@ export function PromoCodeModal({
     document.body
   );
 }
-
