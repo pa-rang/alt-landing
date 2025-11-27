@@ -82,9 +82,10 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
   const [leaderboardRefreshTrigger, setLeaderboardRefreshTrigger] = useState<number>(0);
   const [hasUnlockedPromo, setHasUnlockedPromo] = useState<boolean>(false);
   const [hasUnlockedSuperPromo, setHasUnlockedSuperPromo] = useState<boolean>(false);
-  const [showPromoToast, setShowPromoToast] = useState<boolean>(false);
-  const [showSuperPromoToast, setShowSuperPromoToast] = useState<boolean>(false);
+  const [isPromoBannerVisible, setIsPromoBannerVisible] = useState<boolean>(false);
   const [promoCodeCopied, setPromoCodeCopied] = useState<boolean>(false);
+  const promoBannerRef = useRef<HTMLDivElement>(null);
+  const promoBannerButtonRef = useRef<HTMLButtonElement>(null);
   const [titleClickTimestamps, setTitleClickTimestamps] = useState<number[]>([]);
   const [timeClickTimestamps, setTimeClickTimestamps] = useState<number[]>([]);
 
@@ -122,19 +123,32 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     const unlocked = localStorage.getItem(PROMO_UNLOCKED_KEY);
     if (unlocked === "true") {
       setHasUnlockedPromo(true);
-      // 이미 슈퍼 프로모션을 획득했으면 일반 프로모션 토스트는 띄우지 않음 (슈퍼가 덮어씀)
-      const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
-      if (superUnlocked !== "true") {
-        setShowPromoToast(true);
-      }
     }
     const superUnlocked = localStorage.getItem(SUPER_PROMO_UNLOCKED_KEY);
     if (superUnlocked === "true") {
       setHasUnlockedSuperPromo(true);
-      setShowSuperPromoToast(true);
-      setShowPromoToast(false); // 슈퍼가 우선
     }
   }, []);
+
+  // 배너 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isPromoBannerVisible &&
+        promoBannerRef.current &&
+        !promoBannerRef.current.contains(event.target as Node) &&
+        promoBannerButtonRef.current &&
+        !promoBannerButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsPromoBannerVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isPromoBannerVisible]);
 
   const resetGame = useCallback(() => {
     const values = generateValues(ROWS, COLS);
@@ -187,27 +201,14 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
           setHasUnlockedPromo(true);
           localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
         }
-
-        // 점수 제출 모달이 닫힌 후 토스트 표시
-        setTimeout(() => {
-          setShowPromoToast(false); // 일반 토스트 끄고
-          setShowSuperPromoToast(true); // 슈퍼 토스트 표시
-        }, 500);
       }
-      // 일반 프로모션 (60점 이상) 체크 (슈퍼가 아닐 때만 토스트 표시)
+      // 일반 프로모션 (60점 이상) 체크
       else if (score >= PROMO_THRESHOLD_SCORE && !hasUnlockedPromo) {
         setHasUnlockedPromo(true);
         localStorage.setItem(PROMO_UNLOCKED_KEY, "true");
-
-        // 이미 슈퍼 프로모션 토스트가 떠있지 않은 경우에만 표시
-        if (!hasUnlockedSuperPromo && !showSuperPromoToast) {
-          setTimeout(() => {
-            setShowPromoToast(true);
-          }, 500);
-        }
       }
     }
-  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo, showSuperPromoToast]);
+  }, [gameState, score, bestScore, hasUnlockedPromo, hasUnlockedSuperPromo]);
 
   // PROMO_THRESHOLD_SCORE 이상일 때 confetti 발사
   useEffect(() => {
@@ -404,61 +405,53 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
     }
   }, []);
 
+  // 현재 표시할 프로모션 타입 결정
+  const currentPromoType = hasUnlockedSuperPromo ? "super" : hasUnlockedPromo ? "normal" : null;
+
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-fade-in p-4 overflow-y-auto">
-      {/* 슈퍼 프로모션 코드 토스트 */}
-      {showSuperPromoToast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-10000 animate-slide-down-bounce">
-          <div className="relative bg-linear-to-r from-purple-600 via-pink-600 to-purple-600 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex flex-col sm:flex-row items-center gap-4">
+      {/* 프로모션 배너 (버튼 클릭 시 표시) */}
+      {currentPromoType && (
+        <div
+          className={cn(
+            "fixed top-0 left-1/2 -translate-x-1/2 z-10000 transition-transform duration-300 ease-out",
+            isPromoBannerVisible ? "translate-y-4" : "-translate-y-full"
+          )}
+        >
+          <div
+            ref={promoBannerRef}
+            className={cn(
+              "relative text-white px-6 py-4 rounded-xl shadow-2xl backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex flex-col sm:flex-row items-center gap-4",
+              currentPromoType === "super"
+                ? "bg-linear-to-r from-purple-600 via-pink-600 to-purple-600"
+                : "bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-500"
+            )}
+          >
             <div className="flex-1 text-center sm:text-left">
               <div className="text-lg font-bold flex items-center justify-center sm:justify-start gap-2">
-                <span className="text-2xl animate-bounce">🏆</span>
-                <span>{dictionary.superPromoToastTitle}</span>
+                <Image
+                  src={currentPromoType === "super" ? "/icons/🎟️ entry_ticket.svg" : "/icons/🎫 ticket.svg"}
+                  alt="ticket"
+                  width={28}
+                  height={28}
+                  className="animate-bounce"
+                />
+                <span>{currentPromoType === "super" ? "Pro Plan 1개월 무료 이용권" : "Pro Plan $1 이용권"}</span>
               </div>
-              <p className="text-sm text-white/90 mt-1">{dictionary.superPromoToastDescription}</p>
+              <p className="text-sm text-white/90 mt-1">
+                {currentPromoType === "super"
+                  ? dictionary.superPromoToastDescription
+                  : dictionary.promoToastDescription}
+              </p>
               <p className="text-xs text-white/70 mt-1">{dictionary.promoUseGuide}</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center bg-white/20 rounded-lg px-3 py-2 border border-white/30">
-                <span className="font-mono font-bold text-lg tracking-wider">{SUPER_PROMO_CODE}</span>
+                <span className="font-mono font-bold text-lg tracking-wider">
+                  {currentPromoType === "super" ? SUPER_PROMO_CODE : PROMO_CODE}
+                </span>
                 <button
-                  onClick={() => handleCopyPromoCode(true)}
-                  className="ml-2 p-1 hover:bg-white/20 rounded transition-colors"
-                  aria-label="Copy super promo code"
-                >
-                  {promoCodeCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
-                </button>
-              </div>
-              <Link
-                href="/pricing"
-                className="bg-white text-purple-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform px-4 py-2 rounded-lg text-sm"
-              >
-                {dictionary.goToPricing}
-              </Link>
-            </div>
-            {/* 반짝이는 효과 */}
-            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none animate-shimmer" />
-          </div>
-        </div>
-      )}
-
-      {/* 일반 프로모션 코드 토스트 (슈퍼 토스트가 없을 때만 표시) */}
-      {showPromoToast && !showSuperPromoToast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-10000 animate-slide-down-bounce">
-          <div className="relative bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl animate-glow-pulse backdrop-blur-sm border border-white/20 min-w-[320px] max-w-[90vw] flex flex-col sm:flex-row items-center gap-4">
-            <div className="flex-1 text-center sm:text-left">
-              <div className="text-lg font-bold flex items-center justify-center sm:justify-start gap-2">
-                <span className="text-2xl animate-bounce">🎉</span>
-                <span>{dictionary.promoToastTitle}</span>
-              </div>
-              <p className="text-sm text-white/90 mt-1">{dictionary.promoToastDescription}</p>
-              <p className="text-xs text-white/70 mt-1">{dictionary.promoUseGuide}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center bg-white/20 rounded-lg px-3 py-2 border border-white/30">
-                <span className="font-mono font-bold text-lg tracking-wider">{PROMO_CODE}</span>
-                <button
-                  onClick={() => handleCopyPromoCode(false)}
+                  onClick={() => handleCopyPromoCode(currentPromoType === "super")}
                   className="ml-2 p-1 hover:bg-white/20 rounded transition-colors"
                   aria-label="Copy promo code"
                 >
@@ -467,13 +460,16 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
               </div>
               <Link
                 href="/pricing"
-                className="bg-white text-emerald-600 hover:bg-white/90 font-semibold shadow-lg hover:scale-105 transition-transform px-4 py-2 rounded-lg text-sm"
+                className={cn(
+                  "font-semibold shadow-lg hover:scale-105 transition-transform px-4 py-2 rounded-lg text-sm",
+                  currentPromoType === "super"
+                    ? "bg-white text-purple-600 hover:bg-white/90"
+                    : "bg-white text-emerald-600 hover:bg-white/90"
+                )}
               >
                 {dictionary.goToPricing}
               </Link>
             </div>
-            {/* 반짝이는 효과 */}
-            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none animate-shimmer" />
           </div>
         </div>
       )}
@@ -481,11 +477,33 @@ export function SquareTomatoGame({ onClose, dictionary }: SquareTomatoGameProps)
       <div className="max-w-7xl rounded-xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] w-full">
         <div className="flex items-center justify-between px-4 sm:px-4 py-3">
           <div className="font-semibold text-lg sm:text-xl text-white select-none" onClick={handleTitleClick}>
-            {dictionary.title}
+            Alt는 시간제한없는 AI 강의 필기·요약앱입니다.
+            <br />
+            60점을 달성하고 Pro 쿠폰을 획득하세요
           </div>
           <div className="flex items-center gap-2">
+            {currentPromoType && (
+              <Button
+                ref={promoBannerButtonRef}
+                className={cn(
+                  "text-white gap-2",
+                  currentPromoType === "super"
+                    ? "bg-purple-600 hover:bg-purple-700"
+                    : "bg-emerald-600 hover:bg-emerald-700"
+                )}
+                onClick={() => setIsPromoBannerVisible(!isPromoBannerVisible)}
+              >
+                <Image
+                  src={currentPromoType === "super" ? "/icons/🎟️ entry_ticket.svg" : "/icons/🎫 ticket.svg"}
+                  alt="ticket"
+                  width={20}
+                  height={20}
+                />
+                <span className="hidden sm:inline">{currentPromoType === "super" ? "1개월 무료" : "$1 이용권"}</span>
+              </Button>
+            )}
             <Button className="text-white bg-white/15" onClick={handleClose}>
-              {dictionary.close}
+              홈 이동
             </Button>
           </div>
         </div>
