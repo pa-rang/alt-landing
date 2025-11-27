@@ -161,21 +161,25 @@
     "guide": "사각형으로 드래그하여 숫자 합이 정확히 10인 네모 토마토들을 제거하세요. 드래그 박스가 초록색으로 표시됩니다.",
     "tabs": {
       "game": "네모 토마토 게임",
+      "all": "전체",
       "personalLeaderboard": "개인",
-      "organizationLeaderboard": "학교/직장"
+      "organizationLeaderboard": "학교·직장"
     },
     "leaderboardTitle": "리더보드",
     "leaderboard": {
+      "personal": "개인",
+      "recentPlays": "최근 플레이",
       "rank": "순위",
       "nickname": "닉네임",
-      "organization": "학교/직장",
+      "organization": "학교·직장",
       "score": "점수",
       "totalScore": "총점",
       "members": "멤버 수",
       "loading": "불러오는 중...",
       "error": "리더보드를 불러올 수 없습니다.",
       "empty": "아직 등록된 점수가 없습니다.",
-      "you": "나"
+      "you": "나",
+      "viewAll": "전체보기"
     },
     "scoreSubmit": {
       "title": "리더보드에 등록하기",
@@ -183,7 +187,7 @@
       "pointsUnit": "점",
       "emailLabel": "이메일",
       "emailPlaceholder": "you@example.com",
-      "organizationLabel": "학교/직장",
+      "organizationLabel": "학교·직장",
       "organizationPlaceholder": "예: 카이스트, 구글, 네이버",
       "nicknameLabel": "닉네임",
       "nicknamePlaceholder": "홍길동",
@@ -198,7 +202,7 @@
       "recordSubmitted": "기록이 제출되었습니다",
       "previousScoreMaintained": "이전 최고 기록 {{previousScore}}점이 유지됩니다",
       "currentRank": "현재 순위: {{rank}}위",
-      "leaderboardHint": "리더보드에 등록하여 학교/직장 순위를 높여보세요.",
+      "leaderboardHint": "리더보드에 등록하여 학교·직장 순위를 높여보세요.",
       "messages": {
         "success": "리더보드에 등록되었습니다!",
         "validationError": "입력값을 확인해주세요.",
@@ -207,8 +211,8 @@
         "genericError": "등록에 실패했습니다."
       },
       "validation": {
-        "organizationRequired": "학교/직장을 입력하세요.",
-        "organizationTooLong": "학교/직장명은 255자 이내로 입력하세요.",
+        "organizationRequired": "학교·직장을 입력하세요.",
+        "organizationTooLong": "학교·직장명은 255자 이내로 입력하세요.",
         "nicknameRequired": "닉네임을 입력하세요.",
         "nicknameTooLong": "닉네임은 100자 이내로 입력하세요.",
         "nicknameInvalid": "닉네임에는 한글, 영문, 숫자, 공백, _, -만 사용할 수 있습니다.",

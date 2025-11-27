@@ -172,11 +172,14 @@
     "guide": "Drag a rectangle to remove square tomatoes that sum to exactly 10. The box turns green when the sum is 10.",
     "tabs": {
       "game": "Game",
+      "all": "All",
       "personalLeaderboard": "Personal",
       "organizationLeaderboard": "Organization"
     },
     "leaderboardTitle": "Leaderboard",
     "leaderboard": {
+      "personal": "Personal",
+      "recentPlays": "Recent Plays",
       "rank": "Rank",
       "nickname": "Nickname",
       "organization": "Organization",
@@ -186,7 +189,8 @@
       "loading": "Loading...",
       "error": "Failed to load leaderboard.",
       "empty": "No scores recorded yet.",
-      "you": "You"
+      "you": "You",
+      "viewAll": "View All"
     },
     "scoreSubmit": {
       "title": "Submit to Leaderboard",
