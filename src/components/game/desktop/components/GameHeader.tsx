@@ -36,7 +36,7 @@ export function GameHeader({
   onTogglePromoBanner,
 }: GameHeaderProps) {
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-7xl w-full px-4">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-10000 max-w-7xl w-full px-4">
       <div className="flex items-center justify-between gap-2">
         <Button className="text-white bg-white/15" onClick={onClose}>
           {dictionary.homeButton}
@@ -61,9 +61,7 @@ export function GameHeader({
                 height={20}
               />
               <span className="hidden sm:inline">
-                {currentPromoType === "super"
-                  ? dictionary.superPromoCodeDescription
-                  : dictionary.promoCodeDescription}
+                {currentPromoType === "super" ? dictionary.superPromoCodeDescription : dictionary.promoCodeDescription}
               </span>
             </Button>
           )}
@@ -79,4 +77,3 @@ export function GameHeader({
     </div>
   );
 }
-
