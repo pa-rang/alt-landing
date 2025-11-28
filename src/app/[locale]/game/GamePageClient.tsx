@@ -16,9 +16,10 @@ const sixtyfour = Sixtyfour({
 type GamePageClientProps = {
   locale: Locale;
   dictionary: Dictionary["game"];
+  fullDictionary: Dictionary;
 };
 
-export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
+export function GamePageClient({ locale, dictionary, fullDictionary }: GamePageClientProps) {
   const router = useRouter();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showGame, setShowGame] = useState(false);
@@ -96,6 +97,8 @@ export function GamePageClient({ locale, dictionary }: GamePageClientProps) {
                   router.push(`/${locale}`);
                 }}
                 dictionary={dictionary}
+                locale={locale}
+                fullDictionary={fullDictionary}
               />
             ))}
         </div>

@@ -18,7 +18,7 @@ export default async function GamePage({ params }: { params: Promise<GamePagePro
 
   return (
     <div className="min-h-screen bg-background">
-      <GamePageClient locale={locale} dictionary={dictionary.game} />
+      <GamePageClient locale={locale} dictionary={dictionary.game} fullDictionary={dictionary} />
     </div>
   );
 }
