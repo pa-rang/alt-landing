@@ -40,6 +40,15 @@ export default async function AboutPage({ params }: { params: Promise<AboutPageP
                   ))}
                 </ul>
               </div>
+
+              <div>
+                <p className="font-semibold mb-1">{dictionary.about.members.yongjae.name}</p>
+                <ul className="list-disc list-inside text-zinc-800 ml-1">
+                  {dictionary.about.members.yongjae.history.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             <div className="pt-2 space-y-2 text-sm text-zinc-800">
