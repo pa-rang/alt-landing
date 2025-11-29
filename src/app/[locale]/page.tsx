@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { DownloadButton } from "@/components/game/DownloadButton";
 import { AboutLetter } from "@/components/AboutLetter";
 import { CopyableCode } from "@/components/CopyableCode";
 import { CopyableInlineCode } from "@/components/CopyableInlineCode";
+import { DemoVideo } from "@/components/video/DemoVideo";
 import { isSupportedLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { accentGradient } from "@/lib/utils";
@@ -111,17 +111,12 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
               </div>
             </div>
 
-            <div className="md:hidden relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+            <div className="md:hidden relative rounded-xl border bg-background/50 backdrop-blur-sm overflow-hidden">
               <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
-              <Image
-                src="/alt_reddit.png"
-                alt="AI Transcript Platform Screenshot"
-                width={1600}
-                height={964}
-                className="relative z-10 w-full h-auto"
-                quality={100}
-                priority
-                unoptimized={false}
+              <DemoVideo
+                src="https://cdn.altalt.io/resources/Alt-landing.mp4"
+                fallbackImage="/alt_reddit.png"
+                className="relative z-10"
               />
             </div>
 
@@ -138,17 +133,12 @@ export default async function HomePage({ params }: { params: Promise<HomePagePro
             </div>
 
             <div className="relative ">
-              <div className="hidden md:block relative rounded-xl border bg-background/50 shadow-2xl backdrop-blur-sm overflow-hidden">
+              <div className="hidden md:block relative rounded-xl border bg-background/50 backdrop-blur-sm overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent" />
-                <Image
-                  src="/alt_reddit.png"
-                  alt="AI Transcript Platform Screenshot"
-                  width={1600}
-                  height={964}
-                  className="relative z-10 w-full h-auto"
-                  quality={100}
-                  priority
-                  unoptimized={false}
+                <DemoVideo
+                  src="https://cdn.altalt.io/resources/Alt-landing.mp4"
+                  fallbackImage="/alt_reddit.png"
+                  className="relative z-10"
                 />
               </div>
 
