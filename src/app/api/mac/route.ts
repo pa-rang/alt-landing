@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-const RELEASES_JSON_URL = "https://altalt-dev.s3.ap-northeast-2.amazonaws.com/alt/darwin/arm64/RELEASES.json";
-const CLOUDFRONT_CDN_URL = "https://d31j0e9r0hmts6.cloudfront.net";
+const RELEASES_JSON_URL = "https://cdn.altalt.io/darwin/arm64/RELEASES.json";
+const CLOUDFRONT_CDN_URL = "https://cdn.altalt.io";
 const CACHE_TTL = 10 * 60 * 1000; // 10분 (밀리초)
 
 // 메모리 캐시: { cdnUrl: string, s3Url: string, expiresAt: number }
