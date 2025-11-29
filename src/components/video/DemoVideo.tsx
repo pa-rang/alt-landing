@@ -2,20 +2,13 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { isMobileDevice } from "@/lib/device";
 
 interface DemoVideoProps {
   src: string;
   poster?: string;
   className?: string;
   fallbackImage?: string;
-}
-
-// 시간 포맷 함수 (초 → MM:SS)
-function formatTime(seconds: number): string {
-  if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
 export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_reddit.png" }: DemoVideoProps) {
@@ -33,6 +26,8 @@ export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_r
   const [showControls, setShowControls] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // 컨트롤 자동 숨김
   const resetHideTimer = useCallback(() => {
@@ -86,17 +81,42 @@ export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_r
   );
 
   // 전체화면 토글
-  const toggleFullscreen = useCallback(() => {
+  const toggleFullscreen = useCallback(async () => {
+    const video = videoRef.current;
     const container = containerRef.current;
-    if (!container) return;
+    if (!video || !container) return;
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      container.requestFullscreen();
+    // 모바일 기기에서는 비디오 요소 자체에 전체화면 요청
+    if (isMobile) {
+      // iOS Safari용 (webkitEnterFullscreen은 TypeScript 타입에 없으므로 타입 단언 사용)
+      const videoWithWebkit = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+      if (videoWithWebkit.webkitEnterFullscreen && typeof videoWithWebkit.webkitEnterFullscreen === "function") {
+        videoWithWebkit.webkitEnterFullscreen();
+        return;
+      }
+      // Android/기타 모바일 브라우저용
+      if (video.requestFullscreen) {
+        try {
+          await video.requestFullscreen();
+        } catch (error) {
+          console.error("Failed to enter fullscreen on mobile:", error);
+        }
+        return;
+      }
+    }
+
+    // 데스크탑에서는 컨테이너 전체를 전체화면으로
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await container.requestFullscreen();
+      }
+    } catch (error) {
+      console.error("Failed to toggle fullscreen:", error);
     }
     resetHideTimer();
-  }, [resetHideTimer]);
+  }, [resetHideTimer, isMobile]);
 
   // 키보드 단축키
   useEffect(() => {
@@ -218,6 +238,30 @@ export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_r
     };
   }, []);
 
+  // 모바일 감지
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
+
+  // 전체화면 상태 감지
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+    };
+  }, []);
+
   // cleanup
   useEffect(() => {
     return () => {
@@ -263,12 +307,13 @@ export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_r
         src={src}
         poster={poster || fallbackImage}
         preload="auto"
-        playsInline
+        playsInline={!isFullscreen}
         muted
         loop
         autoPlay
         className="w-full h-auto rounded-xl"
         onClick={togglePlay}
+        controls={isMobile && isFullscreen}
       />
 
       {/* 컨트롤 바 - 재생바 + 전체화면 버튼 */}
@@ -300,7 +345,7 @@ export function DemoVideo({ src, poster, className = "", fallbackImage = "/alt_r
           {/* 전체화면 */}
           <button
             onClick={toggleFullscreen}
-            className="text-white hover:text-white/80 transition-colors flex-shrink-0"
+            className="text-white hover:text-white/80 transition-colors shrink-0"
             aria-label="전체화면"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
