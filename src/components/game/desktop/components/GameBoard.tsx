@@ -76,8 +76,10 @@ export function GameBoard({
                 alt="tomato"
                 fill
                 className="object-contain select-none"
+                style={{ WebkitUserDrag: 'none', userSelect: 'none' } as React.CSSProperties}
                 unoptimized
                 draggable={false}
+                onDragStart={(e) => e.preventDefault()}
               />
               <span className="relative z-10 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
                 {cell.value}
