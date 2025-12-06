@@ -1,63 +1,21 @@
-import { redirect, notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { query } from "@/lib/db";
-import { isAdmin } from "@/lib/auth";
+import { notFound } from "next/navigation";
 import { isSupportedLocale } from "@/lib/i18n/config";
 
 export const dynamic = "force-dynamic";
 
-type ProfileData = {
-  role: string | null;
-};
-
 type AdminPageProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 /**
  * 어드민 페이지
- * 어드민 권한이 있는 사용자만 접근 가능합니다.
+ * layout.tsx의 AdminGuard에 의해 보호됩니다.
  */
-export default async function AdminPage({ params }: { params: Promise<AdminPageProps["params"]> }) {
+export default async function AdminPage({ params }: AdminPageProps) {
   const { locale } = await params;
 
   if (!isSupportedLocale(locale)) {
     notFound();
-  }
-
-  const supabase = await createClient();
-
-  // 사용자 인증 확인
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    redirect(`/${locale}/auth`);
-  }
-
-  // user_profiles 테이블에서 role 조회
-  let profileData: ProfileData | null = null;
-  try {
-    const profileResult = await query<ProfileData>(
-      `SELECT role
-       FROM user_profiles 
-       WHERE id = $1`,
-      [user.id]
-    );
-
-    profileData = profileResult.rows[0] || null;
-  } catch (profileError) {
-    console.error("Failed to fetch user profile:", profileError);
-    redirect(`/${locale}/auth`);
-  }
-
-  const userRole = (profileData?.role || "user") as "admin" | "user";
-
-  // 어드민 권한 확인
-  if (!isAdmin(userRole)) {
-    redirect(`/${locale}`);
   }
 
   return (

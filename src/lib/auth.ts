@@ -20,4 +20,3 @@ export function requireAdmin(role: UserRole | null | undefined): void {
     throw new Error("Admin access required");
   }
 }
-
