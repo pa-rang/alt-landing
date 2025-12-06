@@ -39,8 +39,9 @@ export async function POST(request: Request) {
           stripe_customer_id: string | null;
           subscription_status: string | null;
           current_period_end: string | null;
+          role: string | null;
         }>(
-          `SELECT display_name, avatar_url, stripe_customer_id, subscription_status, current_period_end
+          `SELECT display_name, avatar_url, stripe_customer_id, subscription_status, current_period_end, role
            FROM user_profiles 
            WHERE id = $1`,
           [userId]
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
           stripe_customer_id: profileData?.stripe_customer_id || null,
           subscription_status: profileData?.subscription_status || "free",
           current_period_end: profileData?.current_period_end || null,
+          role: profileData?.role || "user",
         },
       });
     }

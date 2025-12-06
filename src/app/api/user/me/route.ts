@@ -5,6 +5,7 @@ import { query } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 type SubscriptionStatus = "free" | "active" | "past_due" | "canceled";
+type UserRole = "admin" | "user";
 
 type ProfileData = {
   display_name: string | null;
@@ -12,6 +13,7 @@ type ProfileData = {
   stripe_customer_id: string | null;
   subscription_status: SubscriptionStatus | null;
   current_period_end: string | null;
+  role: UserRole | null;
 };
 
 /**
@@ -42,7 +44,7 @@ export async function GET(request: Request) {
     let profileData: ProfileData | null = null;
     try {
       const profileResult = await query<ProfileData>(
-        `SELECT display_name, avatar_url, stripe_customer_id, subscription_status, current_period_end
+        `SELECT display_name, avatar_url, stripe_customer_id, subscription_status, current_period_end, role
          FROM user_profiles 
          WHERE id = $1`,
         [user.id]
@@ -62,6 +64,7 @@ export async function GET(request: Request) {
       stripe_customer_id: profileData?.stripe_customer_id || null,
       subscription_status: (profileData?.subscription_status || "free") as SubscriptionStatus,
       current_period_end: profileData?.current_period_end || null,
+      role: (profileData?.role || "user") as UserRole,
     });
   } catch (error) {
     console.error("User profile fetch error:", error);
